@@ -1,9 +1,5 @@
-import {
-  BoxGeometry, Color, DirectionalLight, HemisphereLight, Mesh,
-  MeshStandardMaterial, OctahedronGeometry, PlaneGeometry, Scene,
-} from 'three';
 import { createGame } from '../app/game.js';
-import { createAssets, disposeScene } from '../runtime/assets.js';
+import { createAssets } from '../runtime/assets.js';
 import { createControls } from '../runtime/controls.js';
 import { createDisplay } from '../runtime/display.js';
 import { createInput } from '../runtime/input.js';
@@ -13,84 +9,6 @@ import { createWorldRegistry } from '../worlds/registry.js';
 import { createInputPreview } from './input-preview.js';
 
 const SCENE_LABELS = { 'scene-a': 'Scene A', 'scene-b': 'Scene B' };
-
-function waitForFixture(signal) {
-  signal.throwIfAborted();
-  return new Promise((resolve, reject) => {
-    const timer = setTimeout(() => {
-      signal.removeEventListener('abort', cancel);
-      resolve();
-    }, 500);
-
-    function cancel() {
-      clearTimeout(timer);
-      reject(signal.reason);
-    }
-    signal.addEventListener('abort', cancel, { once: true });
-  });
-}
-
-function createFixtureWorld({ assets, sceneB, fail }) {
-  const scene = new Scene();
-  scene.name = sceneB ? 'Scene B' : 'Scene A';
-  scene.background = new Color(sceneB ? 0x382a49 : 0x243752);
-  scene.userData.interactPresses = 0;
-  const fill = new HemisphereLight(0xc2dcff, 0x52634d, 1.4);
-  const key = new DirectionalLight(0xffeed7, 2.2);
-  key.position.set(3, 5, 4);
-  scene.add(fill, key);
-
-  let floorLease;
-  let landmark;
-  let startedAt;
-
-  return {
-    scene,
-    async prepare(signal) {
-      const lease = await assets.acquire('qa:floor', () => ({
-        value: new PlaneGeometry(18, 18),
-        dispose: geometry => geometry.dispose(),
-      }), signal);
-      if (signal.aborted) {
-        lease.release();
-        signal.throwIfAborted();
-      }
-      floorLease = lease;
-      const floor = new Mesh(
-        lease.value, new MeshStandardMaterial({ color: sceneB ? 0x736986 : 0x568578 }),
-      );
-      floor.rotation.x = -Math.PI / 2;
-      scene.add(floor);
-
-      landmark = new Mesh(
-        sceneB ? new OctahedronGeometry(1.1) : new BoxGeometry(1.4, 1.8, 1.4),
-        new MeshStandardMaterial({ color: sceneB ? 0x62dbfa : 0xfdb251 }),
-      );
-      landmark.position.y = sceneB ? 1.1 : 0.9;
-      scene.add(landmark);
-
-      if (sceneB) await waitForFixture(signal);
-      if (fail) throw new Error('The QA fixture failed during preparation.');
-    },
-    enter() {},
-    update(dt, { actions }) {
-      if (actions.interact) scene.userData.interactPresses++;
-    },
-    present(elapsed) {
-      startedAt ??= elapsed;
-      landmark.rotation.y = elapsed - startedAt;
-    },
-    exit() {},
-    dispose() {
-      try {
-        disposeScene(scene, new Set(floorLease ? [floorLease.value] : []));
-      } finally {
-        floorLease?.release();
-        floorLease = undefined;
-      }
-    },
-  };
-}
 
 function createScenePreview({ mount, initial }) {
   const fixture = document.createElement('section');
@@ -139,17 +57,18 @@ function createScenePreview({ mount, initial }) {
   let focusAfterRetry = false;
   let reveal;
 
-  function loadFixture(sceneB) {
+  async function loadFixture(load) {
     const fail = failNext;
     failNext = false;
     failButton.disabled = false;
     failButton.textContent = 'Fail next load';
-    return { createWorld: context => createFixtureWorld({ ...context, sceneB, fail }) };
+    const { createWorld } = await load();
+    return { createWorld: context => createWorld({ ...context, fail }) };
   }
 
   const registry = createWorldRegistry({
-    'scene-a': () => loadFixture(false),
-    'scene-b': () => loadFixture(true),
+    'scene-a': () => loadFixture(() => import('./scene-a.js')),
+    'scene-b': () => loadFixture(() => import('./scene-b.js')),
   });
 
   const host = createWorldHost({
