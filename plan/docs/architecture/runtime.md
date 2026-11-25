@@ -1,0 +1,18 @@
+# Runtime and frame ownership
+
+## Proposed source layout
+
+Use JavaScript ES modules and the existing Vite scripts. main.js mounts under #app. app/game.js composes services. runtime/ holds display, timing, input and world swapping. player/ owns the avatar, camera motion and proximity selection. state/ owns progression. ui/ owns HTML overlays. audio/ owns the mixer and cue manifest. worlds/<id>/ owns an entry module, gameplay code, scenery, cast and local cue selection. Put the pot, Candle, Sword, essence visuals and Wizard factory in shared/props or shared/actors when a second scene needs the exact model. A world imports shared modules and never imports a sibling world.
+
+| Owner | Calls and dependencies | Lifetime and boundary |
+|---|---|---|
+| main.js and createGame({mount}) | Construct display, input, state, UI, audio, player and host once. Expose start(), pause(), resume(), dispose(). Start button is the audio gesture. | One instance per page. Remove listeners, stop loop, cancel scene work, release assets/audio then dispose renderer on teardown. |
+| createDisplay(canvas) | Returns renderer, perspective camera, resize(), render(scene), dispose(). ResizeObserver reads canvas client size and updates aspect/projection; perspective near 0.08, far 180 units. | One canvas, camera and WebGLRenderer. Active world owns its Scene, lighting, background, fog and shadow bounds. Show readable DOM failure text if context creation fails. |
+| createInput(canvas) | sample() gives held move axes, held pointer, accumulated drag/orbit and one-shot jump/interact/attack/ultimate/advance. clear() on lock, blur, hidden and exit. dispose() removes listeners. | Keyboard, pointer and focus only. UI consumes its own buttons. Input never changes a world directly. |
+| game frame | requestAnimationFrame while visible. dt in seconds, cap elapsed at 0.05; accumulate 1/60 s physics steps, max three per frame. Sample held axes for each step, consume an edge once on first eligible step (retain until then). | Freeze elapsed on tab hide, clear debt/input on return. No timeouts to advance play while paused. Draw once per visible frame. |
+| presentation | World update and avatar pose use elapsed active seconds. Camera follow then audio listener then render. Resize does not change simulation speed. | Keep cosmetic bobbing below the collision root. A world animates its own actors and props. |
+| mode ownership | Host exposes ctx.controls.acquire(mode) → release() for story, dialogue or puzzle. Acquire/release by token. Host-owned transition and terminal ending outrank all. | Effective priority transition/ending, dialogue, story, puzzle, explore. Clear consumed edges on change. Dialogue can interrupt a shot and return to its originating mode. |
+
+Within a simulation step, dispatch active mode input, move player against active world surfaces if exploring, run local world.update(dt, frame) and resolve the active interaction once after movement. frame supplies filtered actions, mode and player position. While a lock is active, run the owning sequence and allowed UI only; visual idles still advance. Local contact damage and attack timers run in explore mode only. World switching goes through the host after the step.
+
+Use a few named groups and lerped transforms per actor. A local sequence advances through pose, shot, line and callback on the active clock. The actor API is setPose(name), update(dt), attachPoint(name). Each world owns its sequences, including precisely when movement resumes. The camera owns actual camera writes. A sword swing can publish a strike window to Void. A mesh overlap alone cannot grant a reward.
