@@ -67,6 +67,7 @@ The protagonist can:
 | Space | Jump |
 | E | Interact |
 | Left click | Attack (when holding blade only) |
+| Left drag | Orbit the camera while exploring |
 
 ## Inventory
 

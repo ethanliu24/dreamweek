@@ -8,6 +8,7 @@ const KEY_ACTIONS = new Map([
 ]);
 const PRIMARY = 1;
 const SECONDARY = 2;
+const DRAG_THRESHOLD = 5;
 
 export function createInput(canvas) {
   const listeners = new AbortController();
@@ -22,6 +23,9 @@ export function createInput(canvas) {
   let dragY = 0;
   let orbitX = 0;
   let orbitY = 0;
+  let primaryStartX = 0;
+  let primaryStartY = 0;
+  let orbiting = false;
 
   function onKeyDown(event) {
     const { code } = event;
@@ -35,9 +39,15 @@ export function createInput(canvas) {
     if (action) pressed.add(action);
   }
 
-  function updateButtons(nextButtons) {
-    if ((nextButtons & PRIMARY) && !(buttons & PRIMARY)) pressed.add('attack');
-    buttons = nextButtons;
+  function updateButtons(event) {
+    if ((event.buttons & PRIMARY) && !(buttons & PRIMARY)) {
+      primaryStartX = event.clientX;
+      primaryStartY = event.clientY;
+      orbiting = false;
+      pressed.add('primary');
+    }
+    if ((buttons & PRIMARY) && !(event.buttons & PRIMARY) && !orbiting) pressed.add('attack');
+    buttons = event.buttons;
   }
 
   function onPointerDown(event) {
@@ -48,7 +58,7 @@ export function createInput(canvas) {
     pointerId = event.pointerId;
     lastX = event.clientX;
     lastY = event.clientY;
-    updateButtons(event.buttons);
+    updateButtons(event);
   }
 
   function onPointerMove(event) {
@@ -61,12 +71,20 @@ export function createInput(canvas) {
     if (buttons & PRIMARY) {
       dragX += dx;
       dragY += dy;
+      if (orbiting) {
+        orbitX += dx;
+        orbitY += dy;
+      } else {
+        const totalX = event.clientX - primaryStartX;
+        const totalY = event.clientY - primaryStartY;
+        if (Math.hypot(totalX, totalY) >= DRAG_THRESHOLD) {
+          orbiting = true;
+          orbitX += totalX;
+          orbitY += totalY;
+        }
+      }
     }
-    if (buttons & SECONDARY) {
-      orbitX += dx;
-      orbitY += dy;
-    }
-    updateButtons(event.buttons);
+    updateButtons(event);
   }
 
   function releasePointer() {
@@ -97,11 +115,13 @@ export function createInput(canvas) {
   canvas.addEventListener('pointerdown', onPointerDown, options);
   canvas.addEventListener('pointermove', onPointerMove, options);
   canvas.addEventListener('pointerup', event => {
-    if (event.pointerId === pointerId) releasePointer();
+    if (event.pointerId !== pointerId) return;
+    onPointerMove(event);
+    releasePointer();
   }, options);
   function onPointerCancel(event) {
     if (event.pointerId !== pointerId) return;
-    pressed.delete('attack');
+    pressed.delete('primary');
     resetDeltas();
     releasePointer();
   }
@@ -119,6 +139,7 @@ export function createInput(canvas) {
         moveZ: Number(keys.has('KeyS')) - Number(keys.has('KeyW')),
         primaryHeld: Boolean(buttons & PRIMARY),
         secondaryHeld: Boolean(buttons & SECONDARY),
+        primaryPressed: pressed.has('primary'),
         dragX, dragY, orbitX, orbitY,
         jump: pressed.has('jump'),
         interact: pressed.has('interact'),

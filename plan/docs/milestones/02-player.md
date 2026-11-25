@@ -51,7 +51,7 @@ Read the [root instructions](../../../AGENTS.md) once. Each card lists its addit
 **How to test**
 
 1. In `?qa` choose Traversal. Use WASD and Space to cross the steps. Spam Space midair, then drop to the floor. Land, jump again and walk back to the start.
-2. Drag with the secondary mouse button near the wall. Enter and leave the QA camera shot; the camera should recover behind the spirit and keep the floor visible.
+2. Left-drag near the wall to orbit. With the sword equipped, verify the drag leaves the swing count unchanged and a left click adds one swing. Enter and leave the QA camera shot; the camera should recover behind the spirit and keep the floor visible.
 3. Follow the guidance arrow to the two props. Press and hold E. Only the named prop should respond once. Step away and make sure the prompt goes away.
 
 **Milestone passes when** a person can traverse, orient the camera and activate a chosen prop without a stuck jump, camera or prompt.

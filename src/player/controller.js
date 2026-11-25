@@ -35,6 +35,7 @@ export function createPlayer() {
 
   const velocity = new Vector3();
   const move = new Vector3();
+  let teleportRevision = 0;
   let held = null;
   let pose = 'idle';
   let squash = 0;
@@ -57,6 +58,7 @@ export function createPlayer() {
   }
 
   function teleport(point) {
+    teleportRevision++;
     position.copy(point);
     velocity.set(0, 0, 0);
     swingTime = SWING_DURATION;
@@ -151,6 +153,7 @@ export function createPlayer() {
 
   return {
     root, position, teleport, step, setHeld,
+    get teleportRevision() { return teleportRevision; },
     setPose(name) { pose = name; },
     attachPoint(name) { return name === 'grip' ? spirit.grip : undefined; },
     strikeWindow() {

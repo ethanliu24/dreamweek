@@ -1,8 +1,9 @@
 import {
-  BoxGeometry, CircleGeometry, Color, DirectionalLight, ExtrudeGeometry, Fog, GridHelper,
+  Box3, BoxGeometry, CircleGeometry, Color, DirectionalLight, ExtrudeGeometry, Fog, GridHelper,
   Group, HemisphereLight, Mesh, MeshBasicMaterial, MeshStandardMaterial, RingGeometry,
   Scene, Shape, Vector3,
 } from 'three';
+import { createCameraRig } from '../player/camera.js';
 import { createPlayer } from '../player/controller.js';
 import { disposeScene } from '../runtime/assets.js';
 import { createControls } from '../runtime/controls.js';
@@ -20,8 +21,8 @@ const surfaces = {
 };
 
 function createCourse(scene) {
-  const floor = new Mesh(new BoxGeometry(10.3, 0.2, 13.3), new MeshStandardMaterial({ color: 0x456e79 }));
-  floor.position.set(0, -0.1, -1.5);
+  const floor = new Mesh(new BoxGeometry(11.8, 0.2, 13.3), new MeshStandardMaterial({ color: 0x456e79 }));
+  floor.position.set(-0.75, -0.1, -1.5);
   scene.add(floor);
 
   const grid = new GridHelper(13, 13, 0x729ba4, 0x729ba4);
@@ -77,8 +78,10 @@ export function createTraversalPreview({ mount }) {
   const fixture = document.createElement('section');
   fixture.innerHTML = `
     <h1>Traversal</h1>
-    <p id="qa-traversal-help">WASD to glide, Space to jump. Climb the steps and drop from the side. Click the scene to swing when equipped.</p>
-    <button type="button" aria-pressed="false">Equip sword</button>
+    <p id="qa-traversal-help">WASD to glide, Space to jump. Climb the steps and drop from the side. Left-drag to orbit. Left-click to swing when equipped.</p>
+    <button type="button" data-sword aria-pressed="false">Equip sword</button>
+    <button type="button" data-shot aria-pressed="false">Front shot</button>
+    <button type="button" data-spawn>Return to start</button>
     <p data-readout></p>
     <canvas tabindex="0" aria-label="Traversal course" aria-describedby="qa-traversal-help"
       style="display:block;width:100%;aspect-ratio:16/9;max-height:70vh;touch-action:none"></canvas>
@@ -86,7 +89,9 @@ export function createTraversalPreview({ mount }) {
   mount.replaceChildren(fixture);
 
   const canvas = fixture.querySelector('canvas');
-  const button = fixture.querySelector('button');
+  const button = fixture.querySelector('[data-sword]');
+  const shotButton = fixture.querySelector('[data-shot]');
+  const spawnButton = fixture.querySelector('[data-spawn]');
   const readout = fixture.querySelector('[data-readout]');
   let display;
   try {
@@ -95,7 +100,7 @@ export function createTraversalPreview({ mount }) {
     console.error(error);
     readout.setAttribute('role', 'alert');
     readout.textContent = 'Traversal could not start. WebGL is required.';
-    button.disabled = true;
+    for (const control of fixture.querySelectorAll('button')) control.disabled = true;
     return { dispose: () => fixture.remove() };
   }
 
@@ -106,6 +111,9 @@ export function createTraversalPreview({ mount }) {
   key.position.set(4, 6, 4);
   scene.add(new HemisphereLight(0xc7ddff, 0x567783, 1.55), key);
   createCourse(scene);
+  const wall = new Mesh(new BoxGeometry(0.35, 3, 7), new MeshStandardMaterial({ color: 0x53748c }));
+  wall.position.set(-6.4, 1.5, -1.5);
+  scene.add(wall);
 
   const player = createPlayer();
   const sword = createSword();
@@ -131,16 +139,54 @@ export function createTraversalPreview({ mount }) {
     canvas.focus({ preventScroll: true });
   }
 
+  const rig = createCameraRig(display.camera, { obstructions: [new Box3().setFromObject(wall)] });
+  rig.follow(player);
+  let releaseShotLock;
+
+  function endShot() {
+    if (!releaseShotLock) return;
+    rig.releaseShot();
+    releaseShotLock();
+    releaseShotLock = null;
+    shotButton.setAttribute('aria-pressed', 'false');
+    shotButton.textContent = 'Front shot';
+  }
+
+  function toggleShot() {
+    if (releaseShotLock) {
+      endShot();
+    } else {
+      const lookAt = player.position.clone().add(new Vector3(0, 0.6, 0));
+      const forward = player.strikeWindow().forward;
+      const eye = lookAt.clone().addScaledVector(forward, 2.8);
+      eye.y += 0.65;
+      eye.x = Math.max(-5.9, eye.x);
+      rig.shot({ eye, lookAt, seconds: 0.55 });
+      releaseShotLock = controls.acquire('puzzle');
+      shotButton.setAttribute('aria-pressed', 'true');
+      shotButton.textContent = 'Resume follow';
+    }
+    canvas.focus({ preventScroll: true });
+  }
+
+  function returnToStart() {
+    endShot();
+    input.clear();
+    player.teleport(surfaces.safeSpawn);
+    canvas.focus({ preventScroll: true });
+  }
+
   button.addEventListener('click', toggleSword);
-  const camera = display.camera;
-  camera.fov = 48;
-  camera.updateProjectionMatrix();
+  shotButton.addEventListener('click', toggleShot);
+  spawnButton.addEventListener('click', returnToStart);
 
   const loop = createLoop({
     update(dt) {
-      player.step(dt, controls.sample(), surfaces);
+      const actions = controls.sample();
+      rig.orbit(actions.orbitX, actions.orbitY);
+      player.step(dt, { ...actions, yaw: rig.yaw, mode: controls.mode }, surfaces);
     },
-    render() {
+    render(_elapsed, dt) {
       const { x, y, z } = player.position;
       let support = surfaces.floorHeight(x, z);
       for (const platform of surfaces.platforms) {
@@ -151,8 +197,7 @@ export function createTraversalPreview({ mount }) {
       shadow.position.set(x, support + 0.022, z);
       shadow.material.opacity = 0.32 / (1 + y - support);
 
-      camera.position.set(x, y + 2.5, z + 4.8);
-      camera.lookAt(x, y + 0.65, z);
+      rig.update(dt);
       display.render(scene);
 
       const { swingId, active } = player.strikeWindow();
@@ -166,8 +211,11 @@ export function createTraversalPreview({ mount }) {
   return {
     dispose() {
       loop.dispose();
+      endShot();
       input.dispose();
       button.removeEventListener('click', toggleSword);
+      shotButton.removeEventListener('click', toggleShot);
+      spawnButton.removeEventListener('click', returnToStart);
       player.dispose();
       scene.add(sword);
       disposeScene(scene);

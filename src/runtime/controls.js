@@ -40,7 +40,7 @@ export function createControls(input) {
         dragY: exploring || puzzle ? raw.dragY : 0,
         orbitX: exploring ? raw.orbitX : 0,
         orbitY: exploring ? raw.orbitY : 0,
-        primaryPressed: puzzle && raw.attack,
+        primaryPressed: puzzle && raw.primaryPressed,
         jump: exploring && raw.jump,
         interact: exploring && raw.interact,
         attack: exploring && raw.attack,
