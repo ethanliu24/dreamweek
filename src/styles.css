@@ -1,0 +1,14 @@
+:root {
+    --game-font: "Hoefler Text", "Baskerville", "Iowan Old Style", Georgia, serif;
+
+    --text-light: #e6e6e6,
+    --text-dark: #263449,
+}
+
+body,
+button,
+input,
+select,
+textarea {
+    font-family: var(--game-font);
+}

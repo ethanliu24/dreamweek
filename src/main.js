@@ -1,4 +1,5 @@
 import { createGame } from './app/game.js';
+import './styles.css';
 
 const mount = document.querySelector('#app');
 

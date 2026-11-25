@@ -1,9 +1,11 @@
 import {
   Box3, BoxGeometry, CircleGeometry, Color, DirectionalLight, ExtrudeGeometry, Fog, GridHelper,
   Group, HemisphereLight, Mesh, MeshBasicMaterial, MeshStandardMaterial, RingGeometry,
-  Scene, Shape, Vector3,
+  OctahedronGeometry, Scene, Shape, Vector3,
 } from 'three';
 import { createCameraRig } from '../player/camera.js';
+import { createInteractions } from '../player/interactions.js';
+import { createGuidance } from '../ui/guidance/guidance.js';
 import { createPlayer } from '../player/controller.js';
 import { disposeScene } from '../runtime/assets.js';
 import { createControls } from '../runtime/controls.js';
@@ -83,8 +85,10 @@ export function createTraversalPreview({ mount }) {
     <button type="button" data-shot aria-pressed="false">Front shot</button>
     <button type="button" data-spawn>Return to start</button>
     <p data-readout></p>
+    <div data-course style="position:relative">
     <canvas tabindex="0" aria-label="Traversal course" aria-describedby="qa-traversal-help"
       style="display:block;width:100%;aspect-ratio:16/9;max-height:70vh;touch-action:none"></canvas>
+    </div>
   `;
   mount.replaceChildren(fixture);
 
@@ -130,6 +134,32 @@ export function createTraversalPreview({ mount }) {
   const input = createInput(canvas);
   const controls = createControls(input);
   let equipped = false;
+  const interactions = createInteractions();
+  const guidance = createGuidance({ mount: fixture.querySelector('[data-course]'), canvas });
+  const props = [
+    { id: 'amber', label: 'Amber crystal', x: 2.5, color: 0xef9b45, presses: 0 },
+    { id: 'blue', label: 'Blue crystal', x: 3.7, color: 0x62c7e8, presses: 0 },
+  ];
+  const crystal = new OctahedronGeometry(0.38);
+  const unregister = props.map(prop => {
+    const mesh = new Mesh(crystal, new MeshStandardMaterial({ color: prop.color }));
+    const point = new Vector3(prop.x, 0, -2);
+    mesh.position.copy(point);
+    mesh.position.y = 0.52;
+    mesh.scale.y = 1.3;
+    scene.add(mesh);
+    return interactions.register({
+      id: prop.id, point, label: `Activate ${prop.label}`,
+      run() {
+        prop.presses++;
+        mesh.rotation.y += Math.PI / 6;
+        mesh.material.emissive.setHex(prop.color);
+        mesh.material.emissiveIntensity = prop.presses % 2 ? 0.35 : 0;
+      },
+    });
+  });
+  const objectivePoint = new Vector3(2.5, 1.03, -2);
+  let selected = null;
 
   function toggleSword() {
     equipped = !equipped;
@@ -185,6 +215,8 @@ export function createTraversalPreview({ mount }) {
       const actions = controls.sample();
       rig.orbit(actions.orbitX, actions.orbitY);
       player.step(dt, { ...actions, yaw: rig.yaw, mode: controls.mode }, surfaces);
+      selected = controls.mode === 'explore' ? interactions.select(player.position) : null;
+      if (actions.interact) selected?.run().catch(console.error);
     },
     render(_elapsed, dt) {
       const { x, y, z } = player.position;
@@ -200,9 +232,16 @@ export function createTraversalPreview({ mount }) {
       rig.update(dt);
       display.render(scene);
 
+      const exploring = controls.mode === 'explore';
+      guidance.prompt(exploring ? selected?.label : null);
+      guidance.objective(exploring && !selected ? 'Approach the crystals' : null, objectivePoint);
+      guidance.update(display.camera);
+
       const { swingId, active } = player.strikeWindow();
       const text = `X ${x.toFixed(2)} · Y ${y.toFixed(2)} · Z ${z.toFixed(2)} · Swings ${swingId} · Strike window ${active ? 'active' : 'closed'}`;
-      if (readout.textContent !== text) readout.textContent = text;
+      const counts = props.map(prop => `${prop.label} ${prop.presses}`).join(' · ');
+      const status = `${text} · ${counts}`;
+      if (readout.textContent !== status) readout.textContent = status;
     },
   });
   canvas.focus({ preventScroll: true });
@@ -216,6 +255,8 @@ export function createTraversalPreview({ mount }) {
       button.removeEventListener('click', toggleSword);
       shotButton.removeEventListener('click', toggleShot);
       spawnButton.removeEventListener('click', returnToStart);
+      unregister.forEach(remove => remove());
+      guidance.dispose();
       player.dispose();
       scene.add(sword);
       disposeScene(scene);

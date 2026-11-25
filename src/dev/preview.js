@@ -187,7 +187,7 @@ export function mountPreview({ mount }) {
         <option value="scene-a">Scene A</option>
         <option value="scene-b">Scene B</option>
         <option value="input">Input</option>
-        <option value="traversal">Traversal</option>
+        <option value="traversal" selected>Traversal</option>
       </select>
     </label>
     <button type="button">Reset</button>
