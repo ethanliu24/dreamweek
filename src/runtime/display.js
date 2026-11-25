@@ -1,7 +1,9 @@
-import { ACESFilmicToneMapping, PerspectiveCamera, WebGLRenderer } from 'three';
+import { ACESFilmicToneMapping, PCFShadowMap, PerspectiveCamera, WebGLRenderer } from 'three';
 
 export function createDisplay(canvas) {
   const renderer = new WebGLRenderer({ canvas, antialias: true });
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = PCFShadowMap;
   renderer.toneMapping = ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1;
 

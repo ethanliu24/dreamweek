@@ -5,7 +5,7 @@ import { createScenery, floorHeight, keepInsideIsland } from './scenery.js';
 
 const LOWER_SECONDS = 0.48;
 const SLEEP_SECONDS = 0.75;
-const WAKE_PITCH = 0.27;
+const WAKE_PITCH = 0.19;
 const AUDIO = { cues: ['hammock.lower'] };
 
 function keepOutsideCottage(position, bounds) {
@@ -26,7 +26,7 @@ function keepOutsideCottage(position, bounds) {
 }
 
 export function createWorld({ audio, camera, controls, interactions, player, progress, travel, ui }) {
-  const { scene, cottageBounds, hammock, wake, driftClouds } = createScenery();
+  const { scene, cottageBounds, hammock, wake, animate } = createScenery();
   const cottageFootprint = cottageBounds.clone().expandByScalar(0.22);
   const bed = hammock.point.clone().add(new Vector3(0.33, 0.87, 0));
   let unregister;
@@ -102,7 +102,7 @@ export function createWorld({ audio, camera, controls, interactions, player, pro
       refreshObjective();
     },
     present(elapsed) {
-      driftClouds(elapsed);
+      animate(elapsed, player.position);
     },
     exit() {
       unregister?.();

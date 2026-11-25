@@ -1,8 +1,12 @@
 import {
-  BackSide, Box3, BoxGeometry, BufferGeometry, Color, CylinderGeometry, DirectionalLight, DoubleSide,
-  ExtrudeGeometry, Float32BufferAttribute, Fog, Group, HemisphereLight, Mesh, MeshStandardMaterial,
-  PlaneGeometry, Scene, ShaderMaterial, Shape, SphereGeometry, TorusGeometry, Vector3,
+  Box3, BoxGeometry, BufferGeometry, Color, CylinderGeometry, DirectionalLight, DoubleSide,
+  ExtrudeGeometry, Float32BufferAttribute, Group, HemisphereLight, Mesh, MeshBasicMaterial, MeshStandardMaterial,
+  PlaneGeometry, Scene, Shape, SphereGeometry, TorusGeometry, Vector3,
 } from 'three';
+
+import { createAtmosphere } from './atmosphere.js';
+import { batch, dressCottage, plantGarden } from './garden.js';
+import { contactTexture, wovenTexture } from './surfaces.js';
 
 const ISLAND_X = 9;
 const ISLAND_Z = 7;
@@ -54,8 +58,7 @@ function anchor(parent, point) {
 function createIsland(scene) {
   const segments = 64;
   const rings = [
-    { radius: 0.52, drop: 0 },
-    { radius: 1, drop: 0 },
+    ...Array.from({ length: 12 }, (_, i) => ({ radius: (i + 1) / 12, drop: 0 })),
     { radius: 1.025, drop: 0.52 },
     { radius: 0.54, drop: 3.05 },
   ];
@@ -89,71 +92,27 @@ function createIsland(scene) {
   geometry.setAttribute('position', new Float32BufferAttribute(positions, 3));
   geometry.setIndex(indices);
   geometry.computeVertexNormals();
-  const topCount = segments * 9;
+  const colors = [];
+  const seafoam = new Color(0x68ab99);
+  const mint = new Color(0x96c19c);
+  const tint = new Color();
+  for (let i = 0; i < positions.length; i += 3) {
+    const x = positions[i], z = positions[i + 2];
+    const pigment = 0.5 + 0.25 * Math.sin(x * 0.87 + z * 0.33) + 0.25 * Math.cos(z * 0.86 - x * 0.12);
+    tint.copy(seafoam).lerp(mint, pigment);
+    colors.push(tint.r, tint.g, tint.b);
+  }
+  geometry.setAttribute('color', new Float32BufferAttribute(colors, 3));
+  const topCount = segments * (3 + (rings.length - 3) * 6);
   geometry.addGroup(0, topCount, 0);
   geometry.addGroup(topCount, segments * 6, 1);
   geometry.addGroup(topCount + segments * 6, indices.length - topCount - segments * 6, 2);
-  mesh(scene, geometry, [material(0x538d78), material(0x466e64), material(0x505774)]);
-}
-
-function createSky(scene) {
-  mesh(scene, new SphereGeometry(110, 32, 20), new ShaderMaterial({
-    side: BackSide,
-    depthWrite: false,
-    uniforms: {
-      zenith: { value: new Color(0x367dd1) },
-      horizon: { value: new Color(0x9bcfea) },
-      pink: { value: new Color(0xeab0ce) },
-      mauve: { value: new Color(0xa66bad) },
-    },
-    vertexShader: `
-      varying vec3 skyPoint;
-      void main() {
-        skyPoint = position;
-        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-      }
-    `,
-    fragmentShader: `
-      uniform vec3 zenith, horizon, pink, mauve;
-      varying vec3 skyPoint;
-      void main() {
-        vec3 direction = normalize(skyPoint);
-        vec3 color = mix(horizon, zenith, smoothstep(-0.1, 0.54, direction.y));
-        float warmSide = smoothstep(0.25, 0.94, dot(direction, normalize(vec3(1.0, 0.0, -0.35))));
-        float band = 1.0 - smoothstep(0.0, 0.52, abs(direction.y + 0.04));
-        color = mix(color, mix(pink, mauve, smoothstep(-0.16, 0.35, direction.y)), 0.68 * warmSide * band);
-        gl_FragColor = vec4(color, 1.0);
-        #include <colorspace_fragment>
-      }
-    `,
-  })).renderOrder = -1;
-
-  scene.fog = new Fog(0xb5d6ed, 22, 91);
-  mesh(scene, new CylinderGeometry(86, 86, 1, 48), material(0xa2c6e4), 0, -12, 0);
-  const puff = new SphereGeometry(1, 20, 12);
-  const surfaces = [material(0xe0effa), material(0xd8daf5), material(0xf0deed)];
-  const banks = [
-    [-13, -5.9, -10, 1.15], [13, -5.7, -11, 1.15], [0, -7.2, -16, 1.55],
-    [-22, -5.1, -25, 1.85], [17, -4.9, -30, 2.2], [-2, -4.1, -39, 2.4],
-    [17, -7, 4, 1.45], [-15, -6.2, 6, 1.25], [3, -7.2, 18, 1.6],
-    [-25, -7.4, 20, 2.05], [26, -8, 23, 2.25], [38, -7.8, -14, 2.15],
-  ];
-  return banks.map(([x, y, z, size], index) => {
-    const bank = new Group();
-    bank.position.set(x, y, z);
-    scene.add(bank);
-    for (let i = 0; i < 4; i++) {
-      const cloud = mesh(bank, puff, surfaces[index % surfaces.length],
-        (i - 1.5) * 2.2 * size, Math.sin(i * 2.1 + index) * 0.4, Math.cos(i * 2.5) * size);
-      cloud.scale.set(3.5 * size, (1.05 + 0.25 * Math.sin(i * 1.7)) * size, 2.2 * size);
-    }
-    return { bank, x };
-  });
+  mesh(scene, geometry, [material(0xffffff, { vertexColors: true }), material(0x7fa9a1), material(0x8587a1)]).receiveShadow = true;
 }
 
 function createCottage(scene) {
   const cottage = anchor(scene, COTTAGE);
-  const siding = material(0x71a9ce);
+  const siding = material(0x71abc0);
   const trim = material(0xb0d4df);
   const roof = material(0x385783);
   const wood = material(0x76504a);
@@ -193,6 +152,10 @@ function createCottage(scene) {
   for (const [x, z, size] of [[-2.23, 1.35, 0.53], [2.13, 1.25, 0.45], [2.35, 0.97, 0.32]]) {
     mesh(cottage, bush, leaves, x, size * 0.44, z).scale.set(size, size * 0.78, size);
   }
+  dressCottage(cottage);
+  cottage.traverse(part => {
+    if (part.isMesh) part.castShadow = part.receiveShadow = true;
+  });
   const { x, y, z } = cottage.position;
   return new Box3(new Vector3(x - 2.25, y - 0.2, z - 1.65),
     new Vector3(x + 2.25, y + 3.7, z + 1.7));
@@ -218,10 +181,14 @@ function createHammock(scene) {
       tie.quaternion.setFromUnitVectors(up, span.normalize());
     }
   }
+  const wrap = batch(hammock, new TorusGeometry(0.089, 0.014, 6, 12), 16);
+  for (const side of [-1, 1]) {
+    for (let i = 0; i < 6; i++) wrap(side * 1.43, 1.46 + i * 0.028, 0, 1, 1, 1, 0xe4c7a2, Math.PI / 2 + side * 0.045);
+  }
   const cloth = new PlaneGeometry(2.2, 1, 24, 10);
   const positions = cloth.attributes.position;
   const flat = positions.array.slice();
-  mesh(hammock, cloth, material(0xe2ad82, { side: DoubleSide }));
+  mesh(hammock, cloth, material(0xffffff, { map: wovenTexture(), side: DoubleSide }));
   function setSag(weight) {
     for (let i = 0; i < positions.count; i++) {
       const x = flat[i * 3];
@@ -265,21 +232,38 @@ function createHearth(scene) {
 export function createScenery() {
   const scene = new Scene();
   scene.name = 'Overworld';
-  const key = new DirectionalLight(0xffe8ce, 2.2);
-  key.position.set(3, 6, 5);
-  scene.add(new HemisphereLight(0xc4e2ff, 0x797198, 1.65), key);
-  const clouds = createSky(scene);
+  const key = new DirectionalLight(0xffe1c9, 2.0);
+  key.position.set(8, 9, 5);
+  key.castShadow = true;
+  key.shadow.mapSize.set(1024, 1024);
+  Object.assign(key.shadow.camera, { left: -12, right: 12, top: 10, bottom: -10, near: 0.5, far: 32 });
+  key.shadow.camera.updateProjectionMatrix();
+  key.shadow.normalBias = 0.025;
+  key.shadow.intensity = 0.4;
+  // The large casters stay put. One bake per island visit keeps their shadows off the frame budget.
+  key.shadow.autoUpdate = false;
+  key.shadow.needsUpdate = true;
+  scene.add(new HemisphereLight(0xd3ddff, 0xe8c4d5, 1.65), key);
+  const driftSky = createAtmosphere(scene);
   createIsland(scene);
   const cottageBounds = createCottage(scene);
   const hammock = createHammock(scene);
   const hearth = createHearth(scene);
+  const driftMotes = plantGarden(scene, floorHeight, outline);
+  const contact = mesh(scene, new PlaneGeometry(1.1, 0.75), new MeshBasicMaterial({
+    map: contactTexture(), transparent: true, depthWrite: false,
+    polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -1,
+  }));
+  contact.rotation.x = -Math.PI / 2;
   const wake = WAKE.clone().setY(floorHeight(WAKE.x, WAKE.z));
   return {
     scene, cottageBounds, hammock, hearth, wake,
-    driftClouds(elapsed) {
-      for (const [index, { bank, x }] of clouds.entries()) {
-        bank.position.x = x + Math.sin(elapsed * 0.13 + index) * 0.7;
-      }
+    animate(elapsed, playerPosition) {
+      const ground = floorHeight(playerPosition.x, playerPosition.z);
+      contact.position.set(playerPosition.x, ground + 0.012, playerPosition.z);
+      contact.material.opacity = Math.max(0.14, 0.66 - (playerPosition.y - ground) * 0.45);
+      driftMotes(elapsed, playerPosition);
+      driftSky(elapsed);
     },
   };
 }

@@ -91,6 +91,8 @@ export function disposeScene(scene, leased = new Set()) {
   }
 
   scene.traverse(object => {
+    if (object.shadow) collect(object.shadow);
+    if (object.isInstancedMesh) collect(object);
     collect(object.geometry);
     if (!object.material) return;
     const materials = Array.isArray(object.material) ? object.material : [object.material];

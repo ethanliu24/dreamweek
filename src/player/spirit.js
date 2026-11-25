@@ -16,7 +16,7 @@ const STYLE = {
   foldDepth: 0.15,    // Radial displacement as a fraction of skirt radius.
   rippleHeight: 0.065, // Vertical displacement in world units.
   rippleSpeed: 1.6,   // Radians per second.
-  glow: 1,         // Soft blue emission independent of scene lighting.
+  glow: 5,         // Soft blue emission independent of scene lighting.
 };
 const CYCLE = 2.4;
 const TAU = 2 * Math.PI;
