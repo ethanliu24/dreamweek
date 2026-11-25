@@ -16,6 +16,15 @@
   --hud-border: rgb(255 243 220 / 30%);
 }
 
+body {
+  margin: 0;
+}
+
+canvas:focus,
+canvas:focus-visible {
+  outline: none;
+}
+
 body,
 button,
 input,
@@ -42,14 +51,69 @@ textarea {
   border: 1px solid var(--overlay-glass-border-dark);
 }
 
+.dreamweek-menu {
+  box-sizing: border-box;
+  min-height: 100vh;
+  padding: 1.5rem;
+  background: #17243b;
+  color: var(--hud-text);
+  text-align: center;
+}
+
+.dreamweek-menu:not([hidden]) {
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 1rem;
+}
+
+.dreamweek-menu h1 {
+  margin: 0;
+  font-size: clamp(2.5rem, 7vw, 5rem);
+  font-weight: normal;
+}
+
+.dreamweek-menu p {
+  margin: 0;
+}
+
+.dreamweek-menu p:empty {
+  display: none;
+}
+
+.dreamweek-menu button,
+.dreamweek-stage > [data-sound] {
+  min-height: 44px;
+  padding: 0.5rem 1.25rem;
+  border: 1px solid var(--hud-border);
+  border-radius: 0.4rem;
+  background: #253956;
+  color: var(--hud-text);
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.dreamweek-menu button:focus-visible,
+.dreamweek-stage > [data-sound]:focus-visible {
+  outline: 2px solid var(--hud-gold);
+  outline-offset: 3px;
+}
 
 .dreamweek-stage {
   position: relative;
+  overflow: hidden;
+  background: #000;
 }
 
-.dreamweek-stage canvas {
+.dreamweek-stage > canvas {
   display: block;
-  width: 100%;
-  height: clamp(16rem, 72vh, 52rem);
+  width: 100vw;
+  height: 100vh;
   touch-action: none;
+}
+
+.dreamweek-stage > [data-sound] {
+  position: absolute;
+  right: 0.75rem;
+  bottom: 0.75rem;
 }

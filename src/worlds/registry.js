@@ -9,9 +9,12 @@ const modules = import.meta.glob([
   './void/index.js',
 ]);
 
+const fireFixture = import.meta.env.DEV ? () => import('../dev/fire-fixture.js') : undefined;
+
 export function createWorldRegistry(fixtures = {}) {
   function getLoader(id) {
-    return Object.hasOwn(fixtures, id) ? fixtures[id] : modules[`./${id}/index.js`];
+    if (Object.hasOwn(fixtures, id)) return fixtures[id];
+    return modules[`./${id}/index.js`] ?? (id === 'fire' ? fireFixture : undefined);
   }
 
   return {

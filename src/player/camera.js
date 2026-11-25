@@ -14,7 +14,11 @@ function angleDelta(from, to) {
 }
 
 export function createCameraRig(camera, { obstructions = [] } = {}) {
-  const bounds = obstructions.map(box => box.clone().expandByScalar(0.15));
+  let bounds;
+  function setObstructions(boxes) {
+    bounds = boxes.map(box => box.clone().expandByScalar(0.15));
+  }
+  setObstructions(obstructions);
   const focus = new Vector3();
   const eyeAnchor = new Vector3();
   const followTarget = new Vector3();
@@ -111,6 +115,12 @@ export function createCameraRig(camera, { obstructions = [] } = {}) {
 
   return {
     get yaw() { return orbitYaw; },
+    setObstructions,
+    resetOrbit({ pitch: entryPitch = DEFAULT_PITCH } = {}) {
+      yaw = 0;
+      pitch = entryPitch;
+      if (player) reset();
+    },
     follow(target) {
       if (player === target) return;
       player = target;

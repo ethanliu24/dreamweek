@@ -16,6 +16,7 @@ import './game.css';
 export function createGame({ mount, registry = createWorldRegistry() }) {
   const shell = document.createElement('section');
   shell.innerHTML = markup;
+  const menu = shell.querySelector('.dreamweek-menu');
   const startButton = shell.querySelector('[data-start]');
   const soundButton = shell.querySelector('[data-sound]');
   const status = shell.querySelector('[data-status]');
@@ -45,6 +46,8 @@ export function createGame({ mount, registry = createWorldRegistry() }) {
 
     startButton.disabled = true;
     status.textContent = '';
+    menu.hidden = true;
+    stage.scrollIntoView({ block: 'start' });
     const assets = createAssets();
     const audio = createMixer({ assets });
     const input = createInput(canvas);
@@ -107,7 +110,10 @@ export function createGame({ mount, registry = createWorldRegistry() }) {
       const unlocking = audio.unlock();
       soundButton.hidden = audio.state === 'running';
       const enabled = await unlocking;
-      if (!disposed) soundButton.hidden = enabled;
+      if (disposed) return;
+      const restoreFocus = enabled && document.activeElement === soundButton && !canvas.inert;
+      soundButton.hidden = enabled;
+      if (restoreFocus) canvas.focus({ preventScroll: true });
     }
 
     soundButton.addEventListener('click', enableSound);

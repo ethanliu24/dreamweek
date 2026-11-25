@@ -54,9 +54,12 @@ export function createWorldHost({ registry, controls, ui, resolveTravel, stepWor
 
   function worldContext(instance) {
     const signal = instance.controller.signal;
+    function destination(kind) {
+      return resolveTravel?.({ kind, entry: instance.entry, world: instance.world });
+    }
     function travel(kind) {
       if (active !== instance || attempt || failure || signal.aborted) return false;
-      const next = resolveTravel?.({ kind, entry: instance.entry, world: instance.world });
+      const next = destination(kind);
       return next ? request(next) : false;
     }
 
@@ -87,6 +90,7 @@ export function createWorldHost({ registry, controls, ui, resolveTravel, stepWor
         },
       },
       travel: {
+        canEnterNext: () => !signal.aborted && Boolean(destination('enterNext')),
         enterNext: () => travel('enterNext'),
         returnHome: () => travel('returnHome'),
       },
