@@ -7,8 +7,10 @@ import { createLoop } from '../runtime/loop.js';
 import { createWorldHost } from '../runtime/world-host.js';
 import { createWorldRegistry } from '../worlds/registry.js';
 import { createInputPreview } from './input-preview.js';
+import { createTraversalPreview } from './traversal.js';
 
 const SCENE_LABELS = { 'scene-a': 'Scene A', 'scene-b': 'Scene B' };
+const PREVIEWS = { shell: createGame, input: createInputPreview, traversal: createTraversalPreview };
 
 function createScenePreview({ mount, initial }) {
   const fixture = document.createElement('section');
@@ -185,6 +187,7 @@ export function mountPreview({ mount }) {
         <option value="scene-a">Scene A</option>
         <option value="scene-b">Scene B</option>
         <option value="input">Input</option>
+        <option value="traversal">Traversal</option>
       </select>
     </label>
     <button type="button">Reset</button>
@@ -202,8 +205,7 @@ export function mountPreview({ mount }) {
     if (Object.hasOwn(SCENE_LABELS, selected)) {
       game = createScenePreview({ mount: gameMount, initial: selected });
     } else {
-      const createFixture = selected === 'input' ? createInputPreview : createGame;
-      game = createFixture({ mount: gameMount });
+      game = PREVIEWS[selected]({ mount: gameMount });
     }
   }
 
