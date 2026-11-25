@@ -12,7 +12,7 @@ The player must investigate the incident. The investigation leads underwater, wh
 
 Teal initially maintains his innocence but becomes increasingly nervous as the player uncovers evidence. Eventually, he confesses and the beach reopens.
 
-The player leaves with the filled pot and the Bubble Shield ability.
+The player leaves with the filled pot.
 
 ## 2. Story Structure
 
@@ -93,7 +93,7 @@ All underwater investigation takes place in one compact environment. The player 
 - The bubble allows the player to explore underwater without directly touching the water.
 - The clam immediately goes back to sleep.
 
-The protective bubble also establishes the Bubble Shield ability, which becomes part of the player's abilities.
+The protective bubble stays in the Water dream.
 
 **Animation:**
 - The clam slowly opens its shell.

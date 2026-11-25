@@ -137,7 +137,7 @@ The actual Moon is only released when the Grand Wizard eats the completed magica
 - Keep attack animations exaggerated but relatively simple.
 - He eventually becomes overwhelmed by the player's attacks.
 
-The player ultimately defeats him using the newly unlocked ultimate ability.
+The player ultimately defeats him using the ultimate finisher available at 5% boss health.
 
 ## Defeat
 

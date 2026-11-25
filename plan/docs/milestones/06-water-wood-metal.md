@@ -9,7 +9,7 @@ Read the [root instructions](../../../AGENTS.md) once. Each card lists its addit
 **Prerequisites** H2, FE3
 **Required reading** [architecture/progression.md](../architecture/progression.md), [Visual design](../visual-design.md), [water/gameplay.md](../../../plan/game/worlds/water/gameplay.md), [water/scenary.md](../../../plan/game/worlds/water/scenary.md), [water/story.md](../../../plan/game/worlds/water/story.md), [water/dialog.md](../../../plan/game/worlds/water/dialog.md)
 **Files in scope** `src/worlds/water/index.js`, `src/worlds/water/shore.js`, `src/worlds/water/lines.js`
-**Interfaces** fillPot, grantBubble, floorHeight, register
+**Interfaces** fillPot, floorHeight, register
 
 **Requirements** Load the carried pot profile. Implement faucet, shell siren, barrier/sign, Teal announcement and sleepy clam bubble. Gate the continuous reef route and beach exit independently.
 
@@ -27,7 +27,7 @@ Read the [root instructions](../../../AGENTS.md) once. Each card lists its addit
 
 **Requirements** Use sets for found/presented IDs (crab, whistle, jellyfish). Play denial when showing whistle early. With all clues allow any presentation order; distinguish the earlier denial from final presentation. Allow humorous incomplete responses. After all three, confess, reopen and enable ring.
 
-**Acceptance** Duplicate choices never count twice. Resolution retains filled pot and shield.
+**Acceptance** Duplicate choices never count twice. Resolution retains the filled pot.
 **Verify** Try confronting early, then choose clues in two different orders on separate runs.
 **Out of scope** Branching mystery or clue inventory slots.
 **Model** General · medium

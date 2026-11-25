@@ -53,7 +53,7 @@ Read the [root instructions](../../../AGENTS.md) once. Each card lists its addit
 **Files in scope** `src/worlds/water/shore.js`, `src/worlds/water/reef.js`, `src/worlds/water/teal.js`
 **Interfaces** clue IDs, bubble visual, camera follow
 
-**Requirements** Build three coral landmark silhouettes, clam opening, crab point, pulsing bells and Teal's increasing discomfort. Keep shell and shield layers inexpensive.
+**Requirements** Build three coral landmark silhouettes, clam opening, crab point, pulsing bells and Teal's increasing discomfort. Keep shell and bubble layers inexpensive.
 
 **Acceptance** Whistle and stationary witness stand out in the reef; Teal's face and glasses read from the chair.
 **Verify** Follow the clue loop and inspect beach, bubble and confession at two sizes.

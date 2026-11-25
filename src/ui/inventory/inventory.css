@@ -1,0 +1,65 @@
+.dream-inventory {
+  position: absolute;
+  z-index: 1;
+  top: 0.75rem;
+  right: 0.75rem;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 3.75rem));
+  gap: 0.35rem;
+  max-width: calc(100% - 1.5rem);
+}
+
+.dream-inventory {
+  box-sizing: border-box;
+  display: flex;
+  justify-content: space-between;
+  gap: 0.4rem;
+  aspect-ratio: 1;
+  padding: 0.25rem;
+  font-family: inherit;
+  line-height: 1.1;
+  overflow-wrap: anywhere;
+  pointer-events: auto;
+}
+
+.inventory-slot {
+  display: flex;
+  aspect-ratio: 1;
+  padding: 0.25rem;
+  width: 3rem;
+  height: 3rem;
+}
+
+.inventory-slot span {
+  font-size: 0.6rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.inventory-slot kbd {
+  justify-self: start;
+  font: inherit;
+  font-weight: 700;
+  font-size: 0.6rem;
+  margin-top: -0.2rem;
+}
+
+.inventory-slot [data-item-name] {
+  align-self: center;
+}
+
+.inventory-slot[aria-pressed="true"] {
+  outline: 2px solid var(--hud-gold);
+  outline-offset: 1px;
+}
+
+.inventory-slot:disabled {
+  cursor: default;
+}
+
+@media (max-width: 640px) {
+  .dream-hud-content:has(.dream-inventory) [data-objective] {
+    top: 4.25rem;
+  }
+}

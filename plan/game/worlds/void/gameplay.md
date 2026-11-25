@@ -46,7 +46,6 @@ After all minions are defeated:
 - The orb represents **Sun Essence**.
 - The player collects the orb.
 - Sun Essence is added to the player's inventory as a unique item.
-- Collecting Sun Essence unlocks the ultimate ability.
 
 The encounter then transitions directly into the Grand Wizard boss fight.
 
@@ -99,13 +98,13 @@ Only one projectile is launched at a time.
 
 ### Ultimate Ability
 
-The ultimate ability is unlocked after collecting Sun Essence.
+The boss encounter enables the ultimate only for the final blow.
 
 During the boss fight:
 
 - The player continues attacking the Grand Wizard.
 - When the Grand Wizard reaches **5% remaining health**, the ultimate becomes available.
-- An activation prompt appears.
+- The Q finisher prompt appears.
 - The player activates the ultimate manually.
 - The ultimate performs a cinematic finishing attack that defeats the Grand Wizard.
 
@@ -164,7 +163,6 @@ The Attack and Ultimate actions use the bindings defined in the player controls.
 - Unique golden-white glowing orb.
 - Collected after defeating the minion wave.
 - Added to inventory.
-- Unlocks the ultimate ability.
 
 ### Moon Essence
 
@@ -175,7 +173,6 @@ The Attack and Ultimate actions use the bindings defined in the player controls.
 
 ### Ultimate Ability
 
-- Unlocked by collecting Sun Essence.
 - Becomes available when the Grand Wizard reaches 5% remaining health.
 - Activated manually by the player.
 - Performs a cinematic finishing move.
@@ -190,7 +187,7 @@ The Attack and Ultimate actions use the bindings defined in the player controls.
 - The player is invincible throughout both encounters.
 - Boss attacks apply only small knockback.
 - No player health system, death, or game-over state.
-- Ultimate unlocks after collecting Sun Essence and becomes available at 5% boss health.
+- Void displays the Q prompt and accepts a fresh Q press only during the finisher phase at 5% boss health.
 - Sun Essence and Moon Essence are separate inventory items.
 - Keep the Frog Wizard unconscious after defeat.
 - Keep the return interaction short.
@@ -202,7 +199,6 @@ The Attack and Ultimate actions use the bindings defined in the player controls.
 - The player can defeat the magical cube minions.
 - Each minion requires three successful hits.
 - Sun Essence appears after the minion wave and can be collected.
-- Collecting Sun Essence unlocks the ultimate ability.
 - The Grand Wizard enters the arena for the boss encounter.
 - All three boss attacks function with clear warnings.
 - Boss attacks produce small knockback without damaging player health.

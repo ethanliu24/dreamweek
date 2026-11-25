@@ -25,7 +25,7 @@ Read the [root instructions](../../../AGENTS.md) once. Each card lists its addit
 **Files in scope** `src/ui/hud/`, `src/ui/dialogue/`, `src/ui/iris/`, `src/dev/ui-preview.js`\
 **Interfaces** say, choose, iris.close/open, inventory, clearWorld
 
-**Requirements** Add text, Thought, choices, ability and inventory views, focus handling and reduced motion. Wire host cover to iris. Include a long line, overflowing inventory and delayed load fixture.
+**Requirements** Add text, Thought, choices and a four-slot inventory view, focus handling and reduced motion. Wire host cover to iris. Include a long line, full inventory and delayed load fixture.
 
 **Acceptance** One press finishes the current reveal or advances one fully visible line; choices retain focus; the fully closed iris covers all corners on resize.\
 **Verify** Try keyboard and pointer, cancel a line by a QA scene switch and inspect delayed travel.  
@@ -65,7 +65,7 @@ Read the [root instructions](../../../AGENTS.md) once. Each card lists its addit
 **How to test**
 
 1. In `?qa` choose Round trip. Try to return before collecting the fixture reward. Collect it, stay for a moment, then use E at the ring. Open inventory and find one Candle.
-2. Choose Dialogue. Advance a line, select an option with the keyboard, resize while the iris is closed and check all four corners for leaks. Page through a full inventory.
+2. Choose Dialogue. Advance a line, select an option with the keyboard, resize while the iris is closed and check all four corners for leaks. Select occupied inventory slots with 1–4 and verify that empty slots leave the selection unchanged.
 3. Choose Audio, press Start sound, audition a local sample and a synth, move around the emitter, then switch profiles twice. Turn music down and confirm effects still play. Try the missing cue and keep playing.
 
 **Milestone passes when** the round trip preserves progress, the interface responds once per action, and sound can transition, fail and recover without interrupting play.

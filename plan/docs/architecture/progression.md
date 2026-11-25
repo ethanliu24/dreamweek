@@ -5,7 +5,7 @@ Use a single in-memory progress record for the entire play session. It survives 
 ## Record
 
 - completed is a set of chapter IDs fire, earth, water, wood, metal, sun, moon. Current world and origin are host state. No day index is incremented on travel.
-- items is a set of Candle, Firewood, Sword, Sun Essence, Moon Essence and Soup. A separate pot record holds phase absent/empty/filled/placed and the three normalized shape parameters from Earth. Inventory view derives an empty/filled pot cell only while carried. Three cells per page, configurable. Abilities are bubbleShield and ultimate.
+- items is a set of Candle, Firewood, Sword, Sun Essence, Moon Essence and Soup. A separate pot record holds phase absent/empty/filled/placed and the three normalized shape parameters from Earth. Inventory view derives an empty/filled pot cell only while carried. Carry a maximum of four items, including the pot while carried. The Void boss owns finisher availability.
 - hearth advances through empty, potPlaced, woodPlaced, lit, boiled, sunAdded, moonAdded, stirred, served. Wizard state is distant, unconscious, home or fed. ended becomes true on feeding; UI completes its final exchange before terminal idle. Intro and return thoughts are shown once per relevant beat. Clock, active target, cooldowns, witness choices and poses remain local.
 
 ## Destination selection
@@ -20,18 +20,18 @@ For ordinary dreams canReturn becomes true only after that chapter is complete. 
 |---|---|---|
 | earnCandle | Fire resolution with Wick on ground | Candle + fire complete. E at ring, then hammock → Earth. |
 | collectPot(shape) | Earth shaping and local firing finished, Candle owned | Empty pot + shape + earth complete. E at ring, hammock → Water. |
-| fillPot / grantBubble | Water faucet with empty pot / clam during lockdown | Pot filled / bubbleShield unlocked. Local lockdown and evidence flags govern the investigation. An early attempt to enter water gives the supplied thought. |
-| clearBeach | Filled pot, shield and local confession | water complete. E at reopened exit ring. Hub needs placePot before Wood. |
+| fillPot | Water faucet with empty pot | Pot filled. The clam’s bubble, lockdown and evidence flags are local to Water. An early attempt to enter water gives the supplied thought. |
+| clearBeach | Filled pot and local confession | water complete. E at reopened exit ring. Hub needs placePot before Wood. |
 | placePot | water complete, filled pot, empty hearth | Pot placed, hearth potPlaced. Carried pot leaves the inventory view. |
 | helpMallow | Wood thank-you after Candle lit local pit | Firewood + wood complete. Ring then hub. |
 | placeWood / lightWood | wood complete, potPlaced and Firewood / woodPlaced and Candle | Consume bundle → woodPlaced; use reusable Candle → lit. Unlock Metal. |
 | earnSword | Repaired forge, Clink reward, lit hearth | Sword + metal complete; mark water boiled during trip. On return no hearth action before Void. |
-| takeSun | Wave cleared, orb available | Sun Essence + ultimate + sun complete. Same scene enters boss stage. |
+| takeSun | Wave cleared, orb available | Sun Essence + sun complete. Same scene enters boss stage. |
 | takeMoon | Manual finisher complete, Wizard unconscious | Moon Essence + moon complete. Keep actual Moon in belly. |
 | bringWizardHome | Both essences, unconscious Wizard, E capture | Wizard home; request covered hub travel. Retry arrival without replaying combat. |
 | addSun / addMoon | Wizard home + boiled hearth + Sun Essence / sunAdded + Moon Essence | Consume respective essence and advance hearth once each. |
 | stir / takeSoup / feed | moonAdded + Sword / stirred / served + Soup + Wizard home | Stir with retained Sword; collect Soup and set served; consume Soup, set Wizard fed and ended. Show ending image and final lines. |
 
-World entry, active chapter and previous completion also guard reward commands. For local prerequisites the owning world checks the local phase and calls once at the named beat. Mark the Wizard unconscious on finisher completion through progress.apply('defeatWizard'); valid only after Sun and the local 5% gate. On Void retry, reconstruct from progression: Sun complete → boss, unconscious → Moon pickup, Moon complete → capture, home → hub. Water retry derives filled pot, lockdown and shield from progression, and restarts only uncommitted clue work. Completed ordinary world rebuilt during retry enables its return ring immediately. Input queues clear on stage changes.
+World entry, active chapter and previous completion also guard reward commands. For local prerequisites the owning world checks the local phase and calls once at the named beat. Mark the Wizard unconscious on finisher completion through progress.apply('defeatWizard'); valid only after Sun and the local 5% gate. On Void retry, reconstruct from progression: Sun complete → boss, unconscious → Moon pickup, Moon complete → capture, home → hub. Water retry derives the filled pot and beach completion from progression. During an unfinished investigation, the clam can restore the local bubble and uncommitted clue work restarts. Completed ordinary world rebuilt during retry enables its return ring immediately. Input queues clear on stage changes.
 
 Read the [design decisions](decisions.md) for the Fire, Earth and inventory choices. Verify each blocked gate before satisfying it. Repeat E and reopen inventory after leaving each dream; reward count, hearth mesh and next destination must agree.

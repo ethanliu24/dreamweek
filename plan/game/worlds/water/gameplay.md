@@ -53,7 +53,7 @@ The player encounters a large, sleepy clam near the lifeguard station.
 - The bubble allows the player to explore underwater without directly touching the water.
 - The clam immediately goes back to sleep.
 
-This interaction introduces and grants the Bubble Shield ability.
+The bubble stays in the Water dream.
 
 #### Underwater Movement
 
@@ -61,15 +61,6 @@ This interaction introduces and grants the Bubble Shield ability.
 - Allow the player to move through the underwater environment and approach objects and characters.
 - No oxygen meter, underwater timer, or complicated swimming physics.
 - No bubble physics are required.
-
-#### Bubble Shield Ability
-
-- Absorbs one incoming hit.
-- Pops after absorbing a hit.
-- Recharges automatically after a short cooldown.
-- The ability is retained after completing the Water world.
-
-This is primarily a future gameplay ability; the Water investigation itself does not require combat.
 
 ### Part 4 — Investigation
 
@@ -146,7 +137,7 @@ After Teal confesses:
 - The barrier is removed.
 - The BEACH CLOSED sign is removed.
 - Beachgoers return to their activities.
-- The player retains the filled pot and Bubble Shield ability.
+- The player retains the filled pot.
 - The Water world is marked as completed.
 - The screen fades to black and the player returns to the overworld.
 
@@ -216,7 +207,6 @@ The Water world is completed when:
 - All three clues have been collected and presented.
 - Teal has confessed.
 - The beach lockdown has been lifted.
-- The Bubble Shield ability has been granted.
 - The player returns to the overworld carrying the filled pot.
 
 ## 7. Related Documents

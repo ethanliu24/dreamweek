@@ -1,4 +1,4 @@
-import { canReturn, createProgress, inventoryPages, nextDream, nextStationAction } from '../state/progress.js';
+import { canReturn, createProgress, inventoryItems, nextDream, nextStationAction } from '../state/progress.js';
 const panelMarkup = `
 <style>
 .progress-preview {
@@ -37,8 +37,7 @@ const panelMarkup = `
   opacity: 0.55;
 }
 
-.progress-controls,
-.progress-pager {
+.progress-controls {
   display: flex;
   flex-wrap: wrap;
   align-items: end;
@@ -74,7 +73,7 @@ const panelMarkup = `
 
 .progress-preview [data-inventory] {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 0.4rem;
   list-style: none;
   padding: 0;
@@ -89,10 +88,6 @@ const panelMarkup = `
   border-radius: 0.35rem;
   text-align: center;
   overflow-wrap: anywhere;
-}
-
-.progress-pager {
-  align-items: center;
 }
 
 .progress-preview fieldset {
@@ -157,7 +152,6 @@ const panelMarkup = `
       <dt>Hearth</dt><dd data-value="hearth"></dd>
       <dt>Wizard</dt><dd data-value="wizard"></dd>
       <dt>Ended</dt><dd data-value="ended"></dd>
-      <dt>Abilities</dt><dd data-value="abilities"></dd>
       <dt>Thoughts seen</dt><dd data-value="thoughts"></dd>
     </dl>
 
@@ -166,12 +160,8 @@ const panelMarkup = `
       <li></li>
       <li></li>
       <li></li>
+      <li></li>
     </ol>
-    <div class="progress-pager">
-      <button type="button" data-page-step="-1">Previous</button>
-      <span data-page aria-live="polite"></span>
-      <button type="button" data-page-step="1">Next</button>
-    </div>
   </section>
 
   <section aria-labelledby="progress-commands-title">
@@ -182,7 +172,6 @@ const panelMarkup = `
       <button type="button" data-command="earnCandle">earnCandle</button>
       <button type="button" data-command="collectPot">collectPot</button>
       <button type="button" data-command="fillPot">fillPot</button>
-      <button type="button" data-command="grantBubble">grantBubble</button>
       <button type="button" data-command="clearBeach">clearBeach</button>
       <button type="button" data-command="helpMallow">helpMallow</button>
       <button type="button" data-command="earnSword">earnSword</button>
@@ -224,7 +213,6 @@ const JOURNEY = [
   ['fire', 'earnCandle'],
   ['earth', 'collectPot'],
   ['water', 'fillPot'],
-  ['water', 'grantBubble'],
   ['water', 'clearBeach'],
   ['overworld', 'placePot'],
   ['wood', 'helpMallow'],
@@ -248,13 +236,10 @@ export function createProgressPreview({ mount }) {
   const activeWorld = panel.querySelector('[data-world-select]');
   const result = panel.querySelector('[data-result]');
   const cells = [...panel.querySelectorAll('[data-inventory] li')];
-  const pageLabel = panel.querySelector('[data-page]');
-  const [previous, next] = panel.querySelectorAll('[data-page-step]');
   const fields = Object.fromEntries([...panel.querySelectorAll('[data-value]')].map(
     element => [element.dataset.value, element],
   ));
   let progress;
-  let page;
 
   function render() {
     const snapshot = progress.read();
@@ -271,19 +256,14 @@ export function createProgressPreview({ mount }) {
       hearth: snapshot.hearth,
       wizard: snapshot.wizard,
       ended: snapshot.ended ? 'Yes' : 'No',
-      abilities: list(Object.keys(snapshot.abilities).filter(ability => snapshot.abilities[ability])),
       thoughts: list(snapshot.thoughtsSeen),
     };
     for (const [key, value] of Object.entries(values)) fields[key].textContent = value;
 
-    const pages = inventoryPages(snapshot, cells.length);
-    page = Math.min(Math.max(0, page), pages.length - 1);
+    const items = inventoryItems(snapshot);
     cells.forEach((cell, index) => {
-      cell.textContent = pages[page][index] ?? 'Empty';
+      cell.textContent = items[index] ?? 'Empty';
     });
-    previous.disabled = page === 0;
-    next.disabled = page === pages.length - 1;
-    pageLabel.textContent = `Page ${page + 1} of ${pages.length}`;
   }
 
   function loadSeed() {
@@ -299,7 +279,6 @@ export function createProgressPreview({ mount }) {
       }
     }
     activeWorld.value = option.dataset.world;
-    page = 0;
     result.textContent = `Loaded ${option.label}.`;
     render();
   }
@@ -313,12 +292,11 @@ export function createProgressPreview({ mount }) {
       return;
     }
 
-    const { command, pageStep } = button.dataset;
+    const { command } = button.dataset;
     if (command) {
       const { changed } = progress.apply(command, PAYLOADS[command]);
       result.textContent = changed ? `${command} applied.` : `${command} blocked. State unchanged.`;
     }
-    if (pageStep) page += Number(pageStep);
     render();
   }
 

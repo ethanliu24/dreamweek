@@ -55,7 +55,7 @@ Most rewards do not immediately change the Overworld. Items are kept until they 
 |---|---|---|
 | Fire | Candle | Keep in inventory |
 | Earth | Finished Pot | Keep in inventory |
-| Water | Filled Pot, Bubble Shield | Manually place filled pot on cooking station |
+| Water | Filled Pot | Manually place filled pot on cooking station |
 | Wood | Firewood | Place beneath pot and light using Candle |
 | Metal | Sword | Keep in inventory |
 | Sun | Sun Essence, ultimate ability | Keep essence in inventory |
@@ -65,7 +65,6 @@ Most rewards do not immediately change the Overworld. Items are kept until they 
 
 - **Candle:** Obtained in Fire. Used to harden the pot in Earth and light the firewood in the Overworld. It is not consumed.
 - **Pot:** Shaped and hardened in Earth. Carried into Water and filled there. Manually placed on the cooking station after returning from Water.
-- **Bubble Shield:** Obtained in Water and retained as a player ability.
 - **Firewood:** Obtained in Wood. Manually placed beneath the cooking pot and lit using the Candle.
 - **Sword:** Obtained in Metal. Retained as the player's weapon and later used to stir the soup.
 - **Sun Essence:** Obtained in Sun and kept until the final preparation.

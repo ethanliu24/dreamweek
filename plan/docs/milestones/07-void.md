@@ -11,7 +11,7 @@ Read the [root instructions](../../../AGENTS.md) once. Each card lists its addit
 **Files in scope** `src/worlds/void/index.js`, `src/worlds/void/minions.js`, `src/worlds/void/lines.js`
 **Interfaces** strikeWindow, knockback, enter, say
 
-**Requirements** Start with three cubes in one wave. Per cube alternate hover, 0.5 s telegraph, charge to sampled position and recover. Record last swingId; third valid swing defeats that cube. Shield cancels first knockback, recharges after 3 s, player always invincible. Show Sun only when the wave clears.
+**Requirements** Start with three cubes in one wave. Per cube alternate hover, 0.5 s telegraph, charge to sampled position and recover. Record last swingId; third valid swing defeats that cube. Contact causes modest knockback. The player is invincible. Show Sun only when the wave clears.
 
 **Acceptance** A single swing overlapping many frames counts once per target. Sun waits for physical collection.
 **Verify** Isolate one cube, count three deliberate swings; stand still through two charges. Check no death or edge fall.
@@ -25,7 +25,7 @@ Read the [root instructions](../../../AGENTS.md) once. Each card lists its addit
 **Files in scope** `src/worlds/void/boss.js`, `src/worlds/void/index.js`, `src/shared/actors/wizard.js`
 **Interfaces** takeSun, strikeWindow, player.knockback
 
-**Requirements** Collect Sun with E, unlock ultimate, play Sun thought in place, then step Wizard forward. Cycle crouch/belly bounce/ring, raised-hand/single burst, open-mouth/straight tongue. Use 100 boss HP, 10 per swing, clamp at 5. Pause ordinary damage there and display Q. Gate contact once per attack; preserve a visible recovery beat after each.
+**Requirements** Collect Sun with E, play Sun thought in place, then step Wizard forward. Cycle crouch/belly bounce/ring, raised-hand/single burst, open-mouth/straight tongue. Use 100 boss HP, 10 per swing, clamp at 5. Pause ordinary damage at 5%, enable the finisher and display Q. Ignore Q outside that phase. Gate contact once per attack; preserve a visible recovery beat after each.
 
 **Acceptance** Same arena and camera root throughout. All three telegraphs can be observed. No input can reduce boss below 5 before manual activation.
 **Verify** Try Q before threshold and keep swinging at threshold. Stand in each attack once.
@@ -50,7 +50,7 @@ Read the [root instructions](../../../AGENTS.md) once. Each card lists its addit
 
 **How to test**
 
-1. Choose Void arrival in `?qa`. Watch a cube wind up, take its charge, and look for the bubble to pop and later return. Count three separate successful swings against one cube. Defeat the rest and wait before touching the gold orb.
+1. Choose Void arrival in `?qa`. Watch a cube wind up, take its charge, and check for brief knockback. Count three separate successful swings against one cube. Defeat the rest and wait before touching the gold orb.
 2. Collect Sun. Stay in the arena long enough to see the crouch and shock ring, raised-hand projectile and straight tongue. Attack until Q appears, then keep swinging. The Wizard should remain at 5% until you press Q.
 3. Use Q, look for the separate Moon Essence and the Moon still glowing inside the Wizard. Try grabbing him before taking the essence, then collect it and press E beside him. Inspect both essences and the unconscious Wizard at home.
 

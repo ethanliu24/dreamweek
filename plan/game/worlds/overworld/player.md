@@ -40,7 +40,7 @@ The protagonist moves by floating rather than walking.
 - **Interaction:** Uses its small arms to interact with objects.
 - **Looking:** Slightly tilts its body when observing something.
 - **Blinking:** Occasional simple eye blinks.
-- **Carrying:** Can hold objects with its small arms when needed. Has an inventory of size 3 (keep it configurable)
+- **Carrying:** Can hold objects with its small arms when needed. Carries up to four inventory items.
 - **Attack:** Only possible when obtained the sword from metal world. Holds on one arm and swings on left click.
 
 Animations should be subtle, smooth, and reusable across all worlds.
@@ -71,13 +71,13 @@ The protagonist can:
 
 ## Inventory
 
-The protagonist has an inventory for storing collected items and abilities throughout the adventure.
+The protagonist has an inventory for storing collected items throughout the adventure.
 
 Collected items persist when travelling between dream worlds.
 
 Items do not need to be permanently attached to the character or represented by a physical backpack. Relevant objects can appear in the protagonist's hands during specific interactions.
 
-The inventory layout and interaction details are defined in the Overworld gameplay documentation.
+The top-right inventory shows four numbered slots. Press 1–4 to select an occupied slot.
 
 ## Character Direction
 

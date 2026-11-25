@@ -73,17 +73,13 @@ export function nextStationAction(snapshot) {
   return !snapshot.ended && action?.ready(snapshot) ? action.command : null;
 }
 
-export function inventoryPages(snapshot, cellsPerPage = 3) {
-  const pageSize = Number.isSafeInteger(cellsPerPage) && cellsPerPage > 0 ? cellsPerPage : 3;
-  const cells = [...snapshot.items];
-  if (snapshot.pot.phase === 'empty') cells.push('Empty Pot');
-  if (snapshot.pot.phase === 'filled') cells.push('Filled Pot');
+export const INVENTORY_CAPACITY = 4;
 
-  const pages = [];
-  for (let start = 0; start < cells.length; start += pageSize) {
-    pages.push(cells.slice(start, start + pageSize));
-  }
-  return pages.length ? pages : [[]];
+export function inventoryItems(snapshot) {
+  const items = [...snapshot.items];
+  if (snapshot.pot.phase === 'empty') items.push('Empty Pot');
+  if (snapshot.pot.phase === 'filled') items.push('Filled Pot');
+  return items;
 }
 
 function finishChapter(snapshot, chapter, ...items) {
@@ -111,13 +107,8 @@ const DREAM_COMMANDS = {
       if (nextDream(s) !== 'water') return;
       return { pot: { ...s.pot, phase: 'filled' } };
     },
-    grantBubble(s) {
-      if (nextChapter(s) !== 'water' || s.abilities.bubbleShield) return;
-      if (s.pot.phase !== 'empty' && s.pot.phase !== 'filled') return;
-      return { abilities: { ...s.abilities, bubbleShield: true } };
-    },
     clearBeach(s) {
-      if (nextChapter(s) !== 'water' || s.pot.phase !== 'filled' || !s.abilities.bubbleShield) return;
+      if (nextChapter(s) !== 'water' || s.pot.phase !== 'filled') return;
       return finishChapter(s, 'water');
     },
   },
@@ -136,7 +127,7 @@ const DREAM_COMMANDS = {
   void: {
     takeSun(s) {
       if (nextDream(s) !== 'void') return;
-      return { ...finishChapter(s, 'sun', 'Sun Essence'), abilities: { ...s.abilities, ultimate: true } };
+      return finishChapter(s, 'sun', 'Sun Essence');
     },
     defeatWizard(s) {
       if (nextChapter(s) !== 'moon' || s.wizard !== 'distant') return;
@@ -159,7 +150,6 @@ function freezeSnapshot(snapshot) {
   Object.freeze(snapshot.items);
   Object.freeze(snapshot.pot.shape);
   Object.freeze(snapshot.pot);
-  Object.freeze(snapshot.abilities);
   Object.freeze(snapshot.thoughtsSeen);
   return Object.freeze(snapshot);
 }
@@ -169,7 +159,6 @@ export function createProgress({ getActiveWorld = () => null } = {}) {
     completed: [],
     items: [],
     pot: { phase: 'absent', shape: null },
-    abilities: { bubbleShield: false, ultimate: false },
     hearth: 'empty',
     wizard: 'distant',
     ended: false,
@@ -202,8 +191,11 @@ export function createProgress({ getActiveWorld = () => null } = {}) {
     read: () => snapshot,
     apply(command, payload) {
       const update = typeof command === 'string' && commandUpdate(command, payload);
-      if (update) snapshot = freezeSnapshot({ ...snapshot, ...update });
-      return { changed: Boolean(update), snapshot };
+      if (!update) return { changed: false, snapshot };
+      const next = { ...snapshot, ...update };
+      if (inventoryItems(next).length > INVENTORY_CAPACITY) return { changed: false, snapshot };
+      snapshot = freezeSnapshot(next);
+      return { changed: true, snapshot };
     },
   };
 }

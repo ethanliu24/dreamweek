@@ -64,7 +64,7 @@ The play order is based on the progression of the soup rather than the chronolog
 |---|---|---|---|
 | 1 | Tuesday | Fire | Candle |
 | 2 | Saturday | Earth | Finished Pot |
-| 3 | Wednesday | Water | Water + Bubble Shield |
+| 3 | Wednesday | Water | Filled Pot |
 | 4 | Thursday | Wood | Firewood |
 | 5 | Friday | Metal | Sword |
 | 6 | Sunday | Sun | Sun Essence + Ultimate |
@@ -90,7 +90,7 @@ Completing a dream normally triggers a fade-to-black transition, returning the p
 |---|---|---|
 | Fire | Candle | No mandatory interaction. |
 | Earth | Finished Pot | Carry the empty pot out of the dream. |
-| Water | Filled Pot + Bubble Shield | Fill the carried pot using the beach faucet. On return, interact with the cooking station to place the filled pot. |
+| Water | Filled Pot | Fill the carried pot using the beach faucet. On return, interact with the cooking station to place the filled pot. |
 | Wood | Firewood | Place firewood beneath the pot and light it with the Candle. |
 | Metal | Sword | No mandatory interaction. The water becomes boiled while the player is away. |
 | Sun | Sun Essence + Ultimate | Fight waves of mini frogs. The frog escapes. |
