@@ -77,7 +77,7 @@ Collected items persist when travelling between dream worlds.
 
 Items do not need to be permanently attached to the character or represented by a physical backpack. Relevant objects can appear in the protagonist's hands during specific interactions.
 
-The top-right inventory shows four numbered slots. Press 1–4 to select an occupied slot.
+The top-right inventory shows four numbered slots. Press 1–4 to select an occupied slot. Press the same key again to put the item away.
 
 ## Character Direction
 

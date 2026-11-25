@@ -50,7 +50,7 @@ Read the [root instructions](../../../AGENTS.md) once. Each card lists its addit
 
 **Prerequisites** S1, S2, S3  
 **Required reading** [architecture/world-lifecycle.md](../architecture/world-lifecycle.md), [architecture/runtime.md](../architecture/runtime.md), [architecture/progression.md](../architecture/progression.md)  
-**Files in scope** `src/app/game.js`, `src/dev/preview.js`  
+**Files in scope** `src/app/game.js` and its shell markup/styles, `src/runtime/world-host.js`, `src/worlds/registry.js`, `src/dev/preview.js`, `src/dev/round-trip-preview.js`\
 **Interfaces** ctx, enterNext, returnHome
 
 **Requirements** Use dev hub and Fire fixtures to exercise sleep, one reward, an optional wait and manual return. Wire display, camera, UI and mixer to one host.
@@ -64,7 +64,7 @@ Read the [root instructions](../../../AGENTS.md) once. Each card lists its addit
 
 **How to test**
 
-1. In `?qa` choose Round trip. Try to return before collecting the fixture reward. Collect it, stay for a moment, then use E at the ring. Open inventory and find one Candle.
+1. In `?qa` choose Round trip. Try to return before collecting the fixture reward. Collect it, stay for a moment, then use E at the ring. Confirm the top-right inventory shows exactly one Candle and the objective points to Earth.
 2. Choose Dialogue. Advance a line, select an option with the keyboard, resize while the iris is closed and check all four corners for leaks. Select occupied inventory slots with 1–4 and verify that empty slots leave the selection unchanged.
 3. Choose Audio, press Start sound, audition a local sample and a synth, move around the emitter, then switch profiles twice. Turn music down and confirm effects still play. Try the missing cue and keep playing.
 

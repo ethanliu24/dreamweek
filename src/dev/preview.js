@@ -9,6 +9,7 @@ import { createWorldRegistry } from '../worlds/registry.js';
 import { createAudioPreview } from './audio-preview.js';
 import { createInputPreview } from './input-preview.js';
 import { createProgressPreview } from './progress-preview.js';
+import { createRoundTripPreview } from './round-trip-preview.js';
 import { createTraversalPreview } from './traversal.js';
 import { createUiPreview } from './ui-preview.js';
 
@@ -20,6 +21,7 @@ const PREVIEWS = {
   progression: createProgressPreview,
   dialogue: createUiPreview,
   audio: createAudioPreview,
+  'round-trip': createRoundTripPreview,
 };
 
 function createScenePreview({ mount, initial }) {
@@ -199,8 +201,9 @@ export function mountPreview({ mount }) {
         <option value="input">Input</option>
         <option value="traversal">Traversal</option>
         <option value="progression">Progression</option>
-        <option value="dialogue" selected>Dialogue</option>
+        <option value="dialogue">Dialogue</option>
         <option value="audio">Audio</option>
+        <option value="round-trip" selected>Round trip</option>
       </select>
     </label>
     <button type="button">Reset</button>

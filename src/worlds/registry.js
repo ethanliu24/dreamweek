@@ -10,9 +10,14 @@ const modules = import.meta.glob([
 ]);
 
 export function createWorldRegistry(fixtures = {}) {
+  function getLoader(id) {
+    return Object.hasOwn(fixtures, id) ? fixtures[id] : modules[`./${id}/index.js`];
+  }
+
   return {
+    has: id => Boolean(getLoader(id)),
     async load(id) {
-      const loadModule = Object.hasOwn(fixtures, id) ? fixtures[id] : modules[`./${id}/index.js`];
+      const loadModule = getLoader(id);
       if (!loadModule) throw new Error(`World is unavailable: ${id}`);
 
       const { createWorld } = await loadModule();

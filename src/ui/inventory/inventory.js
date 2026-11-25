@@ -16,7 +16,7 @@ export function createInventory({ mount, canvas, controls }) {
     button.querySelector('kbd').textContent = index + 1;
     panel.append(button);
     button.addEventListener('click', () => {
-      if (select(index)) canvas.focus({ preventScroll: true });
+      if (toggleSlot(index)) canvas.focus({ preventScroll: true });
     }, options);
     return { button, name: button.querySelector('[data-item-name]') };
   });
@@ -31,9 +31,10 @@ export function createInventory({ mount, canvas, controls }) {
     });
   }
 
-  function select(index) {
-    if (panel.closest('[inert]') || controls.mode !== 'explore' || !items[index]) return false;
-    selected = items[index];
+  function toggleSlot(index) {
+    const item = items[index];
+    if (!item || panel.closest('[inert]') || controls.mode !== 'explore') return false;
+    selected = selected === item ? null : item;
     render();
     return true;
   }
@@ -41,7 +42,7 @@ export function createInventory({ mount, canvas, controls }) {
   function onKeyDown(event) {
     if (event.repeat || event.isComposing || event.altKey || event.ctrlKey || event.metaKey ||
         !/^[1-4]$/.test(event.key)) return;
-    if (select(Number(event.key) - 1)) event.preventDefault();
+    if (toggleSlot(Number(event.key) - 1)) event.preventDefault();
   }
   canvas.addEventListener('keydown', onKeyDown, options);
   panel.addEventListener('keydown', onKeyDown, options);
