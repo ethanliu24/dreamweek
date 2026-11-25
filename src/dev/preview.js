@@ -5,6 +5,7 @@ import {
 import { createGame } from '../app/game.js';
 import { createDisplay } from '../runtime/display.js';
 import { createLoop } from '../runtime/loop.js';
+import { createInputPreview } from './input-preview.js';
 
 function createSceneA({ mount }) {
   const fixture = document.createElement('section');
@@ -78,6 +79,7 @@ export function mountPreview({ mount }) {
       <select>
         <option value="shell">Shell</option>
         <option value="scene-a">Scene A</option>
+        <option value="input">Input</option>
       </select>
     </label>
     <button type="button">Reset</button>
@@ -86,7 +88,7 @@ export function mountPreview({ mount }) {
   const fixture = panel.querySelector('select');
   const reset = panel.querySelector('button');
   const gameMount = document.createElement('div');
-  const fixtures = { shell: createGame, 'scene-a': createSceneA };
+  const fixtures = { shell: createGame, 'scene-a': createSceneA, input: createInputPreview };
   let game;
 
   function restart() {
