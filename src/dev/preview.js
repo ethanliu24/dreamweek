@@ -7,6 +7,7 @@ import { createLoop } from '../runtime/loop.js';
 import { createWorldHost } from '../runtime/world-host.js';
 import { createWorldRegistry } from '../worlds/registry.js';
 import { createAudioPreview } from './audio-preview.js';
+import { createHubPreview } from './hub-preview.js';
 import { createInputPreview } from './input-preview.js';
 import { createProgressPreview } from './progress-preview.js';
 import { createRoundTripPreview } from './round-trip-preview.js';
@@ -22,6 +23,10 @@ const PREVIEWS = {
   dialogue: createUiPreview,
   audio: createAudioPreview,
   'round-trip': createRoundTripPreview,
+  'hub-water': ({ mount }) => createHubPreview({ mount, after: 'water' }),
+  'hub-wood': ({ mount }) => createHubPreview({ mount, after: 'wood' }),
+  'hub-metal': ({ mount }) => createHubPreview({ mount, after: 'metal' }),
+  'hub-moon': ({ mount }) => createHubPreview({ mount, after: 'moon' }),
 };
 
 function createScenePreview({ mount, initial }) {
@@ -204,6 +209,10 @@ export function mountPreview({ mount }) {
         <option value="dialogue">Dialogue</option>
         <option value="audio">Audio</option>
         <option value="round-trip" selected>Round trip</option>
+        <option value="hub-water">Hub after Water</option>
+        <option value="hub-wood">Hub after Wood</option>
+        <option value="hub-metal">Hub after Metal</option>
+        <option value="hub-moon">Hub after Moon</option>
       </select>
     </label>
     <button type="button">Reset</button>

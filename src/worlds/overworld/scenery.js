@@ -221,6 +221,10 @@ function createHearth(scene) {
   }
   const trivet = mesh(hearth, new TorusGeometry(0.49, 0.047, 8, 28), iron, 0, 0.59);
   trivet.rotation.x = -Math.PI / 2;
+  const bar = new BoxGeometry(0.9, 0.045, 0.045);
+  for (const angle of [0, Math.PI / 2]) {
+    mesh(hearth, bar, iron, 0, 0.618, 0).rotation.y = angle;
+  }
   const leg = new CylinderGeometry(0.036, 0.052, 0.55, 8);
   for (let i = 0; i < 3; i++) {
     const angle = i * Math.PI * 2 / 3;

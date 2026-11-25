@@ -13,7 +13,7 @@ import { createWorldRegistry } from '../worlds/registry.js';
 import markup from './game.html?raw';
 import './game.css';
 
-export function createGame({ mount, registry = createWorldRegistry() }) {
+export function createGame({ mount, registry = createWorldRegistry(), initialProgress }) {
   const shell = document.createElement('section');
   shell.innerHTML = markup;
   const menu = shell.querySelector('.dreamweek-menu');
@@ -56,7 +56,8 @@ export function createGame({ mount, registry = createWorldRegistry() }) {
     const camera = createCameraRig(display.camera);
     camera.follow(player);
     const ui = createHud({ mount: stage, canvas, controls });
-    const ledger = createProgress({ getActiveWorld: () => host.activeWorld });
+    const seed = import.meta.env.DEV ? initialProgress : undefined;
+    const ledger = createProgress({ getActiveWorld: () => host.activeWorld, seed });
     const progress = {
       read: ledger.read,
       apply(command, payload) {
@@ -132,7 +133,7 @@ export function createGame({ mount, registry = createWorldRegistry() }) {
     const fresh = progress.read();
     ui.inventory(fresh);
     loop.resume();
-    host.request({ id: 'overworld', spawn: 'arrival', progress: fresh });
+    host.request({ id: 'overworld', spawn: seed ? 'wake' : 'arrival', progress: fresh });
   }
 
   startButton.addEventListener('click', start);

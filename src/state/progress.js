@@ -154,7 +154,7 @@ function freezeSnapshot(snapshot) {
   return Object.freeze(snapshot);
 }
 
-export function createProgress({ getActiveWorld = () => null } = {}) {
+export function createProgress({ getActiveWorld = () => null, seed } = {}) {
   let snapshot = freezeSnapshot({
     completed: [],
     items: [],
@@ -163,6 +163,7 @@ export function createProgress({ getActiveWorld = () => null } = {}) {
     wizard: 'distant',
     ended: false,
     thoughtsSeen: [],
+    ...structuredClone(seed),
   });
 
   function commandUpdate(command, payload) {

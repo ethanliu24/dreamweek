@@ -1,6 +1,7 @@
 import { MathUtils, Vector3 } from 'three';
 import { disposeScene } from '../../runtime/assets.js';
 import { nextDream } from '../../state/progress.js';
+import { createHearthStation } from './hearth.js';
 import { createScenery, floorHeight, keepInsideIsland } from './scenery.js';
 
 const LOWER_SECONDS = 0.48;
@@ -25,19 +26,38 @@ function keepOutsideCottage(position, bounds) {
   position.y += floorHeight(position.x, position.z) - previousFloor;
 }
 
+function keepOutsideHearth(position, center) {
+  const x = position.x - center.x;
+  const z = position.z - center.z;
+  const distance = Math.hypot(x, z);
+  const radius = 1.33;
+  if (distance >= radius) return;
+
+  const previousFloor = floorHeight(position.x, position.z);
+  position.x = center.x + (distance ? radius * x / distance : 0);
+  position.z = center.z + (distance ? radius * z / distance : radius);
+  position.y += floorHeight(position.x, position.z) - previousFloor;
+}
+
 export function createWorld({ audio, camera, controls, interactions, player, progress, travel, ui }) {
-  const { scene, cottageBounds, hammock, wake, animate } = createScenery();
+  const { scene, cottageBounds, hammock, hearth, wake, animate } = createScenery();
+  const station = createHearthStation({ scene, hearth, progress, interactions, controls, floorHeight });
   const cottageFootprint = cottageBounds.clone().expandByScalar(0.22);
   const bed = hammock.point.clone().add(new Vector3(0.33, 0.87, 0));
-  let unregister;
+  let unregisterHammock;
+  let unregisterHearth;
   let sleep;
   let objective;
 
   function refreshObjective() {
     const destination = nextDream(progress.read());
-    if (objective === destination) return;
-    objective = destination;
-    if (destination && travel.canEnterNext()) {
+    const stationLabel = station.label();
+    const key = stationLabel ?? destination;
+    if (objective === key) return;
+    objective = key;
+    if (stationLabel) {
+      ui.objective(stationLabel, station.target());
+    } else if (destination && travel.canEnterNext()) {
       ui.objective('Sleep in the hammock to enter the next dream', hammock.point);
     } else if (destination) {
       const name = destination === 'void' ? 'Sun' : destination[0].toUpperCase() + destination.slice(1);
@@ -63,8 +83,9 @@ export function createWorld({ audio, camera, controls, interactions, player, pro
       camera.setObstructions([cottageBounds]);
       scene.add(player.root);
       audio.enter(AUDIO);
+      unregisterHearth = station.enter();
       refreshObjective();
-      unregister = interactions.register({
+      unregisterHammock = interactions.register({
         id: 'hammock',
         point: hammock.point,
         enabled: travel.canEnterNext,
@@ -81,6 +102,7 @@ export function createWorld({ audio, camera, controls, interactions, player, pro
       });
     },
     update(dt) {
+      station.update(dt);
       if (sleep) {
         sleep.elapsed += dt;
         const weight = MathUtils.smoothstep(sleep.elapsed, 0, LOWER_SECONDS);
@@ -98,14 +120,18 @@ export function createWorld({ audio, camera, controls, interactions, player, pro
       }
 
       keepOutsideCottage(player.position, cottageFootprint);
+      keepOutsideHearth(player.position, hearth.position);
       keepInsideIsland(player.position);
       refreshObjective();
     },
     present(elapsed) {
       animate(elapsed, player.position);
+      station.present(elapsed);
     },
     exit() {
-      unregister?.();
+      unregisterHammock?.();
+      unregisterHearth?.();
+      station.exit();
       sleep?.release();
       sleep = null;
       camera.setObstructions([]);
