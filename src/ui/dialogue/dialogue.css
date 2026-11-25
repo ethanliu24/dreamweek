@@ -1,7 +1,5 @@
 .dream-dialogue {
   position: absolute;
-  background: var(--hud-panel);
-  border: 1px solid var(--hud-border);
   border-radius: 0.4rem;
   z-index: 2;
   inset: auto 0.75rem 0.75rem;
@@ -29,8 +27,16 @@
   font-size: 1rem;
 }
 
-.dream-dialogue [data-line]:empty {
-  display: none;
+.dream-dialogue [data-unrevealed] {
+  visibility: hidden;
+}
+
+.dream-dialogue-announcement {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
 }
 
 .dream-dialogue [data-continue] {
@@ -39,6 +45,7 @@
   border: none;
   background: none;
   margin-top: 1rem;
+  margin-bottom: -2rem;
   font-size: 0.8rem;
 }
 
@@ -49,5 +56,18 @@
 .dream-dialogue [data-choices] {
   display: flex;
   flex-wrap: wrap;
+  justify-content: space-between;
+  margin: 1.5rem 0 0 0;
+  width: 100%;
   gap: 0.5rem;
+}
+
+.dream-dialogue [data-choices] button {
+  flex: 1;
+  border: none;
+  background: none;
+}
+
+.dream-dialogue [data-choices] button:hover {
+  color: var(--hud-gold);
 }

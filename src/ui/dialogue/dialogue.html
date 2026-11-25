@@ -1,6 +1,7 @@
 <section class="dream-dialogue overlay-glass overlay-glass-dark" data-dialogue role="dialog" aria-labelledby="dream-dialogue-label" hidden>
   <p id="dream-dialogue-label" data-dialogue-label></p>
-  <p data-line aria-live="polite"></p>
+  <p data-line aria-hidden="true"><span data-revealed></span><span data-unrevealed></span></p>
+  <span class="dream-dialogue-announcement" data-announcement aria-live="polite" aria-atomic="true"></span>
   <button type="button" data-continue>Continue <span aria-hidden="true">›››</span></button>
   <div data-choices></div>
   <template data-choice><button type="button"></button></template>

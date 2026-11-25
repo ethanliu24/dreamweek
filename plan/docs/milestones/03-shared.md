@@ -27,7 +27,7 @@ Read the [root instructions](../../../AGENTS.md) once. Each card lists its addit
 
 **Requirements** Add text, Thought, choices, ability and inventory views, focus handling and reduced motion. Wire host cover to iris. Include a long line, overflowing inventory and delayed load fixture.
 
-**Acceptance** One press advances one line; choices retain focus; the fully closed iris covers all corners on resize.  
+**Acceptance** One press finishes the current reveal or advances one fully visible line; choices retain focus; the fully closed iris covers all corners on resize.\
 **Verify** Try keyboard and pointer, cancel a line by a QA scene switch and inspect delayed travel.  
 **Out of scope** Authored scene scripts.  
 **Model** General · medium

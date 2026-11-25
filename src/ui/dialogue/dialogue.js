@@ -1,11 +1,18 @@
 import markup from './dialogue.html?raw';
 import './dialogue.css';
 
+const CHARACTERS_PER_SECOND = 55;
+const segmenter = new Intl.Segmenter(undefined, { granularity: 'grapheme' });
+
 export function createDialogue({ mount, controls, onVisibility }) {
   mount.insertAdjacentHTML('beforeend', markup);
   const panel = mount.querySelector('[data-dialogue]');
   const label = panel.querySelector('[data-dialogue-label]');
   const line = panel.querySelector('[data-line]');
+  const revealed = line.querySelector('[data-revealed]');
+  const unrevealed = line.querySelector('[data-unrevealed]');
+  const announcement = panel.querySelector('[data-announcement]');
+  const motion = matchMedia('(prefers-reduced-motion: reduce)');
   const advance = panel.querySelector('[data-continue]');
   const choices = panel.querySelector('[data-choices]');
   const choiceTemplate = panel.querySelector('[data-choice]');
@@ -82,18 +89,63 @@ export function createDialogue({ mount, controls, onVisibility }) {
       if (!lines.length) return signal?.aborted ? Promise.reject(signal.reason) : Promise.resolve();
       return run(signal, (done, options) => {
         let index = 0;
+        let frame;
+        let text;
         label.textContent = kind === 'thought' ? 'Thought' : speaker || 'Dreamweek';
-        line.textContent = lines[index];
         advance.hidden = false;
+        line.hidden = false;
+
+        function completeLine() {
+          cancelAnimationFrame(frame);
+          frame = undefined;
+          revealed.textContent = text;
+          unrevealed.textContent = '';
+        }
+
+        function showLine() {
+          text = lines[index];
+          announcement.textContent = text;
+          panel.scrollTop = 0;
+          if (motion.matches || !text) {
+            completeLine();
+            return;
+          }
+
+          const offsets = Array.from(segmenter.segment(text), part => part.index);
+          const start = performance.now();
+          revealed.textContent = '';
+          unrevealed.textContent = text;
+
+          function reveal(now) {
+            const count = Math.max(0, Math.floor((now - start) * CHARACTERS_PER_SECOND / 1000));
+            if (motion.matches || count >= offsets.length) {
+              completeLine();
+              return;
+            }
+            const end = offsets[count];
+            revealed.textContent = text.slice(0, end);
+            unrevealed.textContent = text.slice(end);
+            frame = requestAnimationFrame(reveal);
+          }
+
+          frame = requestAnimationFrame(reveal);
+        }
+
         function next() {
+          if (frame !== undefined) {
+            completeLine();
+            return;
+          }
           index += 1;
           if (index === lines.length) done();
-          else {
-            line.textContent = lines[index];
-            line.scrollTop = 0;
-            panel.scrollTop = 0;
-          }
+          else showLine();
         }
+
+        options.signal.addEventListener('abort', () => {
+          cancelAnimationFrame(frame);
+          announcement.textContent = '';
+        }, { once: true });
+        showLine();
         advance.addEventListener('click', next, options);
         return next;
       });
@@ -102,7 +154,7 @@ export function createDialogue({ mount, controls, onVisibility }) {
       if (!answers.length) return Promise.reject(new RangeError('At least one choice is required'));
       return run(signal, (done, options) => {
         label.textContent = prompt;
-        line.textContent = '';
+        line.hidden = true;
         advance.hidden = true;
         for (const { id, label: text } of answers) {
           const button = choiceTemplate.content.firstElementChild.cloneNode(true);
