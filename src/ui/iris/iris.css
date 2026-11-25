@@ -1,0 +1,25 @@
+.dream-iris {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  background: #000;
+  pointer-events: auto;
+}
+
+.dream-iris.is-moving {
+  background: radial-gradient(circle farthest-corner, transparent var(--aperture), #000 calc(var(--aperture) + 0.5px));
+}
+
+.dream-load-error {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  place-content: center;
+  text-align: center;
+  pointer-events: auto;
+}
+
+.dream-load-error:not([hidden]) {
+  display: grid;
+  gap: 0.5rem;
+}

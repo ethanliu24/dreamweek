@@ -2,7 +2,7 @@
 
 ## Proposed source layout
 
-Use JavaScript ES modules and the existing Vite scripts. main.js mounts under #app. app/game.js composes services. runtime/ holds display, timing, input and world swapping. player/ owns the avatar, camera motion and proximity selection. state/ owns progression. ui/ owns HTML overlays. audio/ owns the mixer and cue manifest. worlds/<id>/ owns an entry module, gameplay code, scenery, cast and local cue selection. Put the pot, Candle, Sword, essence visuals and Wizard factory in shared/props or shared/actors when a second scene needs the exact model. A world imports shared modules and never imports a sibling world.
+Use JavaScript ES modules and the existing Vite scripts. main.js mounts under #app. app/game.js composes services. runtime/ holds display, timing, input and world swapping. player/ owns the avatar, camera motion and proximity selection. state/ owns progression. ui/ owns production HTML overlays. Group each component’s JavaScript, HTML and CSS under ui/<component-name>/. audio/ owns the mixer and cue manifest. worlds/<id>/ owns an entry module, gameplay code, scenery, cast and local cue selection. Put the pot, Candle, Sword, essence visuals and Wizard factory in shared/props or shared/actors when a second scene needs the exact model. A world imports shared modules and never imports a sibling world.
 
 | Owner | Calls and dependencies | Lifetime and boundary |
 |---|---|---|

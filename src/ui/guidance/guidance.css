@@ -14,28 +14,15 @@
     top: 0;
     left: 0;
     margin: 0.75rem;
-    padding: 0.5rem 1rem;
+    min-height: 40px;
+    box-sizing: border-box;
+    padding: 0 0.65rem;
 
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 0.65rem;
 
-
-    /* Frosted glass */
-    background: rgba(255, 255, 255, 0.8);
-    backdrop-filter: blur(20px) saturate(180%);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
-
-    /* Premium finish */
-    border: 1px solid rgba(255, 255, 255, 0.8);
-    border-radius: 1rem;
-    box-shadow:
-        0 8px 30px rgba(20, 30, 50, 0.12),
-        inset 0 1px 0 rgba(255, 255, 255, 0.9);
-
-    font-size: 0.8rem;
-    font-weight: 500;
     text-align: center;
 }
 
@@ -66,20 +53,6 @@
     margin: 0;
     padding: 0.3rem 1rem;
 
-    /* Frosted glass */
-    background: rgba(255, 255, 255, 0.8);
-    backdrop-filter: blur(20px) saturate(180%);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
-
-    /* Premium finish */
-    border: 1px solid rgba(255, 255, 255, 0.8);
-    border-radius: 1rem;
-    box-shadow:
-        0 8px 30px rgba(20, 30, 50, 0.12),
-        inset 0 1px 0 rgba(255, 255, 255, 0.9);
-
-    font-size: 0.8rem;
-    font-weight: 500;
     text-align: center;
 }
 

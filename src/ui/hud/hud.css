@@ -1,0 +1,110 @@
+.dream-hud,
+.dream-hud-content,
+.dream-plate {
+  position: absolute;
+  inset: 0;
+}
+
+.dream-hud {
+  isolation: isolate;
+  pointer-events: none;
+  color: var(--hud-text);
+  line-height: 1.45;
+}
+
+.dream-hud [hidden] {
+  display: none !important;
+}
+
+.dream-plate {
+  background: #17243b;
+}
+
+.dream-plate img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.dream-inventory {
+  color: var(--text-dark);
+  position: absolute;
+  z-index: 1;
+  inset: 0.75rem 0.75rem auto auto;
+  max-width: min(20rem, calc(100% - 1.5rem));
+  display: grid;
+  justify-items: end;
+  gap: 0.4rem;
+}
+
+.dream-inventory details {
+  pointer-events: auto;
+  padding: 0 0.65rem;
+}
+
+.dream-inventory summary {
+  min-height: 40px;
+  align-content: center;
+  cursor: pointer;
+}
+
+.dream-inventory ol,
+.dream-inventory ul {
+  margin: 0;
+  padding: 0.35rem 0;
+  list-style: none;
+}
+
+.dream-inventory [data-items] {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.dream-inventory li {
+  overflow-wrap: anywhere;
+  padding: 0.25rem 0.45rem;
+}
+
+.dream-inventory [data-items] li {
+  flex: 1 1 4rem;
+  border-radius: 0.3rem;
+  background: rgb(38 52 73 / 8%);
+}
+
+.dream-inventory [data-pager] {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+
+.dream-hud button {
+  min-height: 40px;
+  max-width: 100%;
+  padding: 0.35rem 0.75rem;
+  border: 1px solid var(--hud-border);
+  border-radius: 0.4rem;
+  background: #253956;
+  color: inherit;
+  font: inherit;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+}
+
+.dream-inventory button {
+  border-color: var(--overlay-glass-border);
+  background: var(--overlay-glass);
+}
+
+.dream-hud :focus-visible {
+  outline: 2px solid var(--hud-gold);
+  outline-offset: 2px;
+}
+
+.dream-hud button[aria-disabled="true"] {
+  opacity: 0.65;
+  cursor: default;
+}

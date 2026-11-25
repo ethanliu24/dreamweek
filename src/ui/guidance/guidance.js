@@ -1,6 +1,6 @@
 import { Vector3 } from 'three';
-import overlayMarkup from './overlay.html?raw';
-import './overlay.css';
+import overlayMarkup from './guidance.html?raw';
+import './guidance.css';
 
 export function createGuidance({ mount, canvas }) {
   const overlay = document.createElement('div');

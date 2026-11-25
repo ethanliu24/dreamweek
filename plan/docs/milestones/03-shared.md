@@ -22,7 +22,7 @@ Read the [root instructions](../../../AGENTS.md) once. Each card lists its addit
 
 **Prerequisites** R3, P3  
 **Required reading** [architecture/ui.md](../architecture/ui.md), [Visual design](../visual-design.md)  
-**Files in scope** `src/ui/hud.js`, `src/ui/dialogue.js`, `src/ui/iris.js`, `src/ui/style.css`, `src/dev/ui-preview.js`  
+**Files in scope** `src/ui/hud/`, `src/ui/dialogue/`, `src/ui/iris/`, `src/dev/ui-preview.js`\
 **Interfaces** say, choose, iris.close/open, inventory, clearWorld
 
 **Requirements** Add text, Thought, choices, ability and inventory views, focus handling and reduced motion. Wire host cover to iris. Include a long line, overflowing inventory and delayed load fixture.

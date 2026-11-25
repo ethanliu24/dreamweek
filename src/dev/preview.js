@@ -9,6 +9,7 @@ import { createWorldRegistry } from '../worlds/registry.js';
 import { createInputPreview } from './input-preview.js';
 import { createProgressPreview } from './progress-preview.js';
 import { createTraversalPreview } from './traversal.js';
+import { createUiPreview } from './ui-preview.js';
 
 const SCENE_LABELS = { 'scene-a': 'Scene A', 'scene-b': 'Scene B' };
 const PREVIEWS = {
@@ -16,6 +17,7 @@ const PREVIEWS = {
   input: createInputPreview,
   traversal: createTraversalPreview,
   progression: createProgressPreview,
+  dialogue: createUiPreview,
 };
 
 function createScenePreview({ mount, initial }) {
@@ -193,8 +195,9 @@ export function mountPreview({ mount }) {
         <option value="scene-a">Scene A</option>
         <option value="scene-b">Scene B</option>
         <option value="input">Input</option>
-        <option value="traversal" selected>Traversal</option>
+        <option value="traversal">Traversal</option>
         <option value="progression">Progression</option>
+        <option value="dialogue" selected>Dialogue</option>
       </select>
     </label>
     <button type="button">Reset</button>
