@@ -28,12 +28,10 @@ Help Mallow light the fire outside her home.
 
 This is the only gameplay interaction in the world.
 
-### 3. Receive Rewards
+### 3. Receive Firewood
 
 - Mallow thanks the player.
-- The player receives:
-  - Firewood
-  - Healing Mushroom
+- The player receives Firewood.
 - The world is completed.
 
 ## Mechanics and Rules
@@ -44,22 +42,17 @@ This is the only gameplay interaction in the world.
 - Lighting the fire is a single successful interaction.
 - There are no timers, failure states, or additional challenges.
 
-## Rewards
+## Reward
 
 **Firewood**
 
 Used later in the overworld as fuel for the soup preparation.
-
-**Healing Mushroom**
-
-A healing item that can be used by the player.
 
 ## Overworld Integration
 
 After returning to the overworld:
 
 - Add Firewood to the player's collected rewards.
-- Add the Healing Mushroom to the player's collected rewards.
 - The player can later place the Firewood beneath the soup pot and use the Candle to light it.
 
 The fire pit inside the Wood dream is separate from the soup-cooking setup in the overworld.
@@ -81,5 +74,5 @@ The fire pit inside the Wood dream is separate from the soup-cooking setup in th
 - The player can use Wick's Candle on the prepared firewood.
 - The fire changes from unlit to lit.
 - Mallow reacts positively.
-- The player receives Firewood and a Healing Mushroom.
-- The player can return to the overworld with both rewards.
+- The player receives Firewood.
+- The player can return to the overworld with the Firewood.

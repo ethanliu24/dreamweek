@@ -5,7 +5,7 @@ Mount accessible HTML siblings above the canvas under #app: an objective with a 
 | Interface | Behaviour |
 |---|---|
 | ui.objective(text, point?) / ui.prompt(label|null) | Show one current objective and one actionable E prompt. Project point into view or clamp an arrow to a safe screen edge. Hide or replace these during shots, crafting and dialogue. |
-| ui.inventory(snapshot) | Read the three-cell paged inventory, show ability icons separately. Show item names and explicit prev/next buttons when needed. Inventory never spends quest items. |
+| ui.inventory(snapshot) | Render three-cell pages from `inventoryPages(snapshot)` and show ability icons separately. The progression ledger inspector is a development fixture. Show item names and explicit prev/next buttons when needed. Inventory never spends quest items. |
 | ui.say({kind, speaker, lines}, signal) → Promise | Spoken line, narrated plate or labelled Thought. Acquire dialogue mode. Each fresh E/Enter/click advances one line; ignore key repeat and opening press. Return when last line closes. |
 | ui.choose({prompt, options}, signal) → Promise<id> | Native focusable buttons, with keyboard activation. Return stable clue ID, restore prior focus/mode. Wrong selections can lead to authored deflection and a fresh choice. |
 | ui.plate(image, alt) / ui.clearWorld() | Cover canvas with the single intro/ending composition while text advances. clearWorld removes transient labels, listeners, directions, plates and dialogue from outgoing world. |

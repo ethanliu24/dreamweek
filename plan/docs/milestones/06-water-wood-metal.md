@@ -39,7 +39,7 @@ Read the [root instructions](../../../AGENTS.md) once. Each card lists its addit
 **Files in scope** `src/worlds/wood/index.js`, `src/worlds/wood/mallow.js`, `src/worlds/wood/lines.js`
 **Interfaces** register, say, helpMallow
 
-**Requirements** Stage hollow, Mallow and prepared pit. Greet, receive request, light with Candle, then talk again for both rewards. Keep hub hearth independent.
+**Requirements** Stage hollow, Mallow and prepared pit. Greet, receive request, light with Candle, then talk again for Firewood. Keep hub hearth independent.
 
 **Acceptance** Clear the scene in about 30–60 s. Hub still requires manually placing the newly awarded bundle and lighting it.
 **Verify** Try pit before request and reward twice, watch bag and hub fire state.

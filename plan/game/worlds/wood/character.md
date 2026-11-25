@@ -53,7 +53,7 @@ She is preparing a special soup but struggles to manage everything on her own. W
 
 As cooking progresses, her instructions become increasingly urgent. Her normally shy personality gives way to a frantic little chef who is determined to finish her recipe.
 
-After the soup is prepared, Mallow rewards the player with **Firewood and a Healing Mushroom**.
+After the player lights the fire, Mallow rewards the player with **Firewood**.
 
 ## Character Arc
 
@@ -63,6 +63,6 @@ Her main comedic contrast is between her timid everyday personality and her surp
 
 ## Production specification
 
-**Essential.** Mallow is 0.85 units tall. A wide drooping cap spans 0.8, almost twice her stalk width. Build the cap from a shallow curved dome plus a pale inset underside. Lower the front rim unevenly enough to hide one brow when she bows. Join a rounded cream stalk to tiny feet, sink the arm roots into its sides. Place warm brown oval eyes and a tiny mouth high on the stalk. Dusty rose cap #B76F68 with sparse pale spots, cream body #EBD6AF, moss-green apron #657954 with a stitched pocket following the belly arc. She clasps hands, tips the cap forward on request, opens arms at ignition and offers a tied log bundle and a smaller cream-stem healing mushroom. Her thank-you pose lifts the cap enough to show both eyes.
+**Essential.** Mallow is 0.85 units tall. A wide drooping cap spans 0.8, almost twice her stalk width. Build the cap from a shallow curved dome plus a pale inset underside. Lower the front rim unevenly enough to hide one brow when she bows. Join a rounded cream stalk to tiny feet, sink the arm roots into its sides. Place warm brown oval eyes and a tiny mouth high on the stalk. Dusty rose cap #B76F68 with sparse pale spots, cream body #EBD6AF, moss-green apron #657954 with a stitched pocket following the belly arc. She clasps hands, tips the cap forward on request, opens arms at ignition and offers a tied log bundle. Her thank-you pose lifts the cap enough to show both eyes.
 
 **Secondary polish.** Indicate underside gills with vertex colour stripes and let the cap lag on the relieved nod. **Optional.** One pocket patch. Use the [cap and stalk reference](references/mallow/character_1.jpeg).

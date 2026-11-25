@@ -6,7 +6,7 @@ The player enters an enchanted forest clearing and meets Mallow, a shy mushroom 
 
 Mallow has prepared a fire pit outside her home but has no way to light it. The player uses Wick's Candle to help her start the fire.
 
-Mallow thanks the player and gives them Firewood and a Healing Mushroom.
+Mallow thanks the player and gives them Firewood.
 
 **Target duration:** 30–60 seconds.
 
@@ -85,7 +85,7 @@ The fire lights successfully.
 
 Mallow thanks the player for helping her.
 
-She gives the player a bundle of Firewood and a Healing Mushroom.
+She gives the player a bundle of Firewood.
 
 **Camera:**
 - Medium shot of Mallow and the player.
@@ -116,7 +116,7 @@ The player leaves the dream and returns to the overworld.
 3. Mallow asks the player for help lighting the fire.
 4. The player uses Wick's Candle.
 5. The fire lights and Mallow reacts happily.
-6. Mallow gives the player Firewood and a Healing Mushroom.
+6. Mallow gives the player Firewood.
 7. Fade back to the overworld.
 
 ## Notes
