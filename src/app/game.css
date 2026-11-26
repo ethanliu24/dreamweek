@@ -6,7 +6,7 @@
 
   --overlay-glass: rgba(255, 255, 255, 0.8);
   --overlay-glass-border: rgba(255, 255, 255, 1);
-  --overlay-glass-dark: rgba(22, 22, 22, 0.7);
+  --overlay-glass-dark: rgba(22, 22, 22, 0.9);
   --overlay-glass-border-dark: rgba(0, 0, 0, 0.5);
   --overlay-glass-shadow: 0 8px 30px rgba(20, 30, 50, 0.12);
 
@@ -49,6 +49,9 @@ textarea {
   color: var(--text-light);
   background: var(--overlay-glass-dark);
   border: 1px solid var(--overlay-glass-border-dark);
+  border-radius: 0.65rem;
+  font-size: 0.875rem;
+  line-height: 1.45;
 }
 
 .dreamweek-menu {

@@ -35,7 +35,6 @@ export function createIris({ mount, onCover }) {
     onCover(true);
     const reduced = motion.matches;
     const duration = reduced ? 120 : closing ? 400 : 400;
-    const holdDuration = closing ? 1000 : 0;
     cover.classList.toggle('is-moving', !reduced);
 
     return new Promise((resolve, reject) => {

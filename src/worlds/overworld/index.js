@@ -2,6 +2,7 @@ import { MathUtils, Vector3 } from 'three';
 import { disposeScene } from '../../runtime/assets.js';
 import { nextDream } from '../../state/progress.js';
 import { createHearthStation } from './hearth.js';
+import { createOverworldStory } from './story.js';
 import { createScenery, floorHeight, keepInsideIsland } from './scenery.js';
 
 const LOWER_SECONDS = 0.48;
@@ -39,8 +40,9 @@ function keepOutsideHearth(position, center) {
   position.y += floorHeight(position.x, position.z) - previousFloor;
 }
 
-export function createWorld({ audio, camera, controls, interactions, player, progress, travel, ui }) {
+export function createWorld({ audio, camera, controls, interactions, player, progress, signal, travel, ui }) {
   const { scene, cottageBounds, hammock, hearth, wake, animate } = createScenery();
+  const story = createOverworldStory({ ui, controls, progress, signal });
   const station = createHearthStation({ scene, hearth, progress, interactions, controls, floorHeight });
   const cottageFootprint = cottageBounds.clone().expandByScalar(0.22);
   const bed = hammock.point.clone().add(new Vector3(0.33, 0.87, 0));
@@ -75,7 +77,7 @@ export function createWorld({ audio, camera, controls, interactions, player, pro
       walkBounds: { minX: -10, maxX: 10, minZ: -8, maxZ: 8 },
     },
     prepare: signal => audio.prepare(AUDIO, signal),
-    enter() {
+    enter({ spawn }) {
       player.root.rotation.set(0, Math.PI, 0);
       player.setPose('idle');
       player.teleport(wake);
@@ -85,6 +87,7 @@ export function createWorld({ audio, camera, controls, interactions, player, pro
       audio.enter(AUDIO);
       unregisterHearth = station.enter();
       refreshObjective();
+      story.enter(spawn);
       unregisterHammock = interactions.register({
         id: 'hammock',
         point: hammock.point,
@@ -103,6 +106,7 @@ export function createWorld({ audio, camera, controls, interactions, player, pro
     },
     update(dt) {
       station.update(dt);
+      story.update();
       if (sleep) {
         sleep.elapsed += dt;
         const weight = MathUtils.smoothstep(sleep.elapsed, 0, LOWER_SECONDS);
