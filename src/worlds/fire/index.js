@@ -1,39 +1,34 @@
 import { Vector3 } from 'three';
 import { disposeScene } from '../../runtime/assets.js';
 import { createScenery } from './scenery.js';
+import { createFireStory } from './story.js';
 
-export function createWorld({ camera, player, ui }) {
-  const { scene, platforms, walkBounds } = createScenery();
+const AUDIO = { cues: ['candle.chime'] };
+
+export function createWorld(context) {
+  const { audio, camera, player } = context;
+  const scenery = createScenery();
+  const { scene, platforms, walkBounds } = scenery;
   const safeSpawn = new Vector3(0, 0, 3.6);
-  const summit = platforms.at(-1);
-  const summitTarget = new Vector3(
-    (summit.minX + summit.maxX) / 2,
-    summit.y,
-    (summit.minZ + summit.maxZ) / 2,
-  );
-  let reachedSummit = false;
+  const story = createFireStory({ ...context, ...scenery, summit: platforms.at(-1), safeSpawn });
 
   return {
     scene,
     surfaces: { floorHeight: () => 0, platforms, walkBounds, safeSpawn },
-    prepare() {},
+    prepare: signal => audio.prepare(AUDIO, signal),
     enter() {
       player.root.rotation.set(0, Math.PI, 0);
       player.setPose('idle');
       player.teleport(safeSpawn);
       camera.resetOrbit({ pitch: 0.18 });
       scene.add(player.root);
-      reachedSummit = false;
-      ui.objective('Climb to the top lantern', summitTarget);
+      audio.enter(AUDIO);
+      story.enter();
     },
-    update() {
-      if (reachedSummit) return;
-      const { x, y, z } = player.position;
-      if (y !== summit.y || x < summit.minX || x > summit.maxX || z < summit.minZ || z > summit.maxZ) return;
-      reachedSummit = true;
-      ui.objective('');
-    },
+    update: story.update,
+    present: scenery.animate,
     exit() {
+      story.exit();
       player.root.removeFromParent();
     },
     dispose() {
