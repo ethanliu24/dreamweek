@@ -3,9 +3,10 @@ import {
   AdditiveBlending, BoxGeometry, BufferGeometry, CanvasTexture, Color, ConeGeometry, CylinderGeometry,
   DoubleSide, EquirectangularReflectionMapping, ExtrudeGeometry, Float32BufferAttribute,
   FogExp2, Group, IcosahedronGeometry, Mesh, MeshBasicMaterial, MeshStandardMaterial,
-  PlaneGeometry, Points, PointsMaterial, PointLight, Shape, SphereGeometry, Sprite,
+  PlaneGeometry, RepeatWrapping, Points, PointsMaterial, PointLight, Shape, SphereGeometry, Sprite,
   SpriteMaterial, SRGBColorSpace, TorusGeometry,
 } from 'three';
+import { addCandleStream } from './candle-stream.js';
 import { batches } from './lanterns.js';
 
 const tau = Math.PI * 2;
@@ -18,7 +19,7 @@ function nightSky() {
   canvas.width = 2048; canvas.height = 768;
   const ctx = canvas.getContext('2d');
   const wash = ctx.createLinearGradient(0,0,0,768);
-  for (const [y,col] of [[0,'#0c1234'],[0.25,'#182348'],[0.40,'#494570'],[0.48,'#795b80'],[0.52,'#9a7185'],[0.62,'#494663'],[1,'#333853']]) wash.addColorStop(y,col);
+  for (const [y,col] of [[0,'#090e26'],[0.25,'#152044'],[0.40,'#31365a'],[0.48,'#604558'],[0.52,'#936454'],[0.62,'#47405b'],[1,'#282c46']]) wash.addColorStop(y,col);
   ctx.fillStyle=wash; ctx.fillRect(0,0,2048,768);
   for(let i=0;i<450;i++){
     const x=rand(0,2048), y=rand(216,427), w=rand(24,145), h=rand(2,14);
@@ -61,19 +62,41 @@ function reservedGroundArea(x,z) {
   return areas.some(([cx,cz,rx,rz])=>((x-cx)/rx)**2+((z-cz)/rz)**2<1);
 }
 
+// Tile a fine layer of silt, leaf litter and broken blades over the broad terrain colors.
+function meadowTexture() {
+  const canvas = document.createElement('canvas');
+  canvas.width = canvas.height = 256;
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = '#b4b4b4';
+  ctx.fillRect(0, 0, 256, 256);
+  for (let i = 0; i < 6800; i++) {
+    const x = rand(0, 256), y = rand(0, 256);
+    ctx.strokeStyle = i % 5 ? '#333d4c60' : '#ffe9bf80';
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+    ctx.lineTo(x + rand(-2, 2), y + rand(1, 4));
+    ctx.stroke();
+  }
+  const texture = new CanvasTexture(canvas);
+  texture.wrapS = texture.wrapT = RepeatWrapping;
+  texture.colorSpace = SRGBColorSpace;
+  return texture;
+}
+
 function makeTerrain() {
-  const width=48, depth=68, nx=144, nz=204, positions=[], colors=[], indices=[];
-  const low=[0.075,0.145,0.075], high=[0.12,0.205,0.105], edge=[0.085,0.135,0.105];
+  const width=48, depth=68, nx=144, nz=204, positions=[], colors=[], uvs=[], indices=[];
+  const low=[0.034,0.049,0.067], high=[0.12,0.095,0.112], edge=[0.055,0.085,0.095];
   for(let iz=0;iz<=nz;iz++){
     const z=18-iz/nz*depth;
     for(let ix=0;ix<=nx;ix++){
       const x=-width/2+ix/nx*width, h=terrainHeight(x,z);
       positions.push(x,h,z);
+      uvs.push(x/3,z/3);
       const e=Math.max(smooth(7,20.5,Math.abs(x)),smooth(20,33,Math.abs(z+13)));
       const patch=0.5+0.5*Math.sin(x*0.28+z*0.21)*Math.cos(z*0.34);
       const rockMix=smooth(0.58,0.98,e+Math.max(0,h)*0.07);
       for(let k=0;k<3;k++){
-        const grass=low[k]*(1-patch*0.25)+high[k]*patch*0.25;
+        const grass=low[k]*(1-patch)+high[k]*patch;
         colors.push(grass*(1-rockMix)+edge[k]*rockMix);
       }
       if(ix<nx&&iz<nz){const a=iz*(nx+1)+ix,b=a+1,c=a+nx+1,d=c+1;indices.push(a,b,c,b,d,c);}
@@ -82,8 +105,9 @@ function makeTerrain() {
   const geometry=new BufferGeometry();
   geometry.setAttribute('position',new Float32BufferAttribute(positions,3));
   geometry.setAttribute('color',new Float32BufferAttribute(colors,3));
+  geometry.setAttribute('uv',new Float32BufferAttribute(uvs,2));
   geometry.setIndex(indices); geometry.computeVertexNormals();
-  const mesh=new Mesh(geometry,new MeshStandardMaterial({vertexColors:true,roughness:0.96,metalness:0.01}));
+  const mesh=new Mesh(geometry,new MeshStandardMaterial({vertexColors:true,map:meadowTexture(),roughness:0.96,metalness:0.01}));
   mesh.receiveShadow=true; mesh.frustumCulled=false;
   return mesh;
 }
@@ -693,7 +717,7 @@ function addFestivalGroundDetails(add,scene) {
 
 export function dressFestival(scene) {
   scene.background=nightSky();
-  scene.fog=new FogExp2(0x686180,0.012);
+  scene.fog=new FogExp2(0x58506a,0.012);
   scene.add(makeTerrain());
   scene.add(
     makeRidge(150,24,-66,-13,25,0x626183,0.4),
@@ -710,9 +734,6 @@ export function dressFestival(scene) {
   const stoneMat=new MeshStandardMaterial({color:0x687183,roughness:0.34,metalness:0.18,emissive:0x101a2a,emissiveIntensity:0.12});
   const rockMat=matte(0x485568,0.94), rockLight=matte(0x667080,0.88), moss=matte(0x263f30,1);
   const bark=matte(0x564348,0.96), pineDark=matte(0x1e4140,0.96), pineMid=matte(0x2c5a4d,0.94), pineLight=matte(0x406956,0.94);
-  const puddleMat=new MeshStandardMaterial({color:0x35435a,roughness:0.19,metalness:0.36,emissive:0x111c35,emissiveIntensity:0.22});
-  const puddleGeo=new SphereGeometry(1,20,12);
-
   // Detailed rocky shelves around the valley edges.
   for(let i=0;i<126;i++){
     const side=i%2?1:-1,x=side*rand(7.4,20.7),z=rand(-40,14),s=rand(0.38,1.65);
@@ -759,12 +780,7 @@ export function dressFestival(scene) {
     if(i%3===0)add(smallRock,rockLight,x+rand(-0.65,0.65),y+0.025,z+rand(-0.4,0.4),0.12,0.07,0.14,0,rand(0,tau));
   }
 
-  // Shallow reflective pools and damp stone patches along the sides.
-  for(let i=0;i<15;i++){
-    const side=i%2?1:-1,x=side*rand(6.3,11.5),z=rand(-34,9),s=rand(0.45,1.25),y=terrainHeight(x,z)+0.025;
-    if(Math.abs(x)<6.5)continue;
-    add(puddleGeo,puddleMat,x,y,z,s*1.35,0.035*s,s*0.72,0,rand(0,tau));
-  }
+  const animateStream = addCandleStream(scene, add, terrainHeight);
 
   // Small luminous crystals in the rocks, with a restrained cool glow.
   const crystalGeo=new ConeGeometry(0.19,0.82,7,3);
@@ -795,6 +811,17 @@ export function dressFestival(scene) {
     const y=terrainHeight(x,z),s=rand(0.65,1.35),m=i%4===0?flowerCool:flowerWarm;
     add(flowerStem,stems,x,y+0.075*s,z,0.75,0.15*s,0.75,0,rand(0,tau));
     add(flowerGeo,m,x,y+0.17*s,z,0.75*s,0.75*s,0.75*s);
+  }
+
+  // Fallen plum petals collect in irregular drifts along the processional path.
+  const petal = new SphereGeometry(1, 5, 3);
+  const petals = [matte(0xc87580), matte(0xad5869), matte(0xe2a48f)];
+  for (let i = 0; i < 72; i++) {
+    const cx = (i%3 ? 1 : -1)*rand(1.8,8.8), cz = rand(-32,10);
+    for (let j = 0; j < 22; j++) {
+      const x = cx+rand(-1,1)*rand(.2,1.5), z = cz+rand(-.6,.6);
+      add(petal, petals[j%3], x,terrainHeight(x,z)+.018,z,.048,.013,.085,0,rand(0,tau));
+    }
   }
 
   // Gate, poles and decorative festival structures from the original scene.
@@ -858,7 +885,7 @@ export function dressFestival(scene) {
   const paper=new CylinderGeometry(0.46,0.32,1,8);
   const haloCanvas=document.createElement('canvas');haloCanvas.width=haloCanvas.height=64;
   const ctx=haloCanvas.getContext('2d'),g=ctx.createRadialGradient(32,32,1,32,32,32);
-  g.addColorStop(0,'#ffb96988');g.addColorStop(0.3,'#ff8c4539');g.addColorStop(1,'#fc873000');
+  g.addColorStop(0,'#ffd28fbd');g.addColorStop(0.3,'#ffa85a65');g.addColorStop(1,'#fc873000');
   ctx.fillStyle=g;ctx.fillRect(0,0,64,64);
   const halo=new MeshBasicMaterial({map:new CanvasTexture(haloCanvas),transparent:true,depthWrite:false,side:DoubleSide});
   const plane=new PlaneGeometry();
@@ -868,12 +895,13 @@ export function dressFestival(scene) {
     if(Math.abs(x)<12&&z>-35&&z<13)continue;
     lights.add(paper,ember,x,y,z,s,s*1.27,s);
     lights.add(ball,flame,x,y-s*0.46,z,s*0.32,s*0.16,s*0.32);
-    lights.add(plane,halo,x,y,z,s*4.8,s*4.8,1,0,Math.PI/2-a);
+    lights.add(plane,halo,x,y,z,s*4.9,s*4.9,1,0,Math.PI/2-a);
   }
   lights.finish();
 
   return elapsed=>{
     const t=Number.isFinite(elapsed)?elapsed:0;
+    animateStream(t);
     drift.position.y=Math.sin(t*0.18)*0.30;
     drift.rotation.y=Math.sin(t*0.057)*0.009;
     fireflies.position.y=Math.sin(t*0.31)*0.12;

@@ -35,7 +35,7 @@ function paperTexture() {
   const ctx=canvas.getContext('2d');
   const glow=ctx.createRadialGradient(128,137,4,128,97,155);
 
-  for(const [stop,tint] of [[0,'#fff9eb'],[0.32,'#fff1d9'],[0.68,'#e9dfd0'],[1,'#c9c4c8']])glow.addColorStop(stop,tint);
+  for(const [stop,tint] of [[0,'#fff1bd'],[0.32,'#ffd089'],[0.68,'#f5a36c'],[1,'#d07964']])glow.addColorStop(stop,tint);
 
   ctx.fillStyle=glow;ctx.fillRect(0,0,256,192);
 
