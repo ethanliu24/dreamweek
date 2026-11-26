@@ -23,6 +23,8 @@ const PREVIEWS = {
   dialogue: createUiPreview,
   audio: createAudioPreview,
   'round-trip': createRoundTripPreview,
+  'earth-arrival': ({ mount }) => createGame({ mount, initialWorld: 'earth',
+    initialProgress: { completed: ['fire'], items: ['Candle'] } }),
   'fire-arrival': ({ mount }) => createGame({ mount, initialWorld: 'fire' }),
   'hub-water': ({ mount }) => createHubPreview({ mount, after: 'water' }),
   'hub-wood': ({ mount }) => createHubPreview({ mount, after: 'wood' }),
@@ -211,6 +213,7 @@ export function mountPreview({ mount }) {
         <option value="audio">Audio</option>
         <option value="round-trip" selected>Round trip</option>
         <option value="fire-arrival">Fire arrival</option>
+        <option value="earth-arrival">Earth arrival</option>
         <option value="hub-water">Hub after Water</option>
         <option value="hub-wood">Hub after Wood</option>
         <option value="hub-metal">Hub after Metal</option>

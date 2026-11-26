@@ -69,7 +69,7 @@ export function createGame({ mount, registry = createWorldRegistry(), initialPro
     };
 
     const host = createWorldHost({
-      registry, controls, ui, assets, audio, progress, player, camera,
+      registry, controls, ui, assets, audio, progress, player, camera, canvas,
       resolveTravel({ kind, entry }) {
         const snapshot = progress.read();
         if (kind === 'enterNext' && entry.id === 'overworld') {

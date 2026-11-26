@@ -2,24 +2,20 @@ import {
   CylinderGeometry, Group, LatheGeometry, Mesh, MeshStandardMaterial, Vector2,
 } from 'three';
 
-export function createCookingPot({ base, height, rim }) {
-  const width = 0.25 + base * 0.17;
-  const lip = 0.35 + rim * 0.14;
-  const depth = 0.32 + height * 0.24;
-  const profile = [
-    [0, 0], [width * 0.83, 0], [width, 0.04], [Math.max(width, lip) * 1.06, depth * 0.48],
-    [lip, depth * 0.93], [lip + 0.035, depth], [lip - 0.028, depth],
-    [lip - 0.044, depth * 0.9], [width * 0.82, 0.065], [0, 0.065],
-  ].map(([x, y]) => new Vector2(x, y));
+import { potDimensions, potGeometry } from './pot.js';
+
+export function createCookingPot(shape) {
+  const { lip, top } = potDimensions(shape);
   const root = new Group();
-  const clay = new Mesh(new LatheGeometry(profile, 32), new MeshStandardMaterial({
+  const clay = new Mesh(potGeometry(shape), new MeshStandardMaterial({
     color: 0x9f6454, roughness: 0.62,
   }));
-  const liquid = new Mesh(new CylinderGeometry(lip - 0.052, lip - 0.052, 0.02, 32),
+  const radius = lip - 0.008;
+  const liquid = new Mesh(new CylinderGeometry(radius, radius, 0.016, 36),
     new MeshStandardMaterial({ color: 0x70b9d2, roughness: 0.28 }));
-  liquid.position.y = depth * 0.85;
+  liquid.position.y = top * 0.88;
   root.add(clay, liquid);
-  return { root, liquid, radius: lip - 0.052 };
+  return { root, liquid, radius };
 }
 
 export function createSoupBowl() {
