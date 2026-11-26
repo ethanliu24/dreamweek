@@ -42,7 +42,8 @@ export function createBoardPreview({ mount }) {
 
   const loop = createLoop({
     update() {},
-    render() {
+    render(elapsed) {
+      board.animateFlow(elapsed);
       const { eye, lookAt } = board.frame(display.camera);
       display.camera.position.copy(eye);
       display.camera.lookAt(lookAt);

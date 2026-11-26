@@ -34,7 +34,7 @@ export const wakeThoughts = {
   OVERWORLD_EARTH_RETURN: 'Now I need some water to fill this pot.',
   OVERWORLD_WATER_RETURN: 'Now I need some firewood to get this going.',
   OVERWORLD_WOOD_RETURN: "The fire's ready. Now I just need something to stir it with.",
-  OVERWORLD_METAL_RETURN: "A sword... well, I suppose that'll work.",
+  OVERWORLD_METAL_RETURN: "A sword... well, I suppose it'll have its use somewhere.",
   OVERWORLD_MOON_RETURN: "That's everything. Time to finish the soup.",
 };
 

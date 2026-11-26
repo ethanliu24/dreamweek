@@ -46,7 +46,7 @@ export function createPipeBoard() {
   const copper = new MeshStandardMaterial({ color: 0x91634f, metalness: 0.46, roughness: 0.4 });
   const collarMetal = new MeshStandardMaterial({ color: 0xc29474, metalness: 0.4, roughness: 0.35 });
   const energy = new MeshStandardMaterial({
-    color: 0x54dbcb, emissive: 0x54dbcb, emissiveIntensity: 0.65, roughness: 0.35,
+    color: 0xffd265, emissive: 0xffa92f, emissiveIntensity: 0.65, metalness: 0.22, roughness: 0.22,
   });
   const straight = new LineCurve3(new Vector3(-0.5, 0, 0), new Vector3(0.5, 0, 0));
   const elbow = new CubicBezierCurve3(new Vector3(0, 0.5, 0), new Vector3(0, 0.224, 0),
@@ -117,6 +117,8 @@ export function createPipeBoard() {
 
   return {
     root,
+    outletPoint: () => outlet.getWorldPosition(new Vector3()),
+    animateFlow(time) { energy.emissiveIntensity = 0.72 + Math.sin(time * 8) * 0.13; },
     rotate,
     rotateAtPointer(event, canvas, camera) {
       const rect = canvas.getBoundingClientRect();

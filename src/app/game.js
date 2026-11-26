@@ -1,7 +1,7 @@
 import { createMixer } from '../audio/mixer.js';
 import { createCameraRig } from '../player/camera.js';
 import { createPlayer } from '../player/controller.js';
-import { createAssets } from '../runtime/assets.js';
+import { createAssets, disposeScene } from '../runtime/assets.js';
 import { createControls } from '../runtime/controls.js';
 import { createDisplay } from '../runtime/display.js';
 import { createInput } from '../runtime/input.js';
@@ -10,6 +10,7 @@ import { createWorldHost } from '../runtime/world-host.js';
 import { canReturn, createProgress, nextDream } from '../state/progress.js';
 import { createHud } from '../ui/hud/hud.js';
 import { createWorldRegistry } from '../worlds/registry.js';
+import { createSword } from '../shared/props/sword.js';
 import markup from './game.html?raw';
 import './game.css';
 
@@ -59,17 +60,25 @@ export function createGame({ mount, registry = createWorldRegistry(), initialPro
     const ui = createHud({ mount: stage, canvas, controls });
     const seed = import.meta.env.DEV ? initialProgress : undefined;
     const ledger = createProgress({ getActiveWorld: () => host.activeWorld, seed });
+    let sword;
+    function syncInventory(snapshot) {
+      ui.inventory(snapshot);
+      if (!sword && snapshot.items.includes('Sword')) {
+        sword = createSword();
+        player.setHeld(sword);
+      }
+    }
     const progress = {
       read: ledger.read,
       apply(command, payload) {
         const result = ledger.apply(command, payload);
-        if (result.changed) ui.inventory(result.snapshot);
+        if (result.changed) syncInventory(result.snapshot);
         return result;
       },
     };
 
     const host = createWorldHost({
-      registry, controls, ui, assets, audio, progress, player, camera, canvas,
+      registry, controls, ui, assets, audio, progress, player, camera, canvas, viewCamera: display.camera,
       resolveTravel({ kind, entry }) {
         const snapshot = progress.read();
         if (kind === 'enterNext' && entry.id === 'overworld') {
@@ -126,13 +135,14 @@ export function createGame({ mount, registry = createWorldRegistry(), initialPro
       ui.dispose();
       input.dispose();
       player.dispose();
+      if (sword) disposeScene(sword);
       audio.dispose();
       display.dispose();
     };
 
     void enableSound();
     const fresh = progress.read();
-    ui.inventory(fresh);
+    syncInventory(fresh);
     loop.resume();
     const spawn = firstWorld === 'overworld' && seed ? 'wake' : 'arrival';
     host.request({ id: firstWorld, spawn, progress: fresh });
