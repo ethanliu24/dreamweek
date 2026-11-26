@@ -39,8 +39,8 @@ function skyMaterial(clock) {
         float h=max(d.y,0.);
         vec2 uv=d.xz/max(.14,h+.19);
         float billow=clouds(uv*1.55+vec2(clock*.013,0.));
-        float cloud=smoothstep(.46,.69,billow)*smoothstep(.0,.13,h);
-        vec3 sky=mix(vec3(1.02,.55,.52),vec3(.15,.48,.76),smoothstep(-.025,.48,d.y));
+        float cloud=smoothstep(.54,.74,billow)*smoothstep(.0,.13,h);
+        vec3 sky=mix(vec3(.91,.43,.50),vec3(.065,.32,.68),smoothstep(-.045,.29,d.y));
         sky=mix(sky,mix(vec3(.88,.65,.72),vec3(1.6,1.31,1.06),smoothstep(.52,.72,billow)),cloud*.92);
         float sun=max(0.,dot(d,normalize(vec3(-.31,.26,-1.))));
         sky+=vec3(1.,.69,.4)*(pow(sun,12.)*.28+pow(sun,160.)*.7+smoothstep(.9986,.9994,sun)*1.8);
@@ -49,18 +49,21 @@ function skyMaterial(clock) {
   });
 }
 
-function sandstone(sand) {
+function sandstone(sand, clock) {
   return new ShaderMaterial({
-    vertexShader:vertex, uniforms:{ sand:{value:sand} },
-    fragmentShader:`varying vec3 world, face; uniform bool sand;
+    vertexShader:vertex, uniforms:{ sand:{value:sand}, clock },
+    fragmentShader:`varying vec3 world, face; uniform bool sand; uniform float clock;
       ${noise}
       void main() {
         vec2 p=world.xz;
         float grain=clouds(p*.38);
-        float bed=world.y+sin(world.x*.46+world.z*.19)*.48+grain*.48;
+        float bed=world.y+sin(world.x*.46+world.z*.19)*.48+grain*.62;
+        float bedding=noise2(vec2(world.x*.8+world.z*.45,bed*13.));
+        bed+=.13*bedding;
         float wave=sin(bed*5.2+sin(bed*1.6))*.5+.5;
         vec3 rock=mix(vec3(.21,.048,.077),vec3(.73,.25,.15),smoothstep(.12,.86,wave));
-        rock+=vec3(.32,.22,.16)*smoothstep(.88,.995,wave);
+        rock+=vec3(.22,.15,.10)*smoothstep(.88,.995,wave);
+        rock*=.86+.23*bedding+.07*noise2(p*17.);
         float ripple=sin(p.y*13.+p.x*3.4+3.*sin(p.x*.83)+grain*9.);
         vec3 dune=mix(vec3(.38,.145,.11),vec3(.88,.51,.31),grain)+ripple*.016;
         // A dusty rose wash settles along shallow wind-carved channels.
@@ -71,8 +74,14 @@ function sandstone(sand) {
         if(sand){
           float wheelShadow=exp(-dot(p,p)*1.9);
           col*=1.-.39*wheelShadow;
+          float seam=abs(abs(p.x + .32*sin(p.y*.8)) - (4.8+1.55*sin(.34*p.y)+1.3*(grain-.5)));
+          float filament=abs(seam-.21*sin(p.y*1.3+grain*4.));
+          float light=.55+.45*sin(p.y*.78-clock*.67);
+          col+=vec3(.46,.20,.31)*exp(-seam*3.8);
+          col+=vec3(1.4,.84,.61)*exp(-filament*38.)*light;
+          col*=.96+.08*noise2(p*32.);
         }
-        float fog=1.-exp(-pow(distance(world,cameraPosition)*.030,1.6));
+        float fog=1.-exp(-pow(distance(world,cameraPosition)*.023,1.6));
         gl_FragColor=vec4(mix(col,vec3(.68,.39,.46),fog),1.); ${output}
       }`,
   });
@@ -116,9 +125,17 @@ export function dressBasin(scene) {
     pos.setY(i,edge*edge*(1.2+1.05*Math.sin(x*.29+z*.17)+.83*Math.sin(z*.36-x*.09))-.012);
   }
   ground.computeVertexNormals();
-  place(ground,sandstone(true),0,0,0);
-  const rock=sandstone(false);
+  place(ground,sandstone(true, clock),0,0,0);
+  const rock=sandstone(false, clock);
   const mesa=new LatheGeometry([[0,0],[1,0],[.96,.15],[.7,.35],[.72,.4],[.47,.59],[.46,.72],[.35,.77],[.34,.96],[.27,1],[0,1]].map(([x,y])=>new Vector2(x,y)),32);
+  const ledges=mesa.attributes.position;
+  for(let i=0;i<ledges.count;i++){
+    const x=ledges.getX(i), y=ledges.getY(i), z=ledges.getZ(i);
+    const a=Math.atan2(z,x);
+    const worn=1+.14*Math.sin(3*a+.7*y)+.10*Math.cos(5*a-1.2*y);
+    ledges.setXYZ(i,x*worn+.2*y,y+.04*y*Math.sin(x*3+z*2),z*worn);
+  }
+  mesa.computeVertexNormals();
   for(let i=0;i<28;i++){
     const a=i*2.39996, r=22+(i%4)*7;
     const mesh=place(mesa,rock,Math.cos(a)*r,-1.6,Math.sin(a)*r,4+i%5,3.4+5.2*(.5+.5*Math.cos(i*1.6)),4+i%3);
@@ -129,10 +146,14 @@ export function dressBasin(scene) {
   const rings=arch.attributes.position;
   for(let i=0;i<rings.count;i++){
     const x=rings.getX(i),y=rings.getY(i),z=rings.getZ(i);
-    rings.setXYZ(i,x+.20*y+.085*Math.sin(y*4.),y+.10*Math.sin(x*3.),z+.19*x*y);
+    const angle=Math.atan2(y,x);
+    const width=.92+.28*Math.sin(3*angle+.4)+.15*Math.cos(7*angle);
+    const dx=x-Math.cos(angle), dy=y-Math.sin(angle);
+    rings.setXYZ(i,Math.cos(angle)+dx*width+.23*y+.085*Math.sin(y*4.),
+      Math.sin(angle)+dy*width+.12*Math.sin(x*3.),z*width+.22*x*y);
   }
   arch.computeVertexNormals();
-  place(arch,rock,-3.8,.3,-13,5.2,5.8,4.3).rotation.y=-.23;
+  place(arch,rock,-4.6,-.46,-15.5,5.9,5.6,4.3).rotation.y=-.23;
   place(arch,rock,11,.2,-22,4,7.8,3.9).rotation.y=.64;
 
   const quartz=new LatheGeometry([[0,-.53],[.21,-.19],[.24,.31],[.16,.48],[0,.83]].map(([x,y])=>new Vector2(x,y)),6).toNonIndexed();
@@ -145,9 +166,11 @@ export function dressBasin(scene) {
       float rim=pow(1.-abs(dot(n,eye)),2.);
       float facet=dot(n,normalize(vec3(-.42,.63,.66)));
       float veil=.5+.5*sin(world.y*5.8+world.x*2.+facet*5.+clock*.34);
-      vec3 c=mix(vec3(.23,.12,.54),vec3(.48,.86,1.17),smoothstep(-.45,.75,facet));
+      vec3 c=mix(vec3(.095,.035,.33),vec3(.36,.74,1.10),smoothstep(-.45,.75,facet));
       c=mix(c,vec3(1.18,.47,.79),veil*.43)+rim*vec3(.59,.79,1.);
       c+=vec3(.74,.83,1.)*smoothstep(.84,.99,veil)*.43;
+      vec3 lightDirection=normalize(mat3(viewMatrix)*vec3(-.51,.76,-.40));
+      c+=vec3(2.1,1.65,1.34)*pow(max(dot(reflect(-lightDirection,n),eye),0.),28.);
       gl_FragColor=vec4(c,1.); ${output}
     }`,
   });

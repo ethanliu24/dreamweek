@@ -15,8 +15,8 @@ const STAGES = [
 export function createWheel({ canvas, controls, camera, onFinish, onShape }) {
   const root = new Group();
   const turntable = new Group();
-  const stone = new MeshStandardMaterial({ color: 0xa97768, roughness: 0.86 });
-  const groove = new MeshStandardMaterial({ color: 0x764f48, roughness: 0.88 });
+  const stone = new MeshStandardMaterial({ color: 0x906462, roughness: 0.64 });
+  const groove = new MeshStandardMaterial({ color: 0xedb78a, roughness: 0.32, metalness: 0.43 });
   const pedestal = new Mesh(new CylinderGeometry(0.34, 0.49, 0.55, 28), stone);
   pedestal.position.y = 0.275;
   const disk = new Mesh(new CylinderGeometry(DISK_RADIUS, 0.56, 0.10, 40), stone);

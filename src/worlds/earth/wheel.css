@@ -1,6 +1,10 @@
+.earth-wheel-controls {
+  overflow-y: hidden;
+}
+
 .earth-wheel-controls [data-continue] {
   height: fit-content;
-  min-height: 3rem;
+  min-height: 4rem;
   padding: 0.35rem 0.75rem;
   color: inherit;
   font-family: inherit;
