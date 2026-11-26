@@ -53,7 +53,7 @@ Read the [root instructions](../../../AGENTS.md) once. Each card lists its addit
 **Files in scope** `src/worlds/metal/board.js`, `src/worlds/metal/layout.js`, `src/dev/board-preview.js`
 **Interfaces** puzzle camera, pointer, connectedPath()
 
-**Requirements** Number rows/columns from 1. Source enters (2,1) from west. Solution follows (2,1)→(2,2)→(1,2)→(1,3)→(2,3)→(3,3)→(3,4)→(3,5)→east outlet. Give each occupied cell its required opposing or adjacent ports, scramble by fixed quarter turns; add detached decoys at (4,1),(4,5). Leave other cells empty. Traverse reciprocal ports with a visited set and require the correct exit side.
+**Requirements** Use a fixed 10 × 10 grid and number rows and columns from 1. The source enters (4,1) from west and the outlet leaves (9,10) to the east. The route runs through (4,3), (2,3), (2,6), (5,6), (5,4), (8,4), (8,7), (6,7), (6,9), and (9,9) in order, following each straight run between turns. Scramble the straight and elbow pieces by fixed quarter turns. Include decoys and empty cells. Traverse reciprocal ports with a visited set and require the correct exit side.
 
 **Acceptance** A full path returns ordered cells. Adjacent mismatched ports, a disconnected loop or an empty click cannot solve it.
 **Verify** In QA board rotate pieces 90° per click; align all except last, then connect it. Resize and check every cell is visible.

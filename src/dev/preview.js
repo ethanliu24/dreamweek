@@ -7,6 +7,8 @@ import { createLoop } from '../runtime/loop.js';
 import { createWorldHost } from '../runtime/world-host.js';
 import { createWorldRegistry } from '../worlds/registry.js';
 import { createAudioPreview } from './audio-preview.js';
+import { createBoardPreview } from './board-preview.js';
+
 import { createHubPreview } from './hub-preview.js';
 import { createInputPreview } from './input-preview.js';
 import { createProgressPreview } from './progress-preview.js';
@@ -22,6 +24,8 @@ const PREVIEWS = {
   progression: createProgressPreview,
   dialogue: createUiPreview,
   audio: createAudioPreview,
+  'metal-board': createBoardPreview,
+
   'round-trip': createRoundTripPreview,
   'earth-arrival': ({ mount }) => createGame({ mount, initialWorld: 'earth',
     initialProgress: { completed: ['fire'], items: ['Candle'] } }),
@@ -224,6 +228,8 @@ export function mountPreview({ mount }) {
         <option value="earth-arrival">Earth arrival</option>
         <option value="water-arrival">Water arrival</option>
         <option value="wood-arrival">Wood arrival</option>
+        <option value="metal-board">Metal pipe board</option>
+
         <option value="hub-water">Hub after Water</option>
         <option value="hub-wood">Hub after Wood</option>
         <option value="hub-metal">Hub after Metal</option>

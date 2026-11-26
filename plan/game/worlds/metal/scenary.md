@@ -50,7 +50,7 @@ Most pipes are environmental decoration. The main puzzle is a specific section o
 #### Pipe Puzzle Wall
 
 - A flat, clearly visible stone wall section.
-- Contains a fixed 4-row × 5-column grid of pipe pieces.
+- Contains a fixed 10-row × 10-column grid of pipe pieces.
 - The grid is integrated into the ancient architecture.
 - The starting point and endpoint are visually distinguishable.
 - Pipe pieces should be large enough to see and interact with comfortably.
@@ -98,7 +98,7 @@ Keep the area sufficiently illuminated for gameplay and navigation.
 - Use one main cavern chamber.
 - Avoid creating multiple underground rooms or an elaborate dungeon.
 - The forge should be the main visual focal point.
-- Keep the playable pipe puzzle to one 4 × 5 grid.
+- Keep the playable pipe puzzle to one 10 × 10 grid.
 - Larger pipes are environmental decoration, not additional puzzles.
 - Avoid steampunk elements such as excessive gears, machinery, gauges, and industrial equipment.
 - Magical effects should be simple and atmospheric rather than complicated simulations.
@@ -106,6 +106,6 @@ Keep the area sufficiently illuminated for gameplay and navigation.
 
 ## Production specification
 
-**Essential.** Place a stepped dark-stone forge at the end of a compact chamber under a high ribbed cavern roof. Put Clink and the Sword plinth in front of the furnace, puzzle on the adjoining wall angled into the arrival view. A 5-unit-wide inset holds five columns and four rows; each cell is square. Straight pieces use tubes, elbows use quarter-annulus sweeps, each with two matching collars. Empty recesses are matte. Raised source has a pulsing droplet and sink a flared mouth. Decorative trunk pipes enter and exit at those sockets. Puzzle shot square to the wall with ≥10% margin on every side. Use #303746 stone, #91634F aged copper, #54DBCB flow stripe. On solution a single front of light follows the actual connected path outward to the furnace. The crucible then changes from dim to amber and lights the Sword stand. Sword has a tapered silver blade 0.85 units long, small curved guard and dark grip; keep its slim outline legible against a matte backdrop.
+**Essential.** Place a stepped dark-stone forge at the end of a compact chamber under a high ribbed cavern roof. Put Clink and the Sword plinth in front of the furnace, puzzle on the adjoining wall angled into the arrival view. A 5-unit-wide inset holds ten columns and ten rows; each cell is square. Straight pieces use tubes, elbows use quarter-annulus sweeps, each with two matching collars. Empty recesses are matte. Raised source has a pulsing droplet and sink a flared mouth. Decorative trunk pipes enter and exit at those sockets. Puzzle shot square to the wall with ≥10% margin on every side. Use #303746 stone, #91634F aged copper, #54DBCB flow stripe. On solution a single front of light follows the actual connected path outward to the furnace. The crucible then changes from dim to amber and lights the Sword stand. Sword has a tapered silver blade 0.85 units long, small curved guard and dark grip; keep its slim outline legible against a matte backdrop.
 
 **Secondary polish.** A broad cool highlight curves around bronze pipe collars, engravings catch furnace light as it wakes. **Optional.** A few high stalactites and scattered sparks confined to the crucible. See [cavern depth](references/scenary/scenary_3.png) and [blade profile](references/items/shiny_sword.jpeg).

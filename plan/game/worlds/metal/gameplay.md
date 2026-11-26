@@ -30,7 +30,7 @@ Reconnect the magical pipes to restore the ancient forge.
 
 ### 3. Solve the Puzzle
 
-The puzzle uses a fixed **4-row × 5-column grid** containing pipe segments.
+The puzzle uses a fixed **10-row × 10-column grid** containing pipe segments.
 
 - Each occupied cell contains a pipe piece.
 - Some cells are intentionally empty.
@@ -87,7 +87,7 @@ However, the actual puzzle is a compact, readable grid.
 
 ## Puzzle Rules
 
-- Grid dimensions: 4 rows × 5 columns.
+- Grid dimensions: 10 rows × 10 columns.
 - Pipe pieces occupy fixed cells.
 - Empty cells are allowed.
 - Pieces can only rotate in 90-degree increments.
@@ -112,4 +112,4 @@ The Sword serves two purposes:
 ## Constraints
 
 - Keep the puzzle to one wall-mounted grid.
-- Use a fixed 4 × 5
+- Use a fixed 10 × 10
