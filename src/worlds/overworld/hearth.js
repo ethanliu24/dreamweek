@@ -1,9 +1,11 @@
 import {
-  BoxGeometry, CylinderGeometry, Group, Mesh, MeshStandardMaterial, PointLight,
-  SphereGeometry, TorusGeometry, Vector3,
+  CylinderGeometry, Group, Mesh, MeshBasicMaterial, MeshStandardMaterial, PointLight, SphereGeometry, Vector3,
 } from 'three';
 import { createWizard, WIZARD_COLLAPSE_ANGLE } from '../../shared/actors/wizard.js';
 import { createCookingPot, createSoupBowl } from '../../shared/props/cooking.js';
+import { createEssence } from '../../shared/props/essence.js';
+import { flameGeometry } from '../../shared/props/flame.js';
+import { createSword } from '../../shared/props/sword.js';
 import { nextStationAction } from '../../state/progress.js';
 
 const LABELS = {
@@ -37,15 +39,35 @@ export function createHearthStation({ scene, hearth, progress, interactions, con
   const fire = new Group();
   hearth.add(wood, fire);
   const log = new CylinderGeometry(0.067, 0.08, 0.64, 9);
-  const flame = new SphereGeometry(1, 12, 8);
   for (let i = 0; i < 4; i++) {
     const piece = mesh(wood, log, i % 2 ? 0x8b5942 : 0x6c4537, 0, 0.13 + i * 0.045, 0);
     piece.rotation.set(Math.PI / 2, 0, i * 0.79);
-    const tongue = mesh(fire, flame, i % 2 ? 0xffc267 : 0xfa6d42, (i - 1.5) * 0.11, 0.29, 0, {
-      emissive: i % 2 ? 0xff8c37 : 0xd53c22, emissiveIntensity: 1.2,
-    });
-    tongue.scale.set(0.098, 0.19, 0.11);
   }
+
+  const flame = flameGeometry();
+  const tongues = [
+    [-0.16, 0.02, 0.089, 0.29], [0.13, -0.07, 0.081, 0.31],
+    [0, -0.05, 0.11, 0.35], [0.04, 0.105, 0.086, 0.25], [-0.07, 0.055, 0.052, 0.21],
+  ].map(([x, z, width, height], i) => {
+    const outer = mesh(fire, flame, 0xff842b, x, 0.235, z, {
+      emissive: i % 2 ? 0xff6421 : 0xf13f10, emissiveIntensity: 1.35,
+    });
+    outer.scale.set(width, height, width);
+    outer.rotation.y = i * 2.4;
+    const core = mesh(fire, flame, 0xffdfa0, x * 0.85, 0.24, z + 0.028, {
+      emissive: 0xffad43, emissiveIntensity: 2,
+    });
+    core.scale.set(width * 0.53, height * 0.66, width * 0.57);
+    return { outer, core, height };
+  });
+
+  const emberGeometry = new SphereGeometry(0.013, 6, 4);
+  const emberMaterial = new MeshBasicMaterial({ color: 0xffae54, toneMapped: false });
+  const embers = Array.from({ length: 9 }, () => {
+    const ember = new Mesh(emberGeometry, emberMaterial);
+    fire.add(ember);
+    return ember;
+  });
   const glow = new PointLight(0xff8f48, 3.3, 4);
   glow.position.y = 0.48;
   fire.add(glow);
@@ -53,18 +75,18 @@ export function createHearthStation({ scene, hearth, progress, interactions, con
   const bowl = createSoupBowl();
   hearth.add(bowl);
   bowl.position.set(0.85, 0.24, 0.25);
-  const sword = new Group();
-  mesh(sword, new BoxGeometry(0.076, 0.52, 0.025), 0xc0d5de, 0, 0.26, 0);
-  mesh(sword, new BoxGeometry(0.22, 0.045, 0.048), 0xd8ad64, 0, 0.53, 0);
-  mesh(sword, new CylinderGeometry(0.027, 0.032, 0.17, 8), 0x573b48, 0, 0.62, 0);
+  const sword = createSword();
+  sword.scale.setScalar(0.62);
   hearth.add(sword);
 
   const bubbles = new Group();
   hearth.add(bubbles);
   for (let i = 0; i < 7; i++) mesh(bubbles, new SphereGeometry(0.032, 8, 6), 0xffe4ba, 0, 0, 0);
-  const essenceRing = new TorusGeometry(0.22, 0.022, 6, 32);
-  const sun = mesh(hearth, essenceRing, 0xffce62, 0, 0, 0, { emissive: 0xffa844, emissiveIntensity: 0.8 });
-  const moon = mesh(hearth, essenceRing, 0xc5a2ef, 0, 0, 0, { emissive: 0x9b76da, emissiveIntensity: 0.75 });
+  const sun = createEssence('sun');
+  const moon = createEssence('moon');
+  sun.root.scale.setScalar(0.43);
+  moon.root.scale.setScalar(0.39);
+  hearth.add(sun.root, moon.root);
 
   let pot;
   let remaining = 0;
@@ -84,8 +106,8 @@ export function createHearthStation({ scene, hearth, progress, interactions, con
     wood.visible = !['empty', 'potPlaced'].includes(phase);
     fire.visible = lit;
     bubbles.visible = lit && phase !== 'lit' && phase !== 'served';
-    sun.visible = golden || phase === 'moonAdded';
-    moon.visible = phase === 'moonAdded';
+    sun.root.visible = golden || phase === 'moonAdded';
+    moon.root.visible = phase === 'moonAdded';
     sword.visible = phase === 'stirred' && remaining > 0;
     bowl.visible = phase === 'stirred' || snapshot.wizard === 'fed';
     if (snapshot.wizard === 'fed') bowl.position.copy(wizardPoint).sub(point).add(new Vector3(0, 0.11, 0.42));
@@ -123,7 +145,20 @@ export function createHearthStation({ scene, hearth, progress, interactions, con
     },
     present(time) {
       if (fire.visible) {
-        for (let i = 0; i < 4; i++) fire.children[i].scale.y = 0.16 + Math.sin(time * 11 + i * 2) * 0.045;
+        for (const [i, { outer, core, height }] of tongues.entries()) {
+          const phase = time * (8 + i * 0.71) + i * 2.4;
+          outer.scale.y = height * (1 + Math.sin(phase) * 0.13);
+          outer.rotation.z = Math.sin(phase * 0.7) * 0.16;
+          core.scale.y = outer.scale.y * 0.66;
+          core.rotation.z = outer.rotation.z;
+        }
+        for (const [i, ember] of embers.entries()) {
+          const age = (time * (0.62 + (i % 3) * 0.18) + i / embers.length) % 1;
+          const angle = i * 2.4 + age * 1.3;
+          const radius = 0.09 + age * 0.29;
+          ember.position.set(Math.cos(angle) * radius, 0.31 + age * 0.37, Math.sin(angle) * radius);
+          ember.scale.setScalar(Math.sin(Math.PI * age) * (0.55 + (i % 3) * 0.2));
+        }
         glow.intensity = 3.3 + Math.sin(time * 12) * 0.45;
       }
       if (!pot) return;
@@ -135,12 +170,12 @@ export function createHearthStation({ scene, hearth, progress, interactions, con
           Math.sin(angle) * pot.radius * 0.7);
         bubble.scale.setScalar(Math.sin(age * Math.PI));
       }
-      sun.position.y = surface + 0.065;
-      moon.position.y = surface + 0.085;
-      sun.rotation.set(-1.25, 0.14, time * 1.4);
-      moon.rotation.set(-1.9, -0.23, -time * 1.9);
-      sword.position.set(Math.cos(time * 12) * 0.16, surface - 0.17, Math.sin(time * 12) * 0.16);
-      sword.rotation.set(0.34, -time * 12, 0.24);
+      sun.root.position.set(moon.root.visible ? -0.12 : 0, surface + 0.10, 0);
+      moon.root.position.set(0.12, surface + 0.12, 0);
+      if (sun.root.visible) sun.animate(time);
+      if (moon.root.visible) moon.animate(time + 0.9);
+      sword.position.set(Math.cos(time * 12) * 0.16, surface + 0.30, Math.sin(time * 12) * 0.16);
+      sword.rotation.set(Math.PI + 0.34, -time * 12, 0.24);
     },
     exit() { releaseEnding?.(); },
   };

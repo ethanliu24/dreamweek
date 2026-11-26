@@ -1,24 +1,20 @@
 import {
-  DoubleSide, Group, IcosahedronGeometry, MathUtils, Mesh, MeshBasicMaterial,
-  RingGeometry, SphereGeometry, Vector3,
+  DoubleSide, Group, MathUtils, Mesh, MeshBasicMaterial,
+  RingGeometry, Vector3,
 } from 'three';
 import { WIZARD_COLLAPSE_ANGLE } from '../../shared/actors/wizard.js';
+import { createEssence } from '../../shared/props/essence.js';
 import { VOID_BOSS_END } from './lines.js';
 
 export function createFinish(scene, wizard, { camera, controls, interactions, player, progress, signal, travel, ui }, keepInside) {
-  const gold = new MeshBasicMaterial({ color: 0xffda67, toneMapped: false });
   const slash = new Mesh(new RingGeometry(0.95, 1.13, 32, 1, 0, Math.PI * 1.45),
     new MeshBasicMaterial({ color: 0xffdd70, transparent: true, side: DoubleSide, depthWrite: false, toneMapped: false }));
   const essences = new Group();
-  const sun = new Mesh(new IcosahedronGeometry(0.22, 1), gold);
-  const moon = new Mesh(new SphereGeometry(0.2, 16, 12), new MeshBasicMaterial({ color: 0xf2ecff }));
-  const halo = new Mesh(new RingGeometry(0.26, 0.29, 24),
-    new MeshBasicMaterial({ color: 0xb599f1, side: DoubleSide }));
-  halo.rotation.set(0.5, 0, 0.45);
-  moon.add(halo);
-  sun.position.x = -0.37;
-  moon.position.x = 0.37;
-  essences.add(sun, moon);
+  const sun = createEssence('sun');
+  const moon = createEssence('moon');
+  sun.root.position.x = -0.37;
+  moon.root.position.x = 0.37;
+  essences.add(sun.root, moon.root);
   slash.visible = essences.visible = false;
   scene.add(slash, essences);
 
@@ -111,8 +107,10 @@ export function createFinish(scene, wizard, { camera, controls, interactions, pl
         });
       } else if (phase === 'pickup') {
         essences.position.y = 0.72 + Math.sin(elapsed * 3) * 0.09;
-        sun.rotation.y = elapsed;
-        moon.rotation.y = -elapsed * 0.75;
+        sun.root.position.y = Math.sin(elapsed * 2.4) * 0.045;
+        moon.root.position.y = Math.sin(elapsed * 1.8 + 1.4) * 0.06;
+        sun.animate(elapsed);
+        moon.animate(elapsed + 0.9);
       } else if (phase === 'grab' && elapsed >= 0.34) {
         stopPose();
         if (progress.apply('bringWizardHome').changed) setPhase('return');
