@@ -12,7 +12,7 @@ One unit is the spirit's standing height. Keep the movement root at floor level,
 | Q | Activate manually when Void exposes the 5% finisher prompt. |
 | Primary pointer drag | Orbit follow camera in explore after 5 CSS pixels of movement. Releasing an orbit drag does not swing the sword. Puzzle mode uses primary press and drag for clay and pipes. Release pointer on blur or mode change. |
 
-Fire must permit walking back after any fall. Use a continuous floor beneath the full lantern path. Elsewhere constrain the island/arena edge to a defined playable inset, and teleport to safeSpawn if an invalid y slips through. Keep movement state and temporary held meshes separate from inventory. Clear vertical speed and reset camera smoothing on teleport.
+Fire must permit walking back after any fall. Use a continuous floor beneath the full lantern path. Elsewhere constrain the island/arena edge to a defined playable inset, and teleport to safeSpawn if an invalid y slips through. Keep movement state and temporary held meshes separate from session progression. Clear vertical speed and reset camera smoothing on teleport.
 
 createCameraRig(camera) exposes follow(player), shot({eye, lookAt, seconds}), releaseShot() and update(dt). Start 4.8 units back, 2.5 up at 48° vertical FOV, aimed 0.65 units above the root. Dragging right reduces yaw at 0.003 rad per pixel. Dragging down raises pitch at 0.0022 rad per pixel. Damp the eye at 7/s and the look target at 12/s on active dt. Limit pitch and shorten follow distance when scenery lies between focus and camera. Story/puzzle supply eye and target. Restore previous yaw after their lock. Frame Metal by grid bounds and aspect; Earth by wheel centre. Do not rotate the world to aim the camera.
 

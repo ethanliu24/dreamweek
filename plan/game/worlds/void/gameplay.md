@@ -45,7 +45,6 @@ After all minions are defeated:
 - A glowing golden-white orb appears in the arena.
 - The orb represents **Sun Essence**.
 - The player collects the orb.
-- Sun Essence is added to the player's inventory as a unique item.
 
 The encounter then transitions directly into the Grand Wizard boss fight.
 
@@ -119,15 +118,10 @@ After the Grand Wizard is defeated:
 - A glowing silver-white orb with purple and lavender light appears near him.
 - The orb represents **Moon Essence**.
 - The player collects the orb.
-- Moon Essence is added to the player's inventory as a unique item.
 
 The Moon Essence is separate from the actual Moon.
 
 The actual Moon remains inside the Grand Wizard and will only be released after he eats the completed soup in the Overworld.
-
-At this point, the player's inventory contains:
-- Sun Essence
-- Moon Essence
 
 ## 4. Bringing Back the Grand Wizard
 
@@ -156,19 +150,17 @@ Use the established circular black transition.
 
 The Attack and Ultimate actions use the bindings defined in the player controls.
 
-## 6. Inventory and Abilities
+## 6. Essences and Abilities
 
 ### Sun Essence
 
 - Unique golden-white glowing orb.
 - Collected after defeating the minion wave.
-- Added to inventory.
 
 ### Moon Essence
 
 - Unique silver-white glowing orb with purple and lavender highlights.
 - Collected after defeating the Grand Wizard.
-- Added to inventory.
 - Required for the final soup preparation.
 
 ### Ultimate Ability
@@ -188,7 +180,6 @@ The Attack and Ultimate actions use the bindings defined in the player controls.
 - Boss attacks apply only small knockback.
 - No player health system, death, or game-over state.
 - Void displays the Q prompt and accepts a fresh Q press only during the finisher phase at 5% boss health.
-- Sun Essence and Moon Essence are separate inventory items.
 - Keep the Frog Wizard unconscious after defeat.
 - Keep the return interaction short.
 - Avoid additional combat mechanics or stages.
@@ -205,6 +196,6 @@ The Attack and Ultimate actions use the bindings defined in the player controls.
 - The ultimate becomes available at 5% remaining boss health.
 - The ultimate defeats the Grand Wizard.
 - Moon Essence appears and can be collected.
-- Both essences are stored in the player's inventory.
+- Both essence pickups unlock the Wizard capture interaction.
 - The player can interact with the unconscious Grand Wizard using E.
 - The player and Grand Wizard return to the Overworld through the established transition.

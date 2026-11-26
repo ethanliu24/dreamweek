@@ -1,7 +1,6 @@
 const CHAPTERS = ['fire', 'earth', 'water', 'wood', 'metal', 'sun', 'moon'];
 const WORLDS = ['overworld', 'fire', 'earth', 'water', 'wood', 'metal', 'void'];
 
-const hasItem = (snapshot, item) => snapshot.items.includes(item);
 const completed = (snapshot, chapter) => snapshot.completed.includes(chapter);
 const nextChapter = snapshot => CHAPTERS.find(chapter => !completed(snapshot, chapter));
 
@@ -10,11 +9,11 @@ export function nextDream(snapshot) {
 
   switch (nextChapter(snapshot)) {
     case 'fire': return 'fire';
-    case 'earth': return hasItem(snapshot, 'Candle') ? 'earth' : null;
+    case 'earth': return completed(snapshot, 'fire') ? 'earth' : null;
     case 'water': return snapshot.pot.phase === 'empty' ? 'water' : null;
     case 'wood': return snapshot.hearth === 'potPlaced' ? 'wood' : null;
     case 'metal': return snapshot.hearth === 'lit' ? 'metal' : null;
-    case 'sun': return snapshot.hearth === 'boiled' && hasItem(snapshot, 'Sword') ? 'void' : null;
+    case 'sun': return snapshot.hearth === 'boiled' && completed(snapshot, 'metal') ? 'void' : null;
     default: return null;
   }
 }
@@ -33,38 +32,38 @@ const STATION_ACTIONS = {
   },
   potPlaced: {
     command: 'placeWood',
-    ready: s => completed(s, 'wood') && hasItem(s, 'Firewood'),
-    update: s => ({ hearth: 'woodPlaced', items: s.items.filter(item => item !== 'Firewood') }),
+    ready: s => completed(s, 'wood'),
+    update: () => ({ hearth: 'woodPlaced' }),
   },
   woodPlaced: {
     command: 'lightWood',
-    ready: s => hasItem(s, 'Candle'),
+    ready: s => completed(s, 'fire'),
     update: () => ({ hearth: 'lit' }),
   },
   boiled: {
     command: 'addSun',
-    ready: s => s.wizard === 'home' && hasItem(s, 'Sun Essence'),
-    update: s => ({ hearth: 'sunAdded', items: s.items.filter(item => item !== 'Sun Essence') }),
+    ready: s => s.wizard === 'home' && completed(s, 'sun'),
+    update: () => ({ hearth: 'sunAdded' }),
   },
   sunAdded: {
     command: 'addMoon',
-    ready: s => hasItem(s, 'Moon Essence'),
-    update: s => ({ hearth: 'moonAdded', items: s.items.filter(item => item !== 'Moon Essence') }),
+    ready: s => completed(s, 'moon'),
+    update: () => ({ hearth: 'moonAdded' }),
   },
   moonAdded: {
     command: 'stir',
-    ready: s => hasItem(s, 'Sword'),
+    ready: s => completed(s, 'metal'),
     update: () => ({ hearth: 'stirred' }),
   },
   stirred: {
     command: 'takeSoup',
     ready: () => true,
-    update: s => ({ hearth: 'served', items: [...s.items, 'Soup'] }),
+    update: () => ({ hearth: 'served' }),
   },
   served: {
     command: 'feed',
-    ready: s => s.wizard === 'home' && hasItem(s, 'Soup'),
-    update: s => ({ wizard: 'fed', ended: true, items: s.items.filter(item => item !== 'Soup') }),
+    ready: s => s.wizard === 'home',
+    update: () => ({ wizard: 'fed', ended: true }),
   },
 };
 
@@ -73,17 +72,8 @@ export function nextStationAction(snapshot) {
   return !snapshot.ended && action?.ready(snapshot) ? action.command : null;
 }
 
-export const INVENTORY_CAPACITY = 4;
-
-export function inventoryItems(snapshot) {
-  const items = [...snapshot.items];
-  if (snapshot.pot.phase === 'empty') items.push('Empty Pot');
-  if (snapshot.pot.phase === 'filled') items.push('Filled Pot');
-  return items;
-}
-
-function finishChapter(snapshot, chapter, ...items) {
-  return { completed: [...snapshot.completed, chapter], items: [...snapshot.items, ...items] };
+function finishChapter(snapshot, chapter) {
+  return { completed: [...snapshot.completed, chapter] };
 }
 
 // The owning world checks the local story or puzzle trigger before calling the ledger.
@@ -91,7 +81,7 @@ const DREAM_COMMANDS = {
   fire: {
     earnCandle(s) {
       if (nextDream(s) !== 'fire') return;
-      return finishChapter(s, 'fire', 'Candle');
+      return finishChapter(s, 'fire');
     },
   },
   earth: {
@@ -114,14 +104,14 @@ const DREAM_COMMANDS = {
   },
   wood: {
     helpMallow(s) {
-      if (nextDream(s) !== 'wood' || !hasItem(s, 'Candle')) return;
-      return finishChapter(s, 'wood', 'Firewood');
+      if (nextDream(s) !== 'wood' || !completed(s, 'fire')) return;
+      return finishChapter(s, 'wood');
     },
   },
   metal: {
     earnSword(s) {
       if (nextDream(s) !== 'metal') return;
-      return { ...finishChapter(s, 'metal', 'Sword'), hearth: 'boiled' };
+      return { ...finishChapter(s, 'metal'), hearth: 'boiled' };
     },
   },
   void: {
@@ -132,12 +122,12 @@ const DREAM_COMMANDS = {
     takeEssences(s) {
       if (s.wizard !== 'unconscious') return;
       if (nextDream(s) === 'void') {
-        return { completed: [...s.completed, 'sun', 'moon'], items: [...s.items, 'Sun Essence', 'Moon Essence'] };
+        return { completed: [...s.completed, 'sun', 'moon'] };
       }
-      if (nextChapter(s) === 'moon' && hasItem(s, 'Sun Essence')) return finishChapter(s, 'moon', 'Moon Essence');
+      if (nextChapter(s) === 'moon' && completed(s, 'sun')) return finishChapter(s, 'moon');
     },
     bringWizardHome(s) {
-      if (s.wizard !== 'unconscious' || !hasItem(s, 'Sun Essence') || !hasItem(s, 'Moon Essence')) return;
+      if (s.wizard !== 'unconscious' || !completed(s, 'sun') || !completed(s, 'moon')) return;
       return { wizard: 'home' };
     },
   },
@@ -146,7 +136,6 @@ const DREAM_COMMANDS = {
 function freezeSnapshot(snapshot) {
   // These arrays hold unique values and stay read-only and structured-cloneable for travel.
   Object.freeze(snapshot.completed);
-  Object.freeze(snapshot.items);
   Object.freeze(snapshot.pot.shape);
   Object.freeze(snapshot.pot);
   Object.freeze(snapshot.thoughtsSeen);
@@ -156,7 +145,6 @@ function freezeSnapshot(snapshot) {
 export function createProgress({ getActiveWorld = () => null, seed } = {}) {
   let snapshot = freezeSnapshot({
     completed: [],
-    items: [],
     pot: { phase: 'absent', shape: null },
     hearth: 'empty',
     wizard: 'distant',
@@ -193,7 +181,6 @@ export function createProgress({ getActiveWorld = () => null, seed } = {}) {
       const update = typeof command === 'string' && commandUpdate(command, payload);
       if (!update) return { changed: false, snapshot };
       const next = { ...snapshot, ...update };
-      if (inventoryItems(next).length > INVENTORY_CAPACITY) return { changed: false, snapshot };
       snapshot = freezeSnapshot(next);
       return { changed: true, snapshot };
     },

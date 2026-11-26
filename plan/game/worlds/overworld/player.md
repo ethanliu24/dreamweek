@@ -40,7 +40,7 @@ The protagonist moves by floating rather than walking.
 - **Interaction:** Uses its small arms to interact with objects.
 - **Looking:** Slightly tilts its body when observing something.
 - **Blinking:** Occasional simple eye blinks.
-- **Carrying:** Can hold objects with its small arms when needed. Carries up to four inventory items.
+- **Carrying:** Can hold objects with its small arms when needed.
 - **Attack:** Only possible when obtained the sword from metal world. Holds on one arm and swings on left click.
 
 Animations should be subtle, smooth, and reusable across all worlds.
@@ -68,16 +68,6 @@ The protagonist can:
 | E | Interact |
 | Left click | Attack (when holding blade only) |
 | Left drag | Orbit the camera while exploring |
-
-## Inventory
-
-The protagonist has an inventory for storing collected items throughout the adventure.
-
-Collected items persist when travelling between dream worlds.
-
-Items do not need to be permanently attached to the character or represented by a physical backpack. Relevant objects can appear in the protagonist's hands during specific interactions.
-
-The top-right inventory shows four numbered slots. Press 1–4 to select an occupied slot. Press the same key again to put the item away.
 
 ## Character Direction
 

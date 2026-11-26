@@ -29,7 +29,7 @@ Read the [root instructions](../../../AGENTS.md) once. Each card lists its addit
 
 **Acceptance** Duplicate choices never count twice. Resolution retains the filled pot.
 **Verify** Try confronting early, then choose clues in two different orders on separate runs.
-**Out of scope** Branching mystery or clue inventory slots.
+**Out of scope** Branching mystery.
 **Model** General · medium
 
 ## WM3 · Light Mallow’s prepared fire

@@ -1,7 +1,6 @@
 import { createDialogue } from '../dialogue/dialogue.js';
 import { createGuidance } from '../guidance/guidance.js';
 import { createIris } from '../iris/iris.js';
-import { createInventory } from '../inventory/inventory.js';
 import markup from './hud.html?raw';
 import './hud.css';
 
@@ -18,7 +17,6 @@ export function createHud({ mount, canvas, controls }) {
   const guidanceLayer = content.lastElementChild;
   const plate = content.querySelector('[data-plate]');
   const image = plate.querySelector('img');
-  const inventory = createInventory({ mount: content, canvas, controls });
   const wasInert = canvas.inert;
   let covered = false;
 
@@ -27,7 +25,6 @@ export function createHud({ mount, canvas, controls }) {
     controls,
     onVisibility(visible) {
       guidanceLayer.hidden = visible;
-      inventory.setInert(visible);
       canvas.inert = covered || visible;
     },
   });
@@ -72,14 +69,11 @@ export function createHud({ mount, canvas, controls }) {
     plate: showPlate,
     iris,
     showLoadError: iris.showLoadError,
-    inventory: inventory.update,
-    selectedItem: inventory.selectedItem,
     clearWorld,
     dispose() {
       clearWorld();
       iris.dispose();
       guidance.dispose();
-      inventory.dispose();
       overlay.remove();
       canvas.inert = wasInert;
     },

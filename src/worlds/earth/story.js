@@ -25,7 +25,7 @@ export function createPotStory({ wheel, ring, scene, camera, controls, interacti
   const ringColor = ring.material.color.clone();
   ring.material.color.setHex(0x9d7a40);
   const complete = () => canReturn('earth', progress.read());
-  const hasCandle = () => progress.read().items.includes('Candle');
+  const hasCandle = () => progress.read().completed.includes('fire');
   const color = new Color();
   const unregister = [];
   let phase = 'empty';

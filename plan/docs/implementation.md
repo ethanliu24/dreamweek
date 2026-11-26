@@ -10,7 +10,7 @@ Start from the Vite shell. Deliver a complete playable week with readable proced
 | Boot, timing, input, mode ownership, animation | [Runtime](architecture/runtime.md) |
 | Register, enter, retry or leave a location | [World lifecycle](architecture/world-lifecycle.md) |
 | Avatar movement, camera, proximity, strikes | [Player and interactions](architecture/player.md) |
-| Rewards, hammock gates, hearth or final capture | [Inventory and progression](architecture/progression.md) |
+| Rewards, hammock gates, hearth or final capture | [Progression](architecture/progression.md) |
 | Text, objectives, choices or iris | [UI and dialogue](architecture/ui.md) |
 | Audio cues, recordings, spatial playback or mixing | [Audio](architecture/audio.md) |
 | Resource budgets, loading or static deployment | [Assets and performance](architecture/assets.md) |

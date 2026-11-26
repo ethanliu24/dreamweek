@@ -42,7 +42,7 @@ Read the [root instructions](../../../AGENTS.md) once. Each card lists its addit
 **Requirements** On Q lock combat, play gold sword arc and collapse. Show gold Sun Essence and silver-lavender Moon Essence together. Keep the actual Moon in the belly. Press E to collect both, then E beside body for short grab, covered return and same model at hearth. Handle retry from each committed phase.
 
 **Acceptance** Early capture fails. Both essences reach hub once and the Wizard remains unconscious until feeding.
-**Verify** Collect both essences then move away, come back, hold E on capture and check hub inventory.
+**Verify** Collect both essences then move away, come back, hold E on capture and confirm the hub prompts you to add Sun Essence first.
 **Out of scope** Long dragging mechanic or Sun-to-hub transition.
 **Model** General · medium
 

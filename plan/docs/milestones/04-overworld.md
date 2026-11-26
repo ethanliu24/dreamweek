@@ -28,7 +28,7 @@ Read the [root instructions](../../../AGENTS.md) once. Each card lists its addit
 **Requirements** Use QA hub seeds after Water, Wood, Metal and Moon. Map each phase to visible props and exactly one valid E action, including both essences, stir, take and feed. Respect retained Candle/Sword. Model post-Metal boil.
 
 **Acceptance** No unplaced filled pot or unlit wood can be skipped by sleeping. Rapid E never consumes two stages.
-**Verify** Try hammock first at each gated arrival, then perform the station prompt and inspect hearth and inventory.
+**Verify** Try hammock first at each gated arrival, then perform the station prompt and inspect the hearth and next objective.
 **Out of scope** A timed soup minigame.
 **Model** General · medium
 
@@ -51,7 +51,7 @@ Read the [root instructions](../../../AGENTS.md) once. Each card lists its addit
 **How to test**
 
 1. Start a new game. Advance the intro and washing-machine lines, walk from the hammock to the empty hearth and look out over the island edge. Sleep and verify the iris closes fully.
-2. In `?qa` choose Hub after Water. Try the hammock before placing the pot. Place it and check it leaves your carried inventory. In Hub after Wood, place wood and light it separately.
+2. In `?qa` choose Hub after Water. Try the hammock before placing the pot. Place it and check that it appears on the hearth and unlocks Wood. In Hub after Wood, place wood and light it separately.
 3. Choose Hub after Moon. Add Sun, add Moon, stir, take the soup and feed the Wizard. Read the final lines and press movement keys. The restored Moon image should stay on screen.
 
 **Milestone passes when** the island provides the next objective, the hearth visibly tracks each manual action, and the ending stops play.

@@ -1,4 +1,4 @@
-import { canReturn, createProgress, inventoryItems, nextDream, nextStationAction } from '../state/progress.js';
+import { canReturn, createProgress, nextDream, nextStationAction } from '../state/progress.js';
 const panelMarkup = `
 <style>
 .progress-preview {
@@ -71,25 +71,6 @@ const panelMarkup = `
   overflow-wrap: anywhere;
 }
 
-.progress-preview [data-inventory] {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 0.4rem;
-  list-style: none;
-  padding: 0;
-}
-
-.progress-preview [data-inventory] li {
-  display: grid;
-  place-items: center;
-  min-height: 3.5rem;
-  padding: 0.25rem;
-  border: 1px solid #aec2de;
-  border-radius: 0.35rem;
-  text-align: center;
-  overflow-wrap: anywhere;
-}
-
 .progress-preview fieldset {
   display: flex;
   flex-wrap: wrap;
@@ -153,14 +134,6 @@ const panelMarkup = `
       <dt>Ended</dt><dd data-value="ended"></dd>
       <dt>Thoughts seen</dt><dd data-value="thoughts"></dd>
     </dl>
-
-    <h2>Inventory</h2>
-    <ol data-inventory>
-      <li></li>
-      <li></li>
-      <li></li>
-      <li></li>
-    </ol>
   </section>
 
   <section aria-labelledby="progress-commands-title">
@@ -232,7 +205,6 @@ export function createProgressPreview({ mount }) {
   const seed = panel.querySelector('[data-seed]');
   const activeWorld = panel.querySelector('[data-world-select]');
   const result = panel.querySelector('[data-result]');
-  const cells = [...panel.querySelectorAll('[data-inventory] li')];
   const fields = Object.fromEntries([...panel.querySelectorAll('[data-value]')].map(
     element => [element.dataset.value, element],
   ));
@@ -256,11 +228,6 @@ export function createProgressPreview({ mount }) {
       thoughts: list(snapshot.thoughtsSeen),
     };
     for (const [key, value] of Object.entries(values)) fields[key].textContent = value;
-
-    const items = inventoryItems(snapshot);
-    cells.forEach((cell, index) => {
-      cell.textContent = items[index] ?? 'Empty';
-    });
   }
 
   function loadSeed() {

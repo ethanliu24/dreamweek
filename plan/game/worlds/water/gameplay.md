@@ -123,7 +123,7 @@ Keep the evidence system simple:
 - Evidence can be presented in any order.
 - Once all three have been presented, the confession triggers.
 - Incorrect or unrelated choices produce humorous responses, not a restart.
-- No complex deduction system, inventory management, or branching investigation tree is required.
+- No complex deduction system, or branching investigation tree is required.
 
 See `dialogs.md` for dialogue and evidence responses.
 
@@ -193,7 +193,7 @@ Keep the investigation straightforward and inexpensive to implement.
 - No complex branching or deduction system.
 - No oxygen meter or underwater timer.
 - No combat or bubble physics.
-- No inventory management system beyond tracking the collected clues and progression rewards.
+- Track collected clues locally and commit progression rewards when the chapter resolves.
 
 The underwater environment should feel open enough to explore but small enough that players can find everything quickly.
 

@@ -4,7 +4,6 @@ import { createWorldHost } from '../runtime/world-host.js';
 import { createHud } from '../ui/hud/hud.js';
 
 const LONG_LINE = 'The light on the island looks close enough to touch, but every time I take a step toward it, the whole horizon seems to drift a little farther away. I think I’ll stay here a moment and watch the sky change before I decide where to go.';
-const INVENTORY_ITEMS = ['Candle', 'Sword', 'Sun Essence', 'Moon Essence'];
 const CHOICES = [
   { id: 'shell', label: 'The shell siren' },
   { id: 'whistle', label: 'The missing whistle' },
@@ -35,10 +34,7 @@ export function createUiPreview({ mount }) {
       <button type="button" data-action="think">Thought</button>
       <button type="button" data-action="choose">Choices</button>
       <button type="button" data-action="travel">Switch scene</button>
-      <button type="button" data-action="inventory" aria-pressed="false">Toggle full inventory</button>
     </p>
-    <p>Toggle full inventory, then press <kbd>1</kbd>–<kbd>4</kbd> to select a slot.</p>
-    <p data-selection role="status">Selected slot: None</p>
     <p data-status role="status">Opening scene…</p>
     <div data-stage style="position:relative;height:clamp(240px, 68vh, 650px)">
       <canvas tabindex="0" aria-label="Dialogue fixture scene"
@@ -50,8 +46,6 @@ export function createUiPreview({ mount }) {
   const canvas = fixture.querySelector('canvas');
   const stage = fixture.querySelector('[data-stage]');
   const status = fixture.querySelector('[data-status]');
-  const selection = fixture.querySelector('[data-selection]');
-  const inventoryToggle = fixture.querySelector('[data-action="inventory"]');
   const input = createInput(canvas);
   const controls = createControls(input);
   const ui = createHud({ mount: stage, canvas, controls });
@@ -80,22 +74,6 @@ export function createUiPreview({ mount }) {
     },
   });
 
-  let fullInventory = false;
-  function showSelection() {
-    const item = ui.selectedItem();
-    const text = item ? `Selected slot: ${INVENTORY_ITEMS.indexOf(item) + 1} · ${item}` : 'Selected slot: None';
-    if (selection.textContent !== text) selection.textContent = text;
-  }
-
-  function showInventory() {
-    ui.inventory({
-      items: fullInventory ? INVENTORY_ITEMS : [],
-      pot: { phase: 'placed' },
-    });
-    inventoryToggle.setAttribute('aria-pressed', String(fullInventory));
-    showSelection();
-  }
-
   function travel() {
     const id = current?.id === 'arrival' ? 'dusk' : 'arrival';
     if (host.request({ id, spawn: 'arrival' })) status.textContent = 'Switching scene…';
@@ -103,12 +81,6 @@ export function createUiPreview({ mount }) {
 
   function onClick(event) {
     const action = event.target.closest('[data-action]')?.dataset.action;
-    if (action === 'inventory') {
-      fullInventory = !fullInventory;
-      showInventory();
-      canvas.focus({ preventScroll: true });
-      return;
-    }
     if (action === 'travel') {
       travel();
       return;
@@ -135,8 +107,6 @@ export function createUiPreview({ mount }) {
   }
 
   fixture.addEventListener('click', onClick);
-  stage.addEventListener('keydown', showSelection);
-  stage.addEventListener('click', showSelection);
   host.request({ id: 'arrival', spawn: 'arrival' });
 
   return {

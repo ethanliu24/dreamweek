@@ -61,9 +61,8 @@ export function createGame({ mount, registry = createWorldRegistry(), initialPro
     const seed = import.meta.env.DEV ? initialProgress : undefined;
     const ledger = createProgress({ getActiveWorld: () => host.activeWorld, seed });
     let sword;
-    function syncInventory(snapshot) {
-      ui.inventory(snapshot);
-      if (!sword && snapshot.items.includes('Sword')) {
+    function equipEarnedSword(snapshot) {
+      if (!sword && snapshot.completed.includes('metal')) {
         sword = createSword();
         player.setHeld(sword);
       }
@@ -72,7 +71,7 @@ export function createGame({ mount, registry = createWorldRegistry(), initialPro
       read: ledger.read,
       apply(command, payload) {
         const result = ledger.apply(command, payload);
-        if (result.changed) syncInventory(result.snapshot);
+        if (result.changed) equipEarnedSword(result.snapshot);
         return result;
       },
     };
@@ -142,7 +141,7 @@ export function createGame({ mount, registry = createWorldRegistry(), initialPro
 
     void enableSound();
     const fresh = progress.read();
-    syncInventory(fresh);
+    equipEarnedSword(fresh);
     loop.resume();
     const spawn = firstWorld === 'overworld' && seed ? 'wake' : 'arrival';
     host.request({ id: firstWorld, spawn, progress: fresh });

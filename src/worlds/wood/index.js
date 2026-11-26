@@ -169,7 +169,7 @@ export function createWorld({ player, camera, controls, interactions, ui, signal
   const ring = createReturnRing(ARRIVAL);
   scene.add(mallow.root, ring);
   const finished = () => canReturn('wood', progress.read());
-  const hasCandle = () => progress.read().items.includes('Candle');
+  const hasCandle = () => progress.read().completed.includes('fire');
   const unregister = [];
   let phase = 'arrival';
   let releaseOpening;

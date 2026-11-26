@@ -11,7 +11,7 @@ Read the [root instructions](../../../AGENTS.md) once. Each card lists its addit
 **Files in scope** `src/state/progress.js`, `src/dev/progress-preview.js`  
 **Interfaces** read, apply, nextDream, canReturn, nextStationAction
 
-**Requirements** Implement the transaction table and derived inventory. QA panel offers named valid starting snapshots, active world and command buttons.
+**Requirements** Implement the transaction table. QA panel offers named valid starting snapshots, active world and command buttons.
 
 **Acceptance** Locked, repeated and out-of-order commands preserve state. Both essence pickups fit with all retained items.  
 **Verify** Step through water→potPlaced, woodPlaced→lit and the entire final sequence twice where possible.  
@@ -23,9 +23,9 @@ Read the [root instructions](../../../AGENTS.md) once. Each card lists its addit
 **Prerequisites** R3, P3  
 **Required reading** [architecture/ui.md](../architecture/ui.md), [Visual design](../visual-design.md)  
 **Files in scope** `src/ui/hud/`, `src/ui/dialogue/`, `src/ui/iris/`, `src/dev/ui-preview.js`\
-**Interfaces** say, choose, iris.close/open, inventory, clearWorld
+**Interfaces** say, choose, iris.close/open, clearWorld
 
-**Requirements** Add text, Thought, choices and a four-slot inventory view, focus handling and reduced motion. Wire host cover to iris. Include a long line, full inventory and delayed load fixture.
+**Requirements** Add text, Thought, choices, focus handling and reduced motion. Wire host cover to iris. Include a long line and delayed load fixture.
 
 **Acceptance** One press finishes the current reveal or advances one fully visible line; choices retain focus; the fully closed iris covers all corners on resize.\
 **Verify** Try keyboard and pointer, cancel a line by a QA scene switch and inspect delayed travel.  
@@ -56,7 +56,7 @@ Read the [root instructions](../../../AGENTS.md) once. Each card lists its addit
 **Requirements** Use dev hub and Fire fixtures to exercise sleep, one reward, an optional wait and manual return. Wire display, camera, UI and mixer to one host.
 
 **Acceptance** A held key cannot retrigger travel. Returning keeps the Candle and guidance points to Earth.  
-**Verify** Try locked return, take reward, wait, return and inspect inventory and next destination.  
+**Verify** Try locked return, take reward, wait, return and inspect chapter completion and next destination.
 **Out of scope** Finished hub art.  
 **Model** General · medium
 
@@ -64,8 +64,8 @@ Read the [root instructions](../../../AGENTS.md) once. Each card lists its addit
 
 **How to test**
 
-1. In `?qa` choose Round trip. Try to return before collecting the fixture reward. Collect it, stay for a moment, then use E at the ring. Confirm the top-right inventory shows exactly one Candle and the objective points to Earth.
-2. Choose Dialogue. Advance a line, select an option with the keyboard, resize while the iris is closed and check all four corners for leaks. Select occupied inventory slots with 1–4 and verify that empty slots leave the selection unchanged.
+1. In `?qa` choose Round trip. Try to return before collecting the fixture reward. Collect it, stay for a moment, then use E at the ring. Confirm Fire is complete in the progression preview and the objective points to Earth.
+2. Choose Dialogue. Advance a line, select an option with the keyboard, resize while the iris is closed and check all four corners for leaks.
 3. Choose Audio, press Start sound, audition a local sample and a synth, move around the emitter, then switch profiles twice. Turn music down and confirm effects still play. Try the missing cue and keep playing.
 
 **Milestone passes when** the round trip preserves progress, the interface responds once per action, and sound can transition, fail and recover without interrupting play.

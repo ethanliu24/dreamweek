@@ -91,7 +91,7 @@ Evaluate and establish the responsibility and boundaries of the following system
 - Player character and movement controller.
 - Camera controller.
 - Interaction detection and interaction prompts.
-- Inventory and persistent progression.
+- Persistent progression.
 - Dialogue and internal monologue.
 - UI and HUD.
 - Circular screen transitions.
@@ -146,14 +146,13 @@ Do not introduce a large universal framework, ECS, or event bus without demonstr
 
 The goal is to make it easy to implement a world independently without breaking another world.
 
-## 3.3 State, inventory, and progression
+## 3.3 State and progression
 
 Design how the game represents:
 
 - Collected items.
 - Abilities.
 - World completion.
-- Persistent inventory.
 - Dream entrance and return.
 - Cooking station state.
 - Sun and Moon Essences.
@@ -426,7 +425,7 @@ Use the following as a proposed structure. Adjust it after repository inspection
 │   │   ├── core-systems.md
 │   │   ├── world-lifecycle.md
 │   │   ├── player-and-interactions.md
-│   │   ├── inventory-and-progression.md
+│   │   ├── progression.md
 │   │   ├── ui-and-dialogue.md
 │   │   ├── audio.md
 │   │   └── assets-and-performance.md
@@ -532,7 +531,7 @@ Consider:
 2. Application and Three.js runtime.
 3. Player movement, camera, and controls.
 4. Interactions and world lifecycle.
-5. UI, dialogue, inventory, and transitions.
+5. UI, dialogue, and transitions.
 6. Audio foundation.
 7. Basic playable Overworld.
 8. Individual dream-world implementation.
@@ -593,7 +592,7 @@ Include:
 - Build verification.
 - Unit tests where genuinely useful.
 - World lifecycle checks.
-- Inventory and progression checks.
+- Progression checks.
 - Interaction checks.
 - Transition checks.
 - Audio cleanup checks.

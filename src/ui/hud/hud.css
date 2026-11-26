@@ -27,7 +27,7 @@
   object-fit: cover;
 }
 
-.dream-hud button:where(:not(.inventory-slot)) {
+.dream-hud button {
   min-height: 40px;
   max-width: 100%;
   padding: 0.35rem 0.75rem;
@@ -45,6 +45,6 @@
   outline-offset: 2px;
 }
 
-.dream-hud-content:has(> .dream-plate:not([hidden])) :is(.dream-inventory, .game-overlay) {
+.dream-hud-content:has(> .dream-plate:not([hidden])) .game-overlay {
   display: none;
 }

@@ -45,20 +45,18 @@ Use the same transition effect for entering and leaving dreams.
 
 The player is not automatically returned to the Overworld after completing a dream. They interact with the designated return point.
 
-## 2. Inventory and Progression
+## 2. Rewards and Progression
 
-Collected items remain in the player's inventory between dreams.
-
-Most rewards do not immediately change the Overworld. Items are kept until they are needed for the soup preparation.
+Chapter completion records which rewards the player has earned. The pot and hearth track preparation separately.
 
 | World | Reward | Overworld interaction |
 |---|---|---|
-| Fire | Candle | Keep in inventory |
-| Earth | Finished Pot | Keep in inventory |
+| Fire | Candle | Use to light the firewood |
+| Earth | Finished Pot | Take to Water to fill |
 | Water | Filled Pot | Manually place filled pot on cooking station |
 | Wood | Firewood | Place beneath pot and light using Candle |
-| Metal | Sword | Keep in inventory |
-| Sun | Sun Essence, ultimate ability | Keep essence in inventory |
+| Metal | Sword | Automatically equip for combat and stirring |
+| Sun | Sun Essence, ultimate ability | Use during final soup preparation |
 | Moon | Moon Essence | Use during final soup preparation |
 
 ### Important Item Behaviour
@@ -102,7 +100,7 @@ The fire introduces a warm glow to the cooking area.
 
 The player receives the Sword from Clink.
 
-It remains in the player's inventory until needed for the final soup preparation.
+The player automatically equips it for combat and later uses it to stir the soup.
 
 No immediate interaction with the cooking station is required.
 
@@ -144,8 +142,6 @@ There is no additional cooking minigame.
 - Use the hammock to enter dreams.
 - Use each dream's designated return point to leave.
 - Use the same circular black transition for both directions.
-- Keep inventory persistent across dreams.
 - Items should only be placed at the cooking station through deliberate player interactions.
-- Avoid introducing unnecessary inventory management or crafting mechanics.
 - Keep soup preparation to a small number of clear interactions.
 - No additional Overworld minigames or quests.

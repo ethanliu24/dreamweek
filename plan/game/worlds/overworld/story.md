@@ -177,4 +177,4 @@ The Moon's return signifies that Monday has been restored and the calendar is wh
 - Actual narration, dialogue, and internal monologue text belong in `dialogs.md`.
 - Individual dream-world stories belong in their respective world documents.
 - Story scenes do not necessarily correspond to separate Three.js scenes.
-- Dream entrance and return interactions, inventory, cooking station mechanics, and item progression are documented in `gameplay.md`.
+- Dream entrance and return interactions, cooking station mechanics, and item progression are documented in `gameplay.md`.

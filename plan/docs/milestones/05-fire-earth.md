@@ -56,7 +56,7 @@ Read the [root instructions](../../../AGENTS.md) once. Each card lists its addit
 **Requirements** Use the Candle at the wheel after shaping. Show hardening, enable collection, retain shape and Candle and unlock manual return. Consume the opening press only once.
 
 **Acceptance** A shaped wet pot cannot be carried out. The fired pot leaves Earth empty and the station in the hub stays empty.
-**Verify** Try the ring before firing, then collect and return. Inspect pot proportions in inventory/held view.
+**Verify** Try the ring before firing, then collect and return. Inspect pot proportions in the held view.
 **Out of scope** Firing in the hub.
 **Model** General · low
 
@@ -66,6 +66,6 @@ Read the [root instructions](../../../AGENTS.md) once. Each card lists its addit
 
 1. Start from the hub and enter Fire. Time the climb, miss a lantern on purpose and walk back. Reach Wick and carry him straight off the top. Wait after receiving the Candle, then use the yellow ring.
 2. Replay Fire through `?qa` and carry Wick down across several lanterns. He should stay in your arms until you reach the ground.
-3. Enter Earth with the Candle. Carry Bob to the wheel, make a broad base, tall walls and a narrow opening. Try to leave before firing. Use the Candle at the wheel, collect the pot, then use the ring. Look for the empty pot and Candle in inventory.
+3. Enter Earth with the Candle. Carry Bob to the wheel, make a broad base, tall walls and a narrow opening. Try to leave before firing. Use the Candle at the wheel, collect the pot, then use the ring. Confirm the collected pot is empty and the hammock leads to Water.
 
 **Milestone passes when** both descents resolve correctly, Earth accepts the three shaping gestures, and the hub offers Water only after the fired pot is collected.

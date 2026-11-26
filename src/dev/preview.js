@@ -18,7 +18,7 @@ import { createUiPreview } from './ui-preview.js';
 
 const SCENE_LABELS = { 'scene-a': 'Scene A', 'scene-b': 'Scene B' };
 const VOID_PROGRESS = {
-  completed: ['fire', 'earth', 'water', 'wood', 'metal'], items: ['Candle', 'Sword'], hearth: 'boiled',
+  completed: ['fire', 'earth', 'water', 'wood', 'metal'], hearth: 'boiled',
   pot: { phase: 'placed', shape: { base: 0.5, height: 0.62, rim: 0.66 } },
 };
 function createVoidPreview(mount, stage) {
@@ -42,7 +42,7 @@ const PREVIEWS = {
   audio: createAudioPreview,
   'metal-board': createBoardPreview,
   'metal-arrival': ({ mount }) => createGame({ mount, initialWorld: 'metal', initialProgress: {
-    completed: ['fire', 'earth', 'water', 'wood'], items: ['Candle'], hearth: 'lit',
+    completed: ['fire', 'earth', 'water', 'wood'], hearth: 'lit',
     pot: { phase: 'placed', shape: { base: 0.5, height: 0.62, rim: 0.66 } },
   } }),
   'void-arrival': ({ mount }) => createGame({ mount, initialWorld: 'void', initialProgress: VOID_PROGRESS }),
@@ -51,14 +51,14 @@ const PREVIEWS = {
 
   'round-trip': createRoundTripPreview,
   'earth-arrival': ({ mount }) => createGame({ mount, initialWorld: 'earth',
-    initialProgress: { completed: ['fire'], items: ['Candle'] } }),
+    initialProgress: { completed: ['fire'] } }),
   'fire-arrival': ({ mount }) => createGame({ mount, initialWorld: 'fire' }),
   'water-arrival': ({ mount }) => createGame({ mount, initialWorld: 'water', initialProgress: {
-    completed: ['fire', 'earth'], items: ['Candle'],
+    completed: ['fire', 'earth'],
     pot: { phase: 'empty', shape: { base: 0.5, height: 0.62, rim: 0.66 } },
   } }),
   'wood-arrival': ({ mount }) => createGame({ mount, initialWorld: 'wood', initialProgress: {
-    completed: ['fire', 'earth', 'water'], items: ['Candle'], hearth: 'potPlaced',
+    completed: ['fire', 'earth', 'water'], hearth: 'potPlaced',
     pot: { phase: 'placed', shape: { base: 0.5, height: 0.62, rim: 0.66 } },
   } }),
   'hub-water': ({ mount }) => createHubPreview({ mount, after: 'water' }),
