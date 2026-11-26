@@ -13,7 +13,8 @@ import { createWorldRegistry } from '../worlds/registry.js';
 import markup from './game.html?raw';
 import './game.css';
 
-export function createGame({ mount, registry = createWorldRegistry(), initialProgress }) {
+export function createGame({ mount, registry = createWorldRegistry(), initialProgress, initialWorld }) {
+  const firstWorld = import.meta.env.DEV ? initialWorld ?? 'overworld' : 'overworld';
   const shell = document.createElement('section');
   shell.innerHTML = markup;
   const menu = shell.querySelector('.dreamweek-menu');
@@ -28,8 +29,8 @@ export function createGame({ mount, registry = createWorldRegistry(), initialPro
 
   function start() {
     if (disposed || startButton.disabled) return;
-    if (!registry.has('overworld')) {
-      status.textContent = 'The Overworld is not available yet.';
+    if (!registry.has(firstWorld)) {
+      status.textContent = 'The starting world is not available yet.';
       return;
     }
 
@@ -133,7 +134,8 @@ export function createGame({ mount, registry = createWorldRegistry(), initialPro
     const fresh = progress.read();
     ui.inventory(fresh);
     loop.resume();
-    host.request({ id: 'overworld', spawn: seed ? 'wake' : 'arrival', progress: fresh });
+    const spawn = firstWorld === 'overworld' && seed ? 'wake' : 'arrival';
+    host.request({ id: firstWorld, spawn, progress: fresh });
   }
 
   startButton.addEventListener('click', start);

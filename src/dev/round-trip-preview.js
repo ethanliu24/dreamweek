@@ -1,4 +1,5 @@
 import { createGame } from '../app/game.js';
+import { createWorldRegistry } from '../worlds/registry.js';
 
 export function createRoundTripPreview({ mount }) {
   const fixture = document.createElement('section');
@@ -8,7 +9,8 @@ export function createRoundTripPreview({ mount }) {
     <div data-game></div>
   `;
   mount.replaceChildren(fixture);
-  const game = createGame({ mount: fixture.querySelector('[data-game]') });
+  const registry = createWorldRegistry({ fire: () => import('./fire-fixture.js') });
+  const game = createGame({ mount: fixture.querySelector('[data-game]'), registry });
   return {
     dispose() {
       game.dispose();
