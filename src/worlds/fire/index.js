@@ -8,13 +8,13 @@ const AUDIO = { cues: ['candle.chime'] };
 export function createWorld(context) {
   const { audio, camera, player } = context;
   const scenery = createScenery();
-  const { scene, platforms, walkBounds } = scenery;
+  const { scene, platforms, advancePlatforms, walkBounds } = scenery;
   const safeSpawn = new Vector3(0, 0, 3.6);
   const story = createFireStory({ ...context, ...scenery, summit: platforms.at(-1), safeSpawn });
 
   return {
     scene,
-    surfaces: { floorHeight: () => 0, platforms, walkBounds, safeSpawn },
+    surfaces: { floorHeight: () => 0, platforms, advancePlatforms, walkBounds, safeSpawn },
     prepare: signal => audio.prepare(AUDIO, signal),
     enter() {
       player.root.rotation.set(0, Math.PI, 0);

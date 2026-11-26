@@ -10,11 +10,15 @@ const STRIKE_END = 0.25;
 const KNOCKBACK_DAMPING = 14;
 const EPSILON = 1e-6;
 
+function withinPlatform(platform, x, z) {
+  return x >= platform.minX && x <= platform.maxX && z >= platform.minZ && z <= platform.maxZ;
+}
+
 function platformTop(platforms, x, z, fromY, toY) {
   let top = -Infinity;
   for (const platform of platforms) {
-    if (x >= platform.minX && x <= platform.maxX && z >= platform.minZ && z <= platform.maxZ &&
-        platform.y <= fromY + EPSILON && platform.y >= toY - EPSILON) {
+    if (withinPlatform(platform, x, z) &&
+        (platform.previousY ?? platform.y) <= fromY + EPSILON && platform.y >= toY - EPSILON) {
       top = Math.max(top, platform.y);
     }
   }
@@ -71,14 +75,23 @@ export function createPlayer() {
   }
 
   // Platforms are one-way tops { y, minX, maxX, minZ, maxZ }.
+  // Moving surfaces advance once per step and record previousY for landing checks.
   // walkBounds uses the same X/Z extents; floorHeight describes a continuous floor.
-  function step(dt, actions, { floorHeight, platforms = [], walkBounds, safeSpawn }) {
+  function step(dt, actions, { floorHeight, platforms = [], advancePlatforms, walkBounds, safeSpawn }) {
     if (!Number.isFinite(position.x) || !Number.isFinite(position.y) || !Number.isFinite(position.z)) {
       teleport(safeSpawn);
     }
 
     squash *= Math.exp(-11 * dt);
     exploring = (actions.mode ?? 'explore') === 'explore';
+    const startY = position.y;
+    const support = velocity.y <= 0 && platforms.find(platform =>
+      Math.abs(platform.y - startY) <= EPSILON && withinPlatform(platform, position.x, position.z),
+    );
+    if (advancePlatforms) {
+      advancePlatforms(dt);
+      if (support) position.y = support.y;
+    }
     if (!exploring) {
       present(dt, false);
       return;
@@ -91,8 +104,7 @@ export function createPlayer() {
     }
     const previousY = position.y;
     const onFloor = velocity.y <= 0 && Math.abs(previousY - previousFloor) <= EPSILON;
-    const onPlatform = velocity.y <= 0 &&
-      platformTop(platforms, position.x, position.z, previousY, previousY) !== -Infinity;
+    const onPlatform = Boolean(support);
     const jumping = actions.jump && (onFloor || onPlatform);
     if (jumping) {
       velocity.y = JUMP_SPEED;
@@ -130,7 +142,7 @@ export function createPlayer() {
     velocity.y -= GRAVITY * dt;
     const nextY = previousY + velocity.y * dt;
     if (velocity.y <= 0) {
-      const top = platformTop(platforms, position.x, position.z, previousY, nextY);
+      const top = platformTop(platforms, position.x, position.z, startY, nextY);
       const floor = floorHeight(position.x, position.z);
       const landing = Math.max(top, floor);
       if (nextY <= landing || (onFloor && !jumping && Number.isFinite(floor))) {

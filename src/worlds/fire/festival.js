@@ -1,7 +1,7 @@
 
 import {
   AdditiveBlending, BoxGeometry, BufferGeometry, CanvasTexture, Color, ConeGeometry, CylinderGeometry,
-  DoubleSide, EquirectangularReflectionMapping, ExtrudeGeometry, Float32BufferAttribute,
+  DoubleSide, DynamicDrawUsage, EquirectangularReflectionMapping, ExtrudeGeometry, Float32BufferAttribute,
   FogExp2, Group, IcosahedronGeometry, Mesh, MeshBasicMaterial, MeshStandardMaterial,
   PlaneGeometry, RepeatWrapping, Points, PointsMaterial, PointLight, Shape, SphereGeometry, Sprite,
   SpriteMaterial, SRGBColorSpace, TorusGeometry,
@@ -10,6 +10,7 @@ import { addCandleStream } from './candle-stream.js';
 import { batches } from './lanterns.js';
 
 const tau = Math.PI * 2;
+const FIREFLY_BOB = { amplitude: [0.13, 0.16], speed: [0.35, 0.5] };
 const rand = (a,b) => a + Math.random() * (b-a);
 const smooth = (a,b,x) => { const t = Math.max(0,Math.min(1,(x-a)/(b-a))); return t*t*(3-2*t); };
 const matte = (color, roughness = 0.92) => new MeshStandardMaterial({ color, roughness, metalness: 0.02 });
@@ -194,6 +195,17 @@ function makeFireflies(scene) {
   const geometry=new BufferGeometry();
   geometry.setAttribute('position',new Float32BufferAttribute(positions,3));
 
+  const position = geometry.getAttribute('position').setUsage(DynamicDrawUsage);
+  const motion = Array.from({ length: position.count }, (_, i) => {
+    const baseY = position.getY(i);
+    return {
+      baseY,
+      amplitude: Math.min(rand(...FIREFLY_BOB.amplitude), baseY * 0.8),
+      speed: rand(...FIREFLY_BOB.speed),
+      phase: rand(0, tau),
+    };
+  });
+
   const canvas=document.createElement('canvas');
   canvas.width=canvas.height=64;
   const ctx=canvas.getContext('2d');
@@ -223,7 +235,13 @@ function makeFireflies(scene) {
   const points=new Points(geometry,material);
   points.frustumCulled=false;
   scene.add(points);
-  return points;
+  return time => {
+    for (let i = 0; i < motion.length; i++) {
+      const { baseY, amplitude, speed, phase } = motion[i];
+      position.setY(i, baseY + Math.sin(time * speed + phase) * amplitude);
+    }
+    position.needsUpdate = true;
+  };
 }
 
 function makeSoftGlowMap() {
@@ -876,7 +894,7 @@ export function dressFestival(scene) {
   // A few real lights provide nearby bounce; most glow remains emissive.
   const warmPool=new PointLight(0xffb77b,9,13,2);warmPool.position.set(-6.2,2.1,-8);scene.add(warmPool);
   const coolPool=new PointLight(0x83b8d1,4,9,2);coolPool.position.set(9,1.8,-20);scene.add(coolPool);
-  const fireflies=makeFireflies(scene),mist=makeMistSprites(scene);
+  const animateFireflies=makeFireflies(scene),mist=makeMistSprites(scene);
 
   // Original background lantern scatter, geometry, materials and drift.
   const drift=new Group();scene.add(drift);
@@ -904,7 +922,7 @@ export function dressFestival(scene) {
     animateStream(t);
     drift.position.y=Math.sin(t*0.18)*0.30;
     drift.rotation.y=Math.sin(t*0.057)*0.009;
-    fireflies.position.y=Math.sin(t*0.31)*0.12;
+    animateFireflies(t);
     warmPool.intensity=8.5+Math.sin(t*0.7)*0.5;
     mist.children.forEach(sprite=>{
       const p=sprite.userData;

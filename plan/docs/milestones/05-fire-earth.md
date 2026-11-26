@@ -11,11 +11,11 @@ Read the [root instructions](../../../AGENTS.md) once. Each card lists its addit
 **Files in scope** `src/worlds/fire/index.js`, `src/worlds/fire/scenery.js`
 **Interfaces** floorHeight, platform tops, safeSpawn
 
-**Requirements** Implement the ground, rectangular step tops and fixed top lantern; make the route apparent from spawn. Expose an arrival QA entry.
+**Requirements** Implement the ground, gently bobbing rectangular steps and a fixed summit lantern; make the route apparent from spawn. Expose an arrival QA entry.
 
 **Acceptance** A normal ascent takes about 30 s and under one minute; every miss lands on accessible terrain.
 **Verify** Time two climbs and deliberately miss from three heights.
-**Out of scope** Wick dialogue or moving platforms during climb.
+**Out of scope** Wick dialogue.
 **Model** General · medium
 
 ## FE2 · Stage Wick’s fright, carry and reward
