@@ -1,7 +1,7 @@
 export const LOCKDOWN = {
   speaker: 'Teal',
   lines: [
-    'ATTENSSION! Apparently someone has PEED in the ocean!',
+    'ATTENSSION! Someone has PEED in the ocean!',
     'Beach is CLOSED until we find the little jerk that did it!',
   ],
 };
