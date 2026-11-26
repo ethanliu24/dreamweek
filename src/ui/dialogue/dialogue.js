@@ -91,7 +91,7 @@ export function createDialogue({ mount, controls, onVisibility }) {
         let index = 0;
         let frame;
         let text;
-        label.textContent = kind === 'thought' ? `${speaker} (Thought)` : speaker || 'Dreamweek';
+        label.textContent = kind === 'thought' ? `Player (Thought)` : speaker || 'Dreamweek';
         advance.hidden = false;
         line.hidden = false;
 

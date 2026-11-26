@@ -53,6 +53,11 @@ export function createWheel({ canvas, controls, camera, onFinish, onShape }) {
   let reactionCooldown = 0;
   const shape = { base: 1, height: 0, rim: 0.5 };
 
+  function focus() {
+    camera.shot({ eye: root.position.clone().add({ x: 0.91, y: 1.57, z: 1.92 }),
+      lookAt: root.position.clone().add({ x: 0, y: 0.88, z: 0 }) });
+  }
+
   function refresh() {
     const old = clay.geometry;
     clay.geometry = potGeometry(shape, { compression, lift });
@@ -73,6 +78,8 @@ export function createWheel({ canvas, controls, camera, onFinish, onShape }) {
       showStage();
       return;
     }
+    compression = 1;
+    refresh();
     panel.hidden = true;
     release();
     release = undefined;
@@ -82,7 +89,7 @@ export function createWheel({ canvas, controls, camera, onFinish, onShape }) {
   });
 
   return {
-    root, turntable,
+    root, turntable, clay, focus,
     keepOutside(position) {
       if (position.y >= root.position.y + DISK_HEIGHT) return;
       const x = position.x - root.position.x;
@@ -100,8 +107,7 @@ export function createWheel({ canvas, controls, camera, onFinish, onShape }) {
       bob.rotation.set(0, 0, 0);
       bob.scale.setScalar(1);
       release = controls.acquire('puzzle');
-      camera.shot({ eye: root.position.clone().add({ x: 0.91, y: 1.57, z: 1.92 }),
-        lookAt: root.position.clone().add({ x: 0, y: 0.88, z: 0 }) });
+      focus();
       panel.hidden = false;
       showStage();
     },

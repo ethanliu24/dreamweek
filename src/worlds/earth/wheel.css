@@ -1,5 +1,6 @@
 .earth-wheel-controls [data-continue] {
-  min-height: 40px;
+  height: fit-content;
+  min-height: 3rem;
   padding: 0.35rem 0.75rem;
   color: inherit;
   font-family: inherit;

@@ -2,7 +2,8 @@ import { MathUtils, Vector3 } from 'three';
 import { createReturnRing } from '../../shared/props/return-ring.js';
 import { canReturn } from '../../state/progress.js';
 import { descent, fright, gift, intro, relief, rescue } from './lines.js';
-import { createCandle, createSeagull, createWick } from './wick.js';
+import { createCandle } from '../../shared/props/candle.js';
+import { createSeagull, createWick } from './wick.js';
 
 const RISE_SECONDS = 2;
 const PASS_SECONDS = 2.7;

@@ -3,8 +3,10 @@ import {
   Mesh, MeshStandardMaterial, Scene, ShaderMaterial, SphereGeometry, Vector3,
 } from 'three';
 import { disposeScene } from '../../runtime/assets.js';
+import { canReturn } from '../../state/progress.js';
 import { createReturnRing } from '../../shared/props/return-ring.js';
 import { createBob, createReaction } from './bob.js';
+import { createPotStory } from './story.js';
 import { createWheel } from './wheel.js';
 
 const ARRIVAL = new Vector3(0, 0, 4.8);
@@ -72,7 +74,7 @@ function dressBasin(scene) {
   });
 }
 
-export function createWorld({ canvas, player, camera, controls, interactions, ui, signal }) {
+export function createWorld({ canvas, player, camera, controls, interactions, ui, signal, progress, travel }) {
   const scene = new Scene();
   scene.name = 'Earth';
   const animateBasin = dressBasin(scene);
@@ -80,19 +82,17 @@ export function createWorld({ canvas, player, camera, controls, interactions, ui
   bob.root.position.set(-2.6, 0, 2.65);
   const reaction = createReaction();
   const ring = createReturnRing(ARRIVAL);
-  ring.material.color.setHex(0x9d7a40);
   let phase = 'meet';
-  let potShape = null;
   const wheel = createWheel({
     canvas, controls, camera,
     onShape: reaction.pop,
     onFinish(shape) {
       phase = 'wet';
-      potShape = shape;
       player.root.visible = true;
-      ui.objective('The wet pot is ready for firing');
+      potStory.shaped(shape);
     },
   });
+  const potStory = createPotStory({ wheel, ring, scene, camera, controls, interactions, player, progress, travel, ui });
   scene.add(wheel.root, bob.root, ring, reaction.sprite);
   const reactionPoint = new Vector3();
   const unregister = [];
@@ -117,7 +117,6 @@ export function createWorld({ canvas, player, camera, controls, interactions, ui
   return {
     scene,
     surfaces: { floorHeight: () => 0, walkBounds: WALK_BOUNDS, safeSpawn: ARRIVAL },
-    get potShape() { return potShape; },
     prepare() {},
     enter() {
       player.root.rotation.set(0, Math.PI, 0);
@@ -125,6 +124,12 @@ export function createWorld({ canvas, player, camera, controls, interactions, ui
       player.teleport(ARRIVAL);
       camera.resetOrbit();
       scene.add(player.root);
+      potStory.enter();
+      if (canReturn('earth', progress.read())) {
+        phase = 'complete';
+        bob.root.visible = false;
+        return;
+      }
       ui.objective('Meet Bob', bob.root.position);
       unregister.push(interactions.register({
         id: 'bob', point: bob.root.position, enabled: () => phase === 'pickup', label: 'Pick up Bob',
@@ -156,6 +161,7 @@ export function createWorld({ canvas, player, camera, controls, interactions, ui
         greet();
       }
       wheel.update(dt, actions);
+      potStory.update(dt);
       const subject = phase === 'shape' || phase === 'wet' ? wheel.turntable : bob.root;
       subject.getWorldPosition(reactionPoint);
       reactionPoint.add(new Vector3(0.47, phase === 'shape' ? 0.45 : 0.56, 0));
@@ -168,6 +174,7 @@ export function createWorld({ canvas, player, camera, controls, interactions, ui
     exit() {
       for (const remove of unregister) remove();
       wheel.exit();
+      potStory.exit();
       camera.releaseShot();
       player.root.visible = true;
       if (phase === 'carry') {
