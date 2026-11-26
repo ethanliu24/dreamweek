@@ -57,12 +57,14 @@ export function createHud({ mount, canvas, controls }) {
     dialogue.cancel();
     guidance.objective(null);
     guidance.prompt(null);
+    guidance.bossHealth(null);
     showPlate(null);
     iris.clearError();
   }
 
   return {
     objective: guidance.objective,
+    bossHealth: guidance.bossHealth,
     prompt: guidance.prompt,
     update: guidance.update,
     say: dialogue.say,

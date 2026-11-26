@@ -12,11 +12,22 @@ export function createGuidance({ mount, canvas }) {
   const prompt = overlay.querySelector('[data-prompt]');
   const label = prompt.querySelector('span');
   const arrow = overlay.querySelector('[data-arrow]');
+  const boss = overlay.querySelector('[data-boss-health]');
+  const healthBar = boss.querySelector('progress');
+  const finisher = boss.querySelector('[data-finisher]');
   const point = new Vector3();
   const viewPoint = new Vector3();
   let hasPoint = false;
 
   return {
+    bossHealth(health, { max = 100, finisherReady = false } = {}) {
+      boss.hidden = health == null;
+      if (health != null) {
+        healthBar.max = max;
+        healthBar.value = health;
+      }
+      finisher.hidden = !finisherReady;
+    },
     objective(text, target) {
       objective.hidden = !text;
       if (objectiveText.textContent !== (text ?? '')) objectiveText.textContent = text ?? '';

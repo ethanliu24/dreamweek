@@ -20,3 +20,32 @@ export function createWizard() {
   mesh(frog, new ConeGeometry(0.24, 0.52, 24), 0x69638a, 0, 0.9, -0.06);
   return frog;
 }
+
+export function addWizardCombatPose(frog) {
+  const sphere = new SphereGeometry(1, 14, 10);
+  const arm = new Group();
+  arm.position.set(0.32, 0.36, 0.12);
+  mesh(arm, sphere, 0x6d9a76, 0.09, -0.09, 0).scale.set(0.16, 0.082, 0.09);
+  const hand = new Group();
+  hand.position.set(0.23, -0.09, 0);
+  arm.add(hand);
+  frog.add(arm);
+
+  const mouth = mesh(frog, sphere, 0x371d39, 0, 0.448, 0.303);
+  const moon = new Mesh(sphere, new MeshStandardMaterial({
+    color: 0xe8e3f8, emissive: 0xc6a1ed, emissiveIntensity: 0.52,
+  }));
+  moon.position.set(0, 0.28, 0.367);
+  moon.scale.set(0.116, 0.116, 0.035);
+  frog.add(moon);
+  const scale = frog.scale.x;
+  return {
+    hand,
+    mouth,
+    set({ crouch = 0, cast = 0, open = 0, hit = 0 } = {}) {
+      frog.scale.set(scale * (1 + crouch * 0.15), scale * (1 - crouch * 0.3 + hit * 0.1), scale);
+      arm.rotation.z = 1.7 * cast;
+      mouth.scale.set(0.22, 0.018 + 0.076 * open, 0.05);
+    },
+  };
+}

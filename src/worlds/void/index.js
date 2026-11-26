@@ -5,11 +5,13 @@ import {
 } from 'three';
 import { disposeScene } from '../../runtime/assets.js';
 import { createWizard } from '../../shared/actors/wizard.js';
+import { createBoss } from './boss.js';
 import { VOID_AFTER_MINIONS, VOID_INTRO } from './lines.js';
 import { createMinions } from './minions.js';
 
 const ARRIVAL = new Vector3(0, 0, 5);
-const WALK_RADIUS = 8.35;
+const ARENA_SCALE = 1.1;
+const WALK_RADIUS = 8.35 * ARENA_SCALE;
 
 function keepInside(position) {
   const radius = Math.hypot(position.x, position.z);
@@ -24,6 +26,7 @@ function addArena(scene) {
     [9, -0.14], [8.96, -0.06], [8.77, 0], [0, 0],
   ].map(([radius, height]) => new Vector2(radius, height));
   const disc = new LatheGeometry(profile, 72);
+  disc.scale(ARENA_SCALE, 1, ARENA_SCALE);
   const points = disc.attributes.position;
   const undersideColors = [];
   const lavender = new Color(0xac8fd0);
@@ -47,6 +50,7 @@ function addArena(scene) {
   const engraving = new MeshBasicMaterial({ color: 0xc9bfdb, transparent: true, opacity: 0.38, depthWrite: false });
   for (const [inner, outer] of [[1.05, 1.08], [5.78, 5.81], [8.38, 8.42]]) {
     const ring = new Mesh(new RingGeometry(inner, outer, 72).rotateX(-Math.PI / 2), engraving);
+    ring.scale.set(ARENA_SCALE, 1, ARENA_SCALE);
     ring.position.y = 0.008;
     scene.add(ring);
   }
@@ -87,7 +91,7 @@ function addPlanet(scene) {
   scene.add(planet);
 }
 
-export function createWorld({ camera, player, progress, signal, ui }) {
+export function createWorld({ camera, player, progress, signal, ui, startAtBoss = false }) {
   const scene = new Scene();
   scene.name = 'Void';
   scene.background = new Color(0x070511);
@@ -99,15 +103,17 @@ export function createWorld({ camera, player, progress, signal, ui }) {
   addPlanet(scene);
   const wizard = createWizard();
   wizard.position.set(0, 0, -6.25);
-  wizard.scale.setScalar(1.65);
+  wizard.scale.setScalar(1.95);
   const shadow = new Mesh(
     new CircleGeometry(0.39, 24).rotateX(-Math.PI / 2),
     new MeshBasicMaterial({ color: 0x352641, transparent: true, opacity: 0.42, depthWrite: false }),
   );
-  const minions = progress.read().completed.includes('sun') ? null : createMinions(scene, keepInside);
+  const skipWave = startAtBoss || progress.read().completed.includes('sun');
+  const minions = skipWave ? null : createMinions(scene, keepInside);
+  const boss = createBoss(scene, wizard, player, keepInside);
   scene.add(wizard, shadow);
 
-  let phase = minions ? 'arrival' : 'sun-taken';
+  let phase = 'arrival';
   let elapsed = 0;
 
   function say(lines, done) {
@@ -116,6 +122,20 @@ export function createWorld({ camera, player, progress, signal, ui }) {
     }).catch(error => {
       if (!signal.aborted) console.error('Void dialogue failed', error);
     });
+  }
+
+  function startBoss() {
+    phase = 'boss';
+    boss.start();
+    ui.bossHealth(boss.health, { max: boss.maxHealth });
+  }
+
+  function frameFinisher() {
+    const eye = new Vector3(0.65, 0.24, 3.15)
+      .applyAxisAngle(new Vector3(0, 1, 0), wizard.rotation.y)
+      .add(wizard.position);
+    const lookAt = wizard.position.clone().add(new Vector3(0, 1.05, 0));
+    camera.shot({ eye, lookAt, seconds: 0.65 });
   }
 
   return {
@@ -132,9 +152,11 @@ export function createWorld({ camera, player, progress, signal, ui }) {
       player.setPose('idle');
       camera.resetOrbit({ pitch: 0.3, distance: 7 });
       scene.add(player.root);
+      if (skipWave) startBoss();
     },
-    update(dt, { mode }) {
+    update(dt, { mode, actions }) {
       keepInside(player.position);
+      boss.updateFeedback(dt);
       if (mode !== 'explore') return;
       elapsed += dt;
       if (phase === 'arrival' && elapsed >= 0.5) {
@@ -151,18 +173,29 @@ export function createWorld({ camera, player, progress, signal, ui }) {
         minions.update(dt, player);
         if (elapsed < 0.65) return;
         phase = 'reaction';
-        say(VOID_AFTER_MINIONS, () => {
-          phase = 'wave-cleared';
-        });
+        say(VOID_AFTER_MINIONS, startBoss);
+      } else if (phase === 'boss') {
+        const previousHealth = boss.health;
+        if (boss.update(dt, actions.ultimate)) {
+          phase = 'finisher';
+          ui.bossHealth(null);
+          camera.releaseShot();
+        } else if (boss.health !== previousHealth) {
+          if (boss.finisherReady) frameFinisher();
+          ui.bossHealth(boss.health, { max: boss.maxHealth, finisherReady: boss.finisherReady });
+        }
       }
     },
     present() {
       const { x, y, z } = player.position;
       shadow.position.set(x, 0.015, z);
       shadow.material.opacity = 0.42 / (1 + y);
-      wizard.scale.y = wizard.scale.x * (phase === 'arrival' ? 1 + 0.055 * Math.sin(Math.PI * elapsed / 0.5) : 1);
+      if (phase === 'arrival' || phase === 'intro') {
+        wizard.scale.y = wizard.scale.x * (1 + 0.055 * Math.sin(Math.PI * Math.min(elapsed, 0.5) / 0.5));
+      }
     },
     exit() {
+      camera.releaseShot();
       player.root.removeFromParent();
     },
     dispose() { disposeScene(scene); },

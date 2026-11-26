@@ -17,6 +17,10 @@ import { createTraversalPreview } from './traversal.js';
 import { createUiPreview } from './ui-preview.js';
 
 const SCENE_LABELS = { 'scene-a': 'Scene A', 'scene-b': 'Scene B' };
+const VOID_PROGRESS = {
+  completed: ['fire', 'earth', 'water', 'wood', 'metal'], items: ['Candle', 'Sword'], hearth: 'boiled',
+  pot: { phase: 'placed', shape: { base: 0.5, height: 0.62, rim: 0.66 } },
+};
 const PREVIEWS = {
   shell: createGame,
   input: createInputPreview,
@@ -29,10 +33,16 @@ const PREVIEWS = {
     completed: ['fire', 'earth', 'water', 'wood'], items: ['Candle'], hearth: 'lit',
     pot: { phase: 'placed', shape: { base: 0.5, height: 0.62, rim: 0.66 } },
   } }),
-  'void-arrival': ({ mount }) => createGame({ mount, initialWorld: 'void', initialProgress: {
-    completed: ['fire', 'earth', 'water', 'wood', 'metal'], items: ['Candle', 'Sword'], hearth: 'boiled',
-    pot: { phase: 'placed', shape: { base: 0.5, height: 0.62, rim: 0.66 } },
-  } }),
+  'void-arrival': ({ mount }) => createGame({ mount, initialWorld: 'void', initialProgress: VOID_PROGRESS }),
+  'void-boss': ({ mount }) => createGame({
+    mount, initialWorld: 'void', initialProgress: VOID_PROGRESS,
+    registry: createWorldRegistry({
+      async void() {
+        const { createWorld } = await import('../worlds/void/index.js');
+        return { createWorld: context => createWorld({ ...context, startAtBoss: true }) };
+      },
+    }),
+  }),
 
   'round-trip': createRoundTripPreview,
   'earth-arrival': ({ mount }) => createGame({ mount, initialWorld: 'earth',
@@ -239,6 +249,7 @@ export function mountPreview({ mount }) {
         <option value="metal-arrival">Metal arrival</option>
         <option value="void-arrival">Void arrival</option>
         <option value="metal-board">Metal pipe board</option>
+        <option value="void-boss">Void Wizard fight</option>
         <option value="hub-water">Hub after Water</option>
         <option value="hub-wood">Hub after Wood</option>
         <option value="hub-metal">Hub after Metal</option>

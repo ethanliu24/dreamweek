@@ -1,8 +1,9 @@
 import {
-  BoxGeometry, BufferGeometry, CanvasTexture, CircleGeometry, Group, LineBasicMaterial, LineSegments,
-  MathUtils, Mesh, MeshBasicMaterial, MeshStandardMaterial, Sprite, SpriteMaterial, Vector3,
+  BoxGeometry, BufferGeometry, CircleGeometry, Group, LineBasicMaterial, LineSegments,
+  MathUtils, Mesh, MeshBasicMaterial, MeshStandardMaterial, Vector3,
 } from 'three';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
+import { createHitFeedback } from './hit-feedback.js';
 
 const TELEGRAPH_TIME = 0.5;
 const RECOVER_TIME = 0.85;
@@ -13,52 +14,6 @@ const STRIKE_ARC = Math.cos(MathUtils.degToRad(55));
 const CONTACT_RADIUS = 0.58;
 const CUBE_HALF_HEIGHT = 0.32;
 const PLAYER_HEIGHT = 0.9;
-const DAMAGE_TEXT_TIME = 0.62;
-
-function createDamageText(scene) {
-  const canvas = document.createElement('canvas');
-  canvas.width = 256;
-  canvas.height = 96;
-  const context = canvas.getContext('2d');
-  const texture = new CanvasTexture(canvas);
-  const sprite = new Sprite(new SpriteMaterial({ map: texture, depthTest: false, depthWrite: false, toneMapped: false }));
-  sprite.visible = false;
-  scene.add(sprite);
-  let remaining = 0;
-  let height = 0;
-
-  return {
-    show(position) {
-      const damage = MathUtils.randInt(300, 800);
-      const critical = Math.random() < 0.15;
-      const label = critical ? `${damage}` : String(damage);
-      context.clearRect(0, 0, canvas.width, canvas.height);
-      context.font = 'bold 46px system-ui';
-      context.textAlign = 'center';
-      context.textBaseline = 'middle';
-      context.lineWidth = 7;
-      context.strokeStyle = '#201629';
-      context.fillStyle = critical ? '#ffd166' : '#fff5ff';
-      context.strokeText(label, 128, 48);
-      context.fillText(label, 128, 48);
-      texture.needsUpdate = true;
-      sprite.scale.set(critical ? 1.9 : 1.6, critical ? 0.71 : 0.6, 1);
-      sprite.position.copy(position);
-      height = sprite.position.y += 1.05;
-      sprite.material.opacity = 1;
-      sprite.visible = true;
-      remaining = DAMAGE_TEXT_TIME;
-    },
-    update(dt) {
-      if (!sprite.visible) return;
-      remaining = Math.max(0, remaining - dt);
-      sprite.position.y = height + (DAMAGE_TEXT_TIME - remaining) * 0.85;
-      sprite.material.opacity = Math.min(1, remaining / 0.24);
-      sprite.visible = remaining > 0;
-    },
-  };
-}
-
 function createRuneGeometry() {
   const outline = [
     [0, 0.16], [0.13, 0.03], [0.13, -0.03], [0, -0.16],
@@ -89,7 +44,7 @@ export function createMinions(scene, keepInside) {
     }));
     const runes = new LineSegments(runeGeometry, new LineBasicMaterial({ color: idleViolet }));
     cube.add(runes);
-    const damageText = createDamageText(scene);
+    const damageText = createHitFeedback(scene);
     cube.rotation.set(0.2, index, 0.2);
     const shadow = new Mesh(shadowGeometry, shadowMaterial);
     shadow.position.y = 0.014;
@@ -177,7 +132,7 @@ export function createMinions(scene, keepInside) {
         lastSwingId = strike.swingId;
         hits++;
         hitTime = 0.14;
-        damageText.show(root.position);
+        damageText.show(root.position, cube.position.y, strike.forward);
         if (hits === 3) {
           cube.visible = false;
           shadow.visible = false;

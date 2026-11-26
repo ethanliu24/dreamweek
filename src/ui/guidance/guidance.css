@@ -86,6 +86,24 @@
     text-shadow: 0 1px 4px #17243b;
 }
 
+.game-overlay [data-boss-health] {
+    position: absolute;
+    top: 4.6rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(22rem, 80%);
+    display: grid;
+    justify-items: center;
+    gap: 0.4rem;
+    color: #fff3dc;
+    text-shadow: 0 1px 4px #17243b;
+}
+
+.game-overlay progress {
+    width: 100%;
+    accent-color: #ad63e2;
+}
+
 /* Respect hidden state */
 .game-overlay [hidden] {
     display: none !important;
