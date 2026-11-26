@@ -131,7 +131,9 @@ export function createGame({ mount, registry = createWorldRegistry(), initialPro
       stepWorld(world, dt, frame, interactions) {
         const { mode, actions } = frame;
         camera.orbit(actions.orbitX, actions.orbitY);
-        if (world.surfaces) player.step(dt, { ...actions, mode, yaw: camera.yaw }, world.surfaces);
+        if (world.surfaces) {
+          frame.playerMotion = player.step(dt, { ...actions, mode, yaw: camera.yaw }, world.surfaces);
+        }
         world.update(dt, frame);
         const target = controls.mode === 'explore' ? interactions.select(player.position) : null;
         ui.prompt(target?.label);

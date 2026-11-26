@@ -121,6 +121,7 @@ export function createPlayer() {
     velocity.x = MathUtils.lerp(velocity.x, move.x, blend);
     velocity.z = MathUtils.lerp(velocity.z, move.z, blend);
 
+    let swingStarted = false;
     if (swingTime < SWING_DURATION) swingTime += dt;
     if (swingTime >= SWING_DURATION - EPSILON) {
       swingTime = SWING_DURATION;
@@ -131,6 +132,7 @@ export function createPlayer() {
       if (actions.attack && held?.userData.kind === 'sword') {
         swingTime = 0;
         swingId++;
+        swingStarted = true;
       }
     }
 
@@ -141,13 +143,15 @@ export function createPlayer() {
     pushVelocity.multiplyScalar(pushDecay);
     velocity.y -= GRAVITY * dt;
     const nextY = previousY + velocity.y * dt;
+    let landed = false;
     if (velocity.y <= 0) {
       const top = platformTop(platforms, position.x, position.z, startY, nextY);
       const floor = floorHeight(position.x, position.z);
       const landing = Math.max(top, floor);
       if (nextY <= landing || (onFloor && !jumping && Number.isFinite(floor))) {
         position.y = landing;
-        if (!onFloor && !onPlatform) squash = Math.min(0.17, -velocity.y * 0.023);
+        landed = !onFloor && !onPlatform;
+        if (landed) squash = Math.min(0.17, -velocity.y * 0.023);
         velocity.y = 0;
       } else {
         position.y = nextY;
@@ -157,6 +161,7 @@ export function createPlayer() {
     }
 
     present(dt, true);
+    if (jumping || landed || swingStarted) return { jumped: Boolean(jumping), landed, swingStarted };
   }
 
   function setHeld(prop) {

@@ -126,6 +126,7 @@ export function createWorldHost({
       const { spawn, progress } = copyEntry(entry);
       await instance.world.enter({ spawn, progress });
       signal.throwIfAborted();
+      audio?.ensureProfile(instance);
 
       instance.ready = true;
       if (coveredTravel) {

@@ -2,6 +2,9 @@ import markup from './dialogue.html?raw';
 import './dialogue.css';
 
 const CHARACTERS_PER_SECOND = 55;
+const VOICE_INTERVAL_MS = 65;
+const VOICE_RELEASE_SECONDS = 0.01;
+const VOICED_GRAPHEME = /[\p{L}\p{N}]/u;
 const segmenter = new Intl.Segmenter(undefined, { granularity: 'grapheme' });
 
 export function createDialogue({ mount, controls, onVisibility }) {
@@ -85,19 +88,26 @@ export function createDialogue({ mount, controls, onVisibility }) {
     focus() { if (active) focus(); },
     get active() { return Boolean(active); },
     cancel,
-    say({ kind, speaker, lines }, signal) {
+    say({ kind, speaker, lines, voice }, signal) {
       if (!lines.length) return signal?.aborted ? Promise.reject(signal.reason) : Promise.resolve();
       return run(signal, (done, options) => {
         let index = 0;
         let frame;
         let text;
+        let chirp;
         label.textContent = kind === 'thought' ? `Player (Thought)` : speaker || 'Dreamweek';
         advance.hidden = false;
         line.hidden = false;
 
+        function stopChirp() {
+          chirp?.stop(VOICE_RELEASE_SECONDS);
+          chirp = undefined;
+        }
+
         function completeLine() {
           cancelAnimationFrame(frame);
           frame = undefined;
+          stopChirp();
           revealed.textContent = text;
           unrevealed.textContent = '';
         }
@@ -111,20 +121,31 @@ export function createDialogue({ mount, controls, onVisibility }) {
             return;
           }
 
-          const offsets = Array.from(segmenter.segment(text), part => part.index);
+          const graphemes = Array.from(segmenter.segment(text));
           const start = performance.now();
+          let visibleCount = 0;
+          let nextChirpAt = start;
           revealed.textContent = '';
           unrevealed.textContent = text;
 
           function reveal(now) {
             const count = Math.max(0, Math.floor((now - start) * CHARACTERS_PER_SECOND / 1000));
-            if (motion.matches || count >= offsets.length) {
+            if (motion.matches || count >= graphemes.length) {
               completeLine();
               return;
             }
-            const end = offsets[count];
+            const end = graphemes[count].index;
             revealed.textContent = text.slice(0, end);
             unrevealed.textContent = text.slice(end);
+            if (voice && !document.hidden && now >= nextChirpAt && count > visibleCount) {
+              const spoken = graphemes.slice(visibleCount, count).find(part => VOICED_GRAPHEME.test(part.segment));
+              if (spoken) {
+                stopChirp();
+                chirp = voice(spoken.segment);
+                nextChirpAt = now + VOICE_INTERVAL_MS;
+              }
+            }
+            visibleCount = count;
             frame = requestAnimationFrame(reveal);
           }
 
@@ -143,6 +164,7 @@ export function createDialogue({ mount, controls, onVisibility }) {
 
         options.signal.addEventListener('abort', () => {
           cancelAnimationFrame(frame);
+          stopChirp();
           announcement.textContent = '';
         }, { once: true });
         showLine();

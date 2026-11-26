@@ -16,6 +16,8 @@ Start from the Vite shell. Deliver a complete playable week with readable proced
 | Resource budgets, loading or static deployment | [Assets and performance](architecture/assets.md) |
 | Geometry, light, character or plate | [Visual design and local build sheets](visual-design.md) |
 
+For step-by-step cue registration, playback examples and listening checks, see [Adding audio to Dreamweek](audio-guide.md).
+
 ## Milestones and gates
 
 | Order | Playable result | Depends on |

@@ -419,6 +419,10 @@ export function createMixer({ assets = createAssets(), manifest = audioManifest 
       setVector(context.listener, 'up', cameraUp, now);
     },
     leave,
+    ensureProfile(id) {
+      const owner = worldOwners.get(id);
+      if (owner && !owner.profile) enter(id, {});
+    },
     fadeMusic: retireMusic,
     dispose() {
       if (disposed) return;
