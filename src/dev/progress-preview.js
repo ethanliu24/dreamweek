@@ -119,9 +119,8 @@ const panelMarkup = `
       <option value="clearBeach" data-world="overworld">Hub after Water</option>
       <option value="helpMallow" data-world="overworld">Hub after Wood</option>
       <option value="earnSword" data-world="overworld">Hub after Metal</option>
-      <option value="takeSun" data-world="void">Void after Sun</option>
       <option value="defeatWizard" data-world="void">Void after finisher</option>
-      <option value="takeMoon" data-world="void">Void after Moon</option>
+      <option value="takeEssences" data-world="void">Void after both essences</option>
       <option value="bringWizardHome" data-world="overworld">Hub after capture</option>
     </select>
   </label>
@@ -178,9 +177,8 @@ const panelMarkup = `
     </fieldset>
     <fieldset>
       <legend>Void</legend>
-      <button type="button" data-command="takeSun">takeSun</button>
       <button type="button" data-command="defeatWizard">defeatWizard</button>
-      <button type="button" data-command="takeMoon">takeMoon</button>
+      <button type="button" data-command="takeEssences">takeEssences</button>
       <button type="button" data-command="bringWizardHome">bringWizardHome</button>
     </fieldset>
     <fieldset>
@@ -219,9 +217,8 @@ const JOURNEY = [
   ['overworld', 'placeWood'],
   ['overworld', 'lightWood'],
   ['metal', 'earnSword'],
-  ['void', 'takeSun'],
   ['void', 'defeatWizard'],
-  ['void', 'takeMoon'],
+  ['void', 'takeEssences'],
   ['void', 'bringWizardHome'],
 ];
 

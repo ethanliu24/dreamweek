@@ -11,3 +11,8 @@ export const VOID_AFTER_MINIONS = [
   'WHAT?! You defeated all of them?!',
   "Fine! I'll stop you myself!",
 ];
+
+export const VOID_BOSS_END = {
+  kind: 'thought',
+  lines: ['Finally... Now I can buy my washing machine on sale.'],
+};

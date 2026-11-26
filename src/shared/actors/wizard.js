@@ -18,8 +18,17 @@ export function createWizard() {
   }
   mesh(frog, new CylinderGeometry(0.39, 0.39, 0.045, 24), 0x57547f, 0, 0.65, -0.06);
   mesh(frog, new ConeGeometry(0.24, 0.52, 24), 0x69638a, 0, 0.9, -0.06);
+  const moon = new Mesh(sphere, new MeshStandardMaterial({
+    color: 0xe8e3f8, emissive: 0xc6a1ed, emissiveIntensity: 0.52,
+  }));
+  moon.position.set(0, 0.28, 0.367);
+  moon.scale.set(0.116, 0.116, 0.035);
+  moon.name = 'Belly Moon';
+  frog.add(moon);
   return frog;
 }
+
+export const WIZARD_COLLAPSE_ANGLE = -0.58;
 
 export function addWizardCombatPose(frog) {
   const sphere = new SphereGeometry(1, 14, 10);
@@ -32,12 +41,6 @@ export function addWizardCombatPose(frog) {
   frog.add(arm);
 
   const mouth = mesh(frog, sphere, 0x371d39, 0, 0.448, 0.303);
-  const moon = new Mesh(sphere, new MeshStandardMaterial({
-    color: 0xe8e3f8, emissive: 0xc6a1ed, emissiveIntensity: 0.52,
-  }));
-  moon.position.set(0, 0.28, 0.367);
-  moon.scale.set(0.116, 0.116, 0.035);
-  frog.add(moon);
   const scale = frog.scale.x;
   return {
     hand,

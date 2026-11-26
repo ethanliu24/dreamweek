@@ -168,6 +168,12 @@ export function createBoss(scene, wizard, player, keepInside) {
     updateFeedback: feedback.update,
     get health() { return health; },
     get finisherReady() { return phase === 'ready'; },
+    stageFinisher() {
+      wizard.position.set(0, 0, 1.6);
+      health = FINISHER_HP;
+      pose.set({ crouch: 0.35 });
+      enter('ready');
+    },
     start() {
       from.copy(wizard.position);
       target.set(0, 0, -1.8);

@@ -6,6 +6,7 @@ import {
 import { disposeScene } from '../../runtime/assets.js';
 import { createWizard } from '../../shared/actors/wizard.js';
 import { createBoss } from './boss.js';
+import { createFinish } from './finish.js';
 import { VOID_AFTER_MINIONS, VOID_INTRO } from './lines.js';
 import { createMinions } from './minions.js';
 
@@ -91,7 +92,8 @@ function addPlanet(scene) {
   scene.add(planet);
 }
 
-export function createWorld({ camera, player, progress, signal, ui, startAtBoss = false }) {
+export function createWorld(ctx) {
+  const { camera, player, progress, signal, ui, startAtBoss = false, startAtFinisher = false } = ctx;
   const scene = new Scene();
   scene.name = 'Void';
   scene.background = new Color(0x070511);
@@ -108,9 +110,11 @@ export function createWorld({ camera, player, progress, signal, ui, startAtBoss 
     new CircleGeometry(0.39, 24).rotateX(-Math.PI / 2),
     new MeshBasicMaterial({ color: 0x352641, transparent: true, opacity: 0.42, depthWrite: false }),
   );
-  const skipWave = startAtBoss || progress.read().completed.includes('sun');
+  const snapshot = progress.read();
+  const skipWave = startAtBoss || startAtFinisher || snapshot.wizard !== 'distant' || snapshot.completed.includes('sun');
   const minions = skipWave ? null : createMinions(scene, keepInside);
   const boss = createBoss(scene, wizard, player, keepInside);
+  const finish = createFinish(scene, wizard, ctx, keepInside);
   scene.add(wizard, shadow);
 
   let phase = 'arrival';
@@ -152,11 +156,18 @@ export function createWorld({ camera, player, progress, signal, ui, startAtBoss 
       player.setPose('idle');
       camera.resetOrbit({ pitch: 0.3, distance: 7 });
       scene.add(player.root);
-      if (skipWave) startBoss();
+      if (finish.enter()) phase = 'finisher';
+      else if (startAtFinisher) {
+        phase = 'boss';
+        boss.stageFinisher();
+        frameFinisher();
+        ui.bossHealth(boss.health, { max: boss.maxHealth, finisherReady: true });
+      } else if (skipWave) startBoss();
     },
     update(dt, { mode, actions }) {
       keepInside(player.position);
       boss.updateFeedback(dt);
+      if (phase === 'finisher') finish.update(dt);
       if (mode !== 'explore') return;
       elapsed += dt;
       if (phase === 'arrival' && elapsed >= 0.5) {
@@ -179,7 +190,7 @@ export function createWorld({ camera, player, progress, signal, ui, startAtBoss 
         if (boss.update(dt, actions.ultimate)) {
           phase = 'finisher';
           ui.bossHealth(null);
-          camera.releaseShot();
+          finish.start();
         } else if (boss.health !== previousHealth) {
           if (boss.finisherReady) frameFinisher();
           ui.bossHealth(boss.health, { max: boss.maxHealth, finisherReady: boss.finisherReady });
@@ -195,6 +206,7 @@ export function createWorld({ camera, player, progress, signal, ui, startAtBoss 
       }
     },
     exit() {
+      finish.exit();
       camera.releaseShot();
       player.root.removeFromParent();
     },

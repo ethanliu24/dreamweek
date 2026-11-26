@@ -125,17 +125,16 @@ const DREAM_COMMANDS = {
     },
   },
   void: {
-    takeSun(s) {
-      if (nextDream(s) !== 'void') return;
-      return finishChapter(s, 'sun', 'Sun Essence');
-    },
     defeatWizard(s) {
-      if (nextChapter(s) !== 'moon' || s.wizard !== 'distant') return;
+      if (s.wizard !== 'distant' || (nextDream(s) !== 'void' && nextChapter(s) !== 'moon')) return;
       return { wizard: 'unconscious' };
     },
-    takeMoon(s) {
-      if (nextChapter(s) !== 'moon' || s.wizard !== 'unconscious') return;
-      return finishChapter(s, 'moon', 'Moon Essence');
+    takeEssences(s) {
+      if (s.wizard !== 'unconscious') return;
+      if (nextDream(s) === 'void') {
+        return { completed: [...s.completed, 'sun', 'moon'], items: [...s.items, 'Sun Essence', 'Moon Essence'] };
+      }
+      if (nextChapter(s) === 'moon' && hasItem(s, 'Sun Essence')) return finishChapter(s, 'moon', 'Moon Essence');
     },
     bringWizardHome(s) {
       if (s.wizard !== 'unconscious' || !hasItem(s, 'Sun Essence') || !hasItem(s, 'Moon Essence')) return;

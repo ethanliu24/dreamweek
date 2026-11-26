@@ -2,7 +2,7 @@ import {
   BoxGeometry, CylinderGeometry, Group, Mesh, MeshStandardMaterial, PointLight,
   SphereGeometry, TorusGeometry, Vector3,
 } from 'three';
-import { createWizard } from '../../shared/actors/wizard.js';
+import { createWizard, WIZARD_COLLAPSE_ANGLE } from '../../shared/actors/wizard.js';
 import { createCookingPot, createSoupBowl } from '../../shared/props/cooking.js';
 import { nextStationAction } from '../../state/progress.js';
 
@@ -30,7 +30,8 @@ export function createHearthStation({ scene, hearth, progress, interactions, con
   wizardPoint.y = floorHeight(wizardPoint.x, wizardPoint.z);
   const wizard = createWizard();
   wizard.position.copy(wizardPoint);
-  wizard.rotation.z = -0.58;
+  wizard.rotation.z = WIZARD_COLLAPSE_ANGLE;
+  const bellyMoon = wizard.getObjectByName('Belly Moon');
   scene.add(wizard);
   const wood = new Group();
   const fire = new Group();
@@ -89,6 +90,7 @@ export function createHearthStation({ scene, hearth, progress, interactions, con
     bowl.visible = phase === 'stirred' || snapshot.wizard === 'fed';
     if (snapshot.wizard === 'fed') bowl.position.copy(wizardPoint).sub(point).add(new Vector3(0, 0.11, 0.42));
     wizard.visible = snapshot.wizard === 'home' || snapshot.wizard === 'fed';
+    bellyMoon.visible = snapshot.wizard !== 'fed';
     if (pot) {
       pot.liquid.visible = phase !== 'served';
       pot.liquid.material.color.setHex(combined ? 0xda9da9 : golden ? 0xf2b64e : 0x70b9d2);

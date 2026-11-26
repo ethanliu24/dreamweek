@@ -12,7 +12,7 @@ Use a single in-memory progress record for the entire play session. It survives 
 
 Only the hub can call enterNext. Select the first incomplete chapter in the authored order. Fire is initially available. Earth needs Candle, Water needs the empty fired pot, Wood needs potPlaced and Metal needs lit. The shared Void entry needs Sword and boiled. If the required hearth action is pending, return no destination and point the objective at the hearth. After capture, always target the next soup action or the Wizard. Feeding disables new travel. A completed Sun with Moon still pending is a Void recovery state, never a new hammock trip.
 
-For ordinary dreams canReturn becomes true only after that chapter is complete. Put the yellow ring at the arrival point, visible but inactive until then. In Water align it with the beach exit path behind the removable barrier. Void exposes only the body capture interaction, after the Moon pickup.
+For ordinary dreams canReturn becomes true only after that chapter is complete. Put the yellow ring at the arrival point, visible but inactive until then. In Water align it with the beach exit path behind the removable barrier. Void exposes only the body capture interaction, after both essence pickups.
 
 ## Transactions and gates
 
@@ -26,12 +26,12 @@ For ordinary dreams canReturn becomes true only after that chapter is complete. 
 | helpMallow | Wood thank-you after Candle lit local pit | Firewood + wood complete. Ring then hub. |
 | placeWood / lightWood | wood complete, potPlaced and Firewood / woodPlaced and Candle | Consume bundle → woodPlaced; use reusable Candle → lit. Unlock Metal. |
 | earnSword | Repaired forge, Clink reward, lit hearth | Sword + metal complete; mark water boiled during trip. On return no hearth action before Void. |
-| takeSun | Wave cleared, orb available | Sun Essence + sun complete. Same scene enters boss stage. |
-| takeMoon | Manual finisher complete, Wizard unconscious | Moon Essence + moon complete. Keep actual Moon in belly. |
+| defeatWizard | Manual finisher complete | Wizard unconscious. Keep the actual Moon in his belly. |
+| takeEssences | Wizard unconscious and player near the pickup | Both essences enter the inventory and both chapters complete together. |
 | bringWizardHome | Both essences, unconscious Wizard, E capture | Wizard home; request covered hub travel. Retry arrival without replaying combat. |
 | addSun / addMoon | Wizard home + boiled hearth + Sun Essence / sunAdded + Moon Essence | Consume respective essence and advance hearth once each. |
 | stir / takeSoup / feed | moonAdded + Sword / stirred / served + Soup + Wizard home | Stir with retained Sword; collect Soup and set served; consume Soup, set Wizard fed and ended. Show ending image and final lines. |
 
-World entry, active chapter and previous completion also guard reward commands. For local prerequisites the owning world checks the local phase and calls once at the named beat. Mark the Wizard unconscious on finisher completion through progress.apply('defeatWizard'); valid only after Sun and the local 5% gate. On Void retry, reconstruct from progression: Sun complete → boss, unconscious → Moon pickup, Moon complete → capture, home → hub. Water retry derives the filled pot and beach completion from progression. During an unfinished investigation, the clam can restore the local bubble and uncommitted clue work restarts. Completed ordinary world rebuilt during retry enables its return ring immediately. Input queues clear on stage changes.
+World entry, active chapter and previous completion also guard reward commands. For local prerequisites the owning world checks the local phase and calls once at the named beat. Mark the Wizard unconscious on finisher completion through progress.apply('defeatWizard'); valid after the local finisher gate. On Void retry, reconstruct from progression: legacy Sun complete → boss, unconscious → both essence pickups, both chapters complete → capture, home → hub. Water retry derives the filled pot and beach completion from progression. During an unfinished investigation, the clam can restore the local bubble and uncommitted clue work restarts. Completed ordinary world rebuilt during retry enables its return ring immediately. Input queues clear on stage changes.
 
 Read the [design decisions](decisions.md) for the Fire, Earth and inventory choices. Verify each blocked gate before satisfying it. Repeat E and reopen inventory after leaving each dream; reward count, hearth mesh and next destination must agree.
