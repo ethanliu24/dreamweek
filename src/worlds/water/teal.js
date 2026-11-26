@@ -27,6 +27,17 @@ export function createTeal() {
   for (const x of [-0.17, 0.17]) prop(root, sphere, dark, [x, 0.59, 0.279], [0.18, 0.11, 0.065]);
   prop(root, box, dark, [0, 0.61, 0.31], [0.15, 0.025, 0.03]);
   prop(root, sphere, ivory, [0, 0.44, 0.3], [0.15, 0.075, 0.08]);
+  const trim=new MeshStandardMaterial({color:0xe5b95e,metalness:.32,roughness:.3});
+  const reflection=new MeshStandardMaterial({color:0x8ddadd,emissive:0x214557});
+  for(const side of [-1,1]){
+    const rim=prop(root,new TorusGeometry(1,.076,8,32),trim,[side*.17,.59,.306],[.18,.113,.11]);
+    rim.rotation.z=side*.065;
+    prop(root,sphere,reflection,[side*.17-.045,.625,.339],[.059,.013,.01]).rotation.z=.33;
+    prop(root,sphere,ivory,[side*.073,.438,.346],[.10,.067,.071]);
+    prop(root,sphere,ivory,[side*.19,.10,-.20],[.14,.08,.19]).rotation.y=side*.48;
+    for(let j=0;j<3;j++)prop(root,sphere,dark,[side*(.08+.025*j),.438+.012*(j%2),.405-.009*j],[.009,.009,.006]);
+  }
+  prop(root,sphere,dark,[0,.485,.385],[.066,.041,.045]);
   const lanyard = prop(root, new TorusGeometry(0.115, 0.012, 6, 20), red, [0, 0.28, 0.29], [1, 1.3, 1]);
   lanyard.rotation.x = -0.27;
 

@@ -1,6 +1,7 @@
 import { Scene, Vector3 } from 'three';
 import { disposeScene } from '../../runtime/assets.js';
 import { createCookingPot } from '../../shared/props/cooking.js';
+import { createDreamSky } from './sky.js';
 import { createReturnRing } from '../../shared/props/return-ring.js';
 import { canReturn } from '../../state/progress.js';
 import { createInvestigation } from './investigation.js';
@@ -13,6 +14,7 @@ const CLAM_SECONDS = 1.6;
 export function createWorld({ player, camera, controls, interactions, ui, signal, progress, travel, audio }) {
   const scene = new Scene();
   scene.name = 'Water';
+  const sky = createDreamSky(scene);
   const shore = buildShore(scene);
   const ring = createReturnRing(ARRIVAL);
   const safeSpawn = ARRIVAL.clone();
@@ -102,6 +104,7 @@ export function createWorld({ player, camera, controls, interactions, ui, signal
       }
       refreshBeach();
       player.teleport(safeSpawn);
+      sky.update(0, player.position);
       player.root.rotation.set(0, Math.PI, 0);
       player.setPose('idle');
       scene.add(player.root);
@@ -158,6 +161,7 @@ export function createWorld({ player, camera, controls, interactions, ui, signal
       });
     },
     present(elapsed) {
+      sky.update(elapsed, player.position);
       shore.animate(elapsed, player.position, bubbleTime, announcing);
       investigation.animate(elapsed);
     },
@@ -171,6 +175,6 @@ export function createWorld({ player, camera, controls, interactions, ui, signal
       }
       player.root.removeFromParent();
     },
-    dispose() { disposeScene(scene); },
+    dispose() { sky.dispose(); disposeScene(scene); },
   };
 }

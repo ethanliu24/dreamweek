@@ -1,3 +1,4 @@
+import { createJellyfish } from './jellyfish.js';
 import {
   BoxGeometry, Group, Mesh, MeshStandardMaterial, SphereGeometry, TorusGeometry, Vector3,
 } from 'three';
@@ -9,9 +10,6 @@ function buildClues(scene) {
   const orange = new MeshStandardMaterial({ color: 0xe4804d });
   const dark = new MeshStandardMaterial({ color: 0x292f42 });
   const pink = new MeshStandardMaterial({ color: 0xe8a5b6 });
-  const lilac = new MeshStandardMaterial({
-    color: 0xd3bcff, emissive: 0x794b9a, emissiveIntensity: 0.55,
-  });
   const gold = new MeshStandardMaterial({
     color: 0xffcd6a, roughness: 0.32, metalness: 0.36, emissive: 0x84531d,
   });
@@ -40,6 +38,18 @@ function buildClues(scene) {
   const claw = add(crab, orange, [0.41, 0.31, 0.22], [0.29, 0.13, 0.16]);
   add(crab, orange, [-0.39, 0.15, 0.22], [0.19, 0.085, 0.12]);
 
+  const ivory=new MeshStandardMaterial({color:0xffe4ad});
+  for(const side of [-1,1]){
+    for(let j=0;j<3;j++){
+      const z=-.22+j*.14;
+      add(crab,orange,[side*.44,.18,z],[.23,.065,.05]).rotation.z=side*.25;
+      add(crab,orange,[side*.62,.12,z-.025],[.055,.15,.041]).rotation.z=side*.48;
+    }
+    add(crab,ivory,[side*.17,.615,.212],[.028,.03,.016]);
+    for(let j=0;j<3;j++)add(crab,ivory,[side*(.12+j*.074),.45-j*.025,-.015],[.028,.019,.034]);
+  }
+  for(const sign of [-1,1])add(claw,ivory,[.8,sign*.55,.18],[.53,.35,.55]).rotation.z=sign*.32;
+
   const cup = place(4.7, -19.4);
   add(cup, pink, [0, 0.09, 0], [0.65, 0.14, 0.55]);
   for (const x of [-0.45, 0.45]) {
@@ -53,11 +63,13 @@ function buildClues(scene) {
   add(whistle, dark, [0.06, 0.074, 0], [0.11, 0.013, 0.055], new BoxGeometry());
   add(whistle, gold, [-0.248, 0, 0], [1, 1, 1], new TorusGeometry(0.056, 0.013, 6, 12));
 
+  const barrel=add(whistle,gold,[-.12,0,0],[.108,.108,.13],new TorusGeometry(1,.14,8,32));
+  barrel.position.z=.07;
+  add(whistle,dark,[.238,.015,0],[.008,.036,.072],new BoxGeometry());
   const jellyfish = place(-3.4, -31.5);
-  const bell = add(jellyfish, lilac, [0, 0.95, 0], [0.69, 0.48, 0.66],
-    new SphereGeometry(1, 20, 10, 0, Math.PI * 2, 0, Math.PI / 2));
-  const ribbons = [-0.43, -0.16, 0.16, 0.43].map(x =>
-    add(jellyfish, pink, [x, 0.58, 0], [0.066, 0.42, 0.055]));
+  const witness=createJellyfish(0xefadff);
+  witness.root.position.y=1.37;
+  jellyfish.add(witness.root);
 
   return {
     points: { crab: crab.position, whistle: cup.position, jellyfish: jellyfish.position },
@@ -66,14 +78,13 @@ function buildClues(scene) {
     cup,
     whistle,
     gold,
-    bell,
-    ribbons,
+    witness,
   };
 }
 
 export function createInvestigation({ scene, shore, player, camera, ui, signal, progress, onResolve }) {
   const { teal, station } = shore;
-  const { points, crab, claw, cup, whistle, gold, bell, ribbons } = buildClues(scene);
+  const { points, crab, claw, cup, whistle, gold, witness } = buildClues(scene);
   const found = new Set();
   const presented = new Set();
   const leave = { id: 'leave', label: 'Keep investigating' };
@@ -94,7 +105,7 @@ export function createInvestigation({ scene, shore, player, camera, ui, signal, 
     setTalking(true);
     const point = points[id];
     camera.shot({
-      eye: point.clone().add(new Vector3(2.8, 1.55, 1.65)),
+      eye: point.clone().add(new Vector3(2.95, 1.72, .75)),
       lookAt: point.clone().add(new Vector3(0, 0.62, 0)),
     });
     try {
@@ -196,9 +207,7 @@ export function createInvestigation({ scene, shore, player, camera, ui, signal, 
         crab.rotation.y = Math.atan2(player.position.x - crab.position.x, player.position.z - crab.position.z);
       }
       claw.rotation.z = crabTalking ? 0.55 + Math.sin(elapsed * 7) * 0.18 : 0;
-      const pulse = Math.sin(elapsed * (jellyfishTalking ? 5 : 2));
-      bell.scale.y = 0.48 + pulse * 0.045;
-      for (const ribbon of ribbons) ribbon.rotation.z = 0.12 * pulse;
+      witness.animate(elapsed, Number(jellyfishTalking));
       whistle.visible = displayingWhistle || !found.has('whistle');
       whistle.rotation.y = displayingWhistle ? 0.3 : Math.sin(elapsed * 1.8) * 0.45;
       gold.emissiveIntensity = 0.35 + 0.3 * Math.sin(elapsed * 3);
