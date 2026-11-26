@@ -37,6 +37,7 @@ export function createCameraRig(camera, { obstructions = [] } = {}) {
   let pitch = DEFAULT_PITCH;
   let orbitYaw = 0;
   let orbitPitch = DEFAULT_PITCH;
+  let followDistance = FOLLOW_DISTANCE;
   let distance = FOLLOW_DISTANCE;
   let scriptedShot = null;
   let elapsed = 0;
@@ -52,7 +53,7 @@ export function createCameraRig(camera, { obstructions = [] } = {}) {
     eyeAnchor.copy(focus);
     orbitYaw = yaw;
     orbitPitch = pitch;
-    distance = FOLLOW_DISTANCE;
+    distance = followDistance;
     scriptedShot = null;
     duration = 0;
   }
@@ -81,7 +82,7 @@ export function createCameraRig(camera, { obstructions = [] } = {}) {
       offset.subVectors(scriptedShot.eye, scriptedShot.lookAt);
       destination.setFromVector3(offset);
     } else {
-      offset.setFromSphericalCoords(FOLLOW_DISTANCE, Math.PI / 2 - orbitPitch, orbitYaw);
+      offset.setFromSphericalCoords(followDistance, Math.PI / 2 - orbitPitch, orbitYaw);
       offset.add(eyeAnchor).sub(focus);
       destination.setFromVector3(offset);
     }
@@ -116,9 +117,10 @@ export function createCameraRig(camera, { obstructions = [] } = {}) {
   return {
     get yaw() { return orbitYaw; },
     setObstructions,
-    resetOrbit({ pitch: entryPitch = DEFAULT_PITCH } = {}) {
+    resetOrbit({ pitch: entryPitch = DEFAULT_PITCH, distance: entryDistance = FOLLOW_DISTANCE } = {}) {
       yaw = 0;
       pitch = entryPitch;
+      followDistance = entryDistance;
       if (player) reset();
     },
     follow(target) {

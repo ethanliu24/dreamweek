@@ -7,6 +7,7 @@ const GRAVITY = 14;
 const SWING_DURATION = 0.45;
 const STRIKE_START = 0.12;
 const STRIKE_END = 0.25;
+const KNOCKBACK_DAMPING = 14;
 const EPSILON = 1e-6;
 
 function platformTop(platforms, x, z, fromY, toY) {
@@ -34,6 +35,7 @@ export function createPlayer() {
   root.add(spirit.model);
 
   const velocity = new Vector3();
+  const pushVelocity = new Vector3();
   const move = new Vector3();
   let teleportRevision = 0;
   let held = null;
@@ -61,6 +63,7 @@ export function createPlayer() {
     teleportRevision++;
     position.copy(point);
     velocity.set(0, 0, 0);
+    pushVelocity.set(0, 0, 0);
     swingTime = SWING_DURATION;
     squash = 0;
     spirit.reset();
@@ -119,8 +122,11 @@ export function createPlayer() {
       }
     }
 
-    position.x = MathUtils.clamp(position.x + velocity.x * dt, walkBounds.minX, walkBounds.maxX);
-    position.z = MathUtils.clamp(position.z + velocity.z * dt, walkBounds.minZ, walkBounds.maxZ);
+    const pushDecay = Math.exp(-KNOCKBACK_DAMPING * dt);
+    const pushStep = (1 - pushDecay) / KNOCKBACK_DAMPING;
+    position.x = MathUtils.clamp(position.x + velocity.x * dt + pushVelocity.x * pushStep, walkBounds.minX, walkBounds.maxX);
+    position.z = MathUtils.clamp(position.z + velocity.z * dt + pushVelocity.z * pushStep, walkBounds.minZ, walkBounds.maxZ);
+    pushVelocity.multiplyScalar(pushDecay);
     velocity.y -= GRAVITY * dt;
     const nextY = previousY + velocity.y * dt;
     if (velocity.y <= 0) {
@@ -155,6 +161,9 @@ export function createPlayer() {
     root, position, teleport, step, setHeld,
     get teleportRevision() { return teleportRevision; },
     setPose(name) { pose = name; },
+    knockback(direction, distance) {
+      pushVelocity.set(direction.x, 0, direction.z).normalize().multiplyScalar(distance * KNOCKBACK_DAMPING);
+    },
     attachPoint(name) { return name === 'grip' ? spirit.grip : undefined; },
     strikeWindow() {
       return {

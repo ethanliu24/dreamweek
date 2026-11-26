@@ -29,6 +29,10 @@ const PREVIEWS = {
     completed: ['fire', 'earth', 'water', 'wood'], items: ['Candle'], hearth: 'lit',
     pot: { phase: 'placed', shape: { base: 0.5, height: 0.62, rim: 0.66 } },
   } }),
+  'void-arrival': ({ mount }) => createGame({ mount, initialWorld: 'void', initialProgress: {
+    completed: ['fire', 'earth', 'water', 'wood', 'metal'], items: ['Candle', 'Sword'], hearth: 'boiled',
+    pot: { phase: 'placed', shape: { base: 0.5, height: 0.62, rim: 0.66 } },
+  } }),
 
   'round-trip': createRoundTripPreview,
   'earth-arrival': ({ mount }) => createGame({ mount, initialWorld: 'earth',
@@ -233,6 +237,7 @@ export function mountPreview({ mount }) {
         <option value="water-arrival">Water arrival</option>
         <option value="wood-arrival">Wood arrival</option>
         <option value="metal-arrival">Metal arrival</option>
+        <option value="void-arrival">Void arrival</option>
         <option value="metal-board">Metal pipe board</option>
         <option value="hub-water">Hub after Water</option>
         <option value="hub-wood">Hub after Wood</option>

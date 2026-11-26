@@ -1,7 +1,8 @@
 import {
-  BoxGeometry, ConeGeometry, CylinderGeometry, Group, Mesh, MeshStandardMaterial, PointLight,
+  BoxGeometry, CylinderGeometry, Group, Mesh, MeshStandardMaterial, PointLight,
   SphereGeometry, TorusGeometry, Vector3,
 } from 'three';
+import { createWizard } from '../../shared/actors/wizard.js';
 import { createCookingPot, createSoupBowl } from '../../shared/props/cooking.js';
 import { nextStationAction } from '../../state/progress.js';
 
@@ -23,28 +24,14 @@ function mesh(parent, geometry, color, x, y, z, options) {
   return object;
 }
 
-function makeWizard(scene, point) {
-  const frog = new Group();
-  frog.position.copy(point);
-  frog.rotation.z = -0.58;
-  scene.add(frog);
-  const sphere = new SphereGeometry(1, 14, 10);
-  mesh(frog, sphere, 0x6d9a76, 0, 0.31, 0).scale.set(0.42, 0.34, 0.34);
-  mesh(frog, sphere, 0xa9bc85, 0, 0.31, 0.23).scale.set(0.30, 0.23, 0.16);
-  for (const x of [-0.2, 0.2]) {
-    mesh(frog, sphere, 0x7da57a, x, 0.55, 0.18).scale.set(0.13, 0.12, 0.1);
-    mesh(frog, new BoxGeometry(0.12, 0.018, 0.014), 0x334447, x, 0.553, 0.271);
-  }
-  mesh(frog, new CylinderGeometry(0.39, 0.39, 0.045, 24), 0x57547f, 0, 0.65, -0.06);
-  mesh(frog, new ConeGeometry(0.24, 0.52, 24), 0x69638a, 0, 0.9, -0.06);
-  return frog;
-}
-
 export function createHearthStation({ scene, hearth, progress, interactions, controls, floorHeight }) {
   const point = hearth.position;
   const wizardPoint = new Vector3(point.x + 2.3, 0, point.z - 0.35);
   wizardPoint.y = floorHeight(wizardPoint.x, wizardPoint.z);
-  const wizard = makeWizard(scene, wizardPoint);
+  const wizard = createWizard();
+  wizard.position.copy(wizardPoint);
+  wizard.rotation.z = -0.58;
+  scene.add(wizard);
   const wood = new Group();
   const fire = new Group();
   hearth.add(wood, fire);
