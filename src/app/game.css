@@ -129,3 +129,101 @@ textarea {
   right: 0.75rem;
   bottom: 0.75rem;
 }
+
+.dreamweek.has-live-title {
+  position: relative;
+  isolation: isolate;
+  background: black;
+}
+
+.has-live-title .dreamweek-menu {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  min-height: 0;
+  padding-bottom: clamp(2rem, 10vh, 7rem);
+  background: transparent;
+  color: white;
+  pointer-events: none;
+  text-shadow: 0 0 30px #8a6ac0a0, 0 1px 3px #514565;
+  transition: opacity var(--intro-fade-out) ease-in-out;
+}
+
+.has-live-title .dreamweek-menu h1 {
+  font-size: min(9vh, 11vw);
+  font-weight: 500;
+  letter-spacing: min(4.5vh, 3.6vw);
+  padding-inline-start: min(4.5vh, 3.6vw);
+  text-transform: lowercase;
+}
+
+.has-live-title .dreamweek-menu [data-start] {
+  display: grid;
+  position: absolute;
+  inset: 0;
+  place-items: center;
+  padding-top: min(30vh, 14rem);
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: 300 0.78rem "Avenir Next", system-ui, sans-serif;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  text-shadow: inherit;
+}
+
+.is-title .dreamweek-menu [data-start]:enabled {
+  pointer-events: auto;
+}
+
+.has-live-title .dreamweek-menu [data-start]:focus-visible {
+  outline-offset: -0.4rem;
+}
+
+.has-live-title .dreamweek-menu [data-start]:disabled {
+  opacity: 0;
+}
+
+.has-live-title .dreamweek-menu.is-waking {
+  opacity: 0;
+}
+
+.has-live-title .dreamweek-stage {
+  background: #f6d9d0;
+}
+
+.is-title .dreamweek-stage::after {
+  position: absolute;
+  inset: 0;
+  background: #f6d9d0;
+  pointer-events: none;
+  content: "";
+}
+
+.is-title.title-ready .dreamweek-stage::after {
+  animation: dreamweek-title-reveal var(--title-fade-in) linear forwards;
+}
+
+.is-title .dream-hud-content {
+  visibility: hidden;
+}
+
+.is-title:has(.dream-load-error:not([hidden])) .dreamweek-menu,
+.is-title:has(.dream-load-error:not([hidden])) .dreamweek-stage::after {
+  visibility: hidden;
+}
+
+@keyframes dreamweek-title-reveal {
+  to { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .has-live-title .dreamweek-menu {
+    transition: none;
+  }
+
+  .is-title.title-ready .dreamweek-stage::after {
+    animation: none;
+    opacity: 0;
+  }
+}

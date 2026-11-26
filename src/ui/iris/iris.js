@@ -76,6 +76,7 @@ export function createIris({ mount, onCover }) {
   return {
     close: signal => animate(true, signal),
     open: signal => animate(false, signal),
+    reveal: () => finishCover(false),
     clearError,
     showLoadError(_error, nextActions) {
       finishCover(true);

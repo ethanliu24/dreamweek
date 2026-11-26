@@ -38,6 +38,8 @@
   font: inherit;
   overflow-wrap: anywhere;
   cursor: pointer;
+  background: none;
+  border: none;
 }
 
 .dream-hud :focus-visible {
@@ -47,4 +49,42 @@
 
 .dream-hud-content:has(> .dream-plate:not([hidden])) .game-overlay {
   display: none;
+}
+
+.dream-plate-blackout {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  background: #000;
+}
+
+.dream-ending {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 1.5rem;
+  background: #000;
+  color: #fff;
+  text-align: center;
+  pointer-events: auto;
+}
+
+.dream-ending h1 {
+  margin: 0;
+  font-size: clamp(2.75rem, 9vw, 5rem);
+  font-weight: 400;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .dream-ending:not([hidden]) {
+    animation: dream-ending-fade 900ms ease-in-out both;
+  }
+}
+
+@keyframes dream-ending-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }

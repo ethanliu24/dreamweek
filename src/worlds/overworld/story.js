@@ -1,5 +1,5 @@
-import { arrival, ending, intro, wakeThoughts } from './lines.js';
-import { openingPlate, endingPlate } from './plates.js';
+import { ending, intro, wakeThoughts } from './lines.js';
+import { endingPlate, openingPlate } from './plates.js';
 
 function reminder(snapshot) {
   switch (snapshot.completed.at(-1)) {
@@ -32,7 +32,6 @@ export function createOverworldStory({ ui, controls, progress, signal }) {
   return {
     enter(spawn) {
       openingPending = spawn === 'arrival' && progress.read().completed.length === 0;
-      if (openingPending) ui.plate(openingPlate(), 'Six elemental dreams curve around a white arena. An empty place marks the missing Moon.');
     },
     update() {
       if (busy || endingStarted) return;
@@ -42,18 +41,15 @@ export function createOverworldStory({ ui, controls, progress, signal }) {
         play(async () => {
           ui.plate(endingPlate(), 'The restored Moon lights the cottage, the overstuffed Frog Wizard and the spirit beside an empty bowl.');
           for (const exchange of ending) await ui.say(exchange, signal);
+          signal.throwIfAborted();
+          ui.showEnding();
         });
       } else if (openingPending) {
         openingPending = false;
         play(async () => {
-          try {
-            await ui.say(intro, signal);
-            await ui.iris.close(signal);
-          } finally {
-            if (!signal.aborted) ui.plate(null);
-          }
-          await ui.iris.open(signal);
-          await ui.say(arrival, signal);
+          await ui.fadePlate(openingPlate(), 'Six elemental dreams curve around a white arena. An empty place marks the missing Moon.', signal);
+          await ui.say(intro, signal);
+          await ui.fadePlate(null, '', signal);
         });
       } else {
         const id = reminder(snapshot);

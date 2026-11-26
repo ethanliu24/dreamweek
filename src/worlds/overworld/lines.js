@@ -18,17 +18,6 @@ export const intro = {
   ],
 };
 
-export const arrival = {
-  speaker: 'Player',
-  lines: [
-    'Wait... no Monday means no Cyber Monday?! And so no Black Friday??!!',
-    "Now I can't buy a washing machine on discount!!!",
-    'I can\'t wash my blanket without it...',
-    '...',
-    'I need to get Monday back.',
-  ],
-};
-
 export const wakeThoughts = {
   OVERWORLD_FIRE_RETURN: 'I have a fire source... now I need something to cook in.',
   OVERWORLD_EARTH_RETURN: 'Now I need some water to fill this pot.',

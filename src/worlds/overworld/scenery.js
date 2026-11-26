@@ -233,7 +233,7 @@ function createHearth(scene) {
   return hearth;
 }
 
-export function createScenery() {
+export function createScenery({ showContact = true } = {}) {
   const scene = new Scene();
   scene.name = 'Overworld';
   const key = new DirectionalLight(0xffe1c9, 2.0);
@@ -258,6 +258,7 @@ export function createScenery() {
     map: contactTexture(), transparent: true, depthWrite: false,
     polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -1,
   }));
+  contact.visible = showContact;
   contact.rotation.x = -Math.PI / 2;
   const wake = WAKE.clone().setY(floorHeight(WAKE.x, WAKE.z));
   return {

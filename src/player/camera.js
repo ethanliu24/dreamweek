@@ -138,9 +138,9 @@ export function createCameraRig(camera, { obstructions = [] } = {}) {
       beginTransition(seconds);
       scriptedShot = { eye: new Vector3().copy(eye), lookAt: new Vector3().copy(lookAt) };
     },
-    releaseShot() {
+    releaseShot(seconds = RETURN_SECONDS) {
       if (!scriptedShot) return;
-      beginTransition(RETURN_SECONDS);
+      beginTransition(seconds);
       scriptedShot = null;
     },
     update,

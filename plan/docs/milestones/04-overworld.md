@@ -39,7 +39,7 @@ Read the [root instructions](../../../AGENTS.md) once. Each card lists its addit
 **Files in scope** `src/worlds/overworld/story.js`, `src/worlds/overworld/lines.js`, `src/worlds/overworld/plates.js`
 **Interfaces** say, plate, feed, ended
 
-**Requirements** Use one composition each for the intro and ending. Deliver the washing-machine motivation, wake thoughts at their specified triggers, and feed sequence. Reuse a basic unconscious Wizard prop until his final model arrives. Reserve OVERWORLD_SUN_RETURN for Void.
+**Requirements** Use one composition each for the intro and ending. Deliver the intro narration, wake thoughts at their specified triggers, and feed sequence. Reuse a basic unconscious Wizard prop until his final model arrives. Reserve OVERWORLD_SUN_RETURN for Void.
 
 **Acceptance** Feeding ends control; the final exchange leaves one concluding image. Wake thoughts appear once after their correct action.
 **Verify** Start normally, then load each hub QA seed. Feed and keep pressing E.
@@ -50,7 +50,7 @@ Read the [root instructions](../../../AGENTS.md) once. Each card lists its addit
 
 **How to test**
 
-1. Start a new game. Advance the intro and washing-machine lines, walk from the hammock to the empty hearth and look out over the island edge. Sleep and verify the iris closes fully.
+1. On the live Overworld title, select Click to wake. Check the fade through full black into the narration illustration, advance the narration, then check the fade through full black back to the normal Overworld camera. Confirm movement is available immediately after the fade, then walk from the hammock to the empty hearth and look out over the island edge. Sleep and verify the iris closes fully.
 2. In `?qa` choose Hub after Water. Try the hammock before placing the pot. Place it and check that it appears on the hearth and unlocks Wood. In Hub after Wood, place wood and light it separately.
 3. Choose Hub after Moon. Add Sun, add Moon, stir, take the soup and feed the Wizard. Read the final lines and press movement keys. The restored Moon image should stay on screen.
 

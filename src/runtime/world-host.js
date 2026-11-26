@@ -23,7 +23,9 @@ function copyEntry({ id, spawn, progress }) {
   return { id, spawn, progress: structuredClone(progress) };
 }
 
-export function createWorldHost({ registry, controls, ui, resolveTravel, stepWorld, audio, progress, ...services }) {
+export function createWorldHost({
+  registry, controls, ui, resolveTravel, stepWorld, audio, progress, coverInitial = true, ...services
+}) {
   let active = null;
   let attempt = null;
   let failure = null;
@@ -99,9 +101,10 @@ export function createWorldHost({ registry, controls, ui, resolveTravel, stepWor
 
   async function swap(instance, coveredAt) {
     const { controller: { signal }, entry, previousEntry } = instance;
+    const coveredTravel = coverInitial || Boolean(previousEntry);
 
     try {
-      if (coveredAt === undefined) {
+      if (coveredTravel && coveredAt === undefined) {
         await ui.iris.close(signal);
         coveredAt = performance.now();
       }
@@ -125,9 +128,13 @@ export function createWorldHost({ registry, controls, ui, resolveTravel, stepWor
       signal.throwIfAborted();
 
       instance.ready = true;
-      await waitForCover(coveredAt, signal);
-      signal.throwIfAborted();
-      await ui.iris.open(signal);
+      if (coveredTravel) {
+        await waitForCover(coveredAt, signal);
+        signal.throwIfAborted();
+        await ui.iris.open(signal);
+      } else if (coveredAt !== undefined) {
+        ui.iris.reveal();
+      }
       signal.throwIfAborted();
       active = instance;
       attempt = null;

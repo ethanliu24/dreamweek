@@ -1,5 +1,4 @@
 import { seededRandom } from './garden.js';
-
 import introImage from './assets/intro.png';
 
 export const openingPlate = () => introImage;
