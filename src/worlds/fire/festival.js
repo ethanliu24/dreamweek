@@ -10,7 +10,7 @@ import { addCandleStream } from './candle-stream.js';
 import { batches } from './lanterns.js';
 
 const tau = Math.PI * 2;
-const FIREFLY_BOB = { amplitude: [0.13, 0.16], speed: [0.35, 0.5] };
+const FIREFLY_BOB = { amplitude: [0.13, 0.16], speed: [0.5, 0.8] };
 const rand = (a,b) => a + Math.random() * (b-a);
 const smooth = (a,b,x) => { const t = Math.max(0,Math.min(1,(x-a)/(b-a))); return t*t*(3-2*t); };
 const matte = (color, roughness = 0.92) => new MeshStandardMaterial({ color, roughness, metalness: 0.02 });

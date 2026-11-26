@@ -17,7 +17,13 @@ import './game.css';
 
 // Latern bloom settings. Strength controls intensity, radius controls spread,
 // and threshold controls which highlights glow. Set strength to 0 to disable.
-const OVERWORLD_GLOW = { strength: 0.22, radius: 0.75, threshold: 0.97 };
+const WORLD_GLOW = {
+  'Overworld': { strength: 0.22, radius: 0.75, threshold: 0.97 },
+  'Fire': { strength: 0.05, radius: 0.1, threshold: 0.97 },
+  'Earth': { strength: 0.22, radius: 0.75, threshold: 0.97 },
+  'Water': { strength: 0.22, radius: 0.75, threshold: 0.97 },
+}
+
 // Intro fade timings in milliseconds.
 const TITLE_FADE_IN_MS = 1500;
 const INTRO_FADE_IN_MS = 450;
@@ -159,14 +165,14 @@ export function createGame({ mount, registry = createWorldRegistry(), initialPro
             titleCamera.updateProjectionMatrix();
           }
           titleScenery.animate(time, titleTarget);
-          display.render(titleScenery.scene, OVERWORLD_GLOW, titleCamera);
+          display.render(titleScenery.scene, WORLD_GLOW['Overworld'], titleCamera);
           return;
         }
         const scene = host.scene;
         if (!scene) return;
         host.present(elapsed, dt);
         audio.updateListener(display.camera);
-        display.render(scene, scene.name === 'Overworld' ? OVERWORLD_GLOW : undefined);
+        display.render(scene, WORLD_GLOW[scene.name]);
         ui.update(display.camera);
       },
     });
