@@ -26,6 +26,10 @@ const PREVIEWS = {
   'earth-arrival': ({ mount }) => createGame({ mount, initialWorld: 'earth',
     initialProgress: { completed: ['fire'], items: ['Candle'] } }),
   'fire-arrival': ({ mount }) => createGame({ mount, initialWorld: 'fire' }),
+  'water-arrival': ({ mount }) => createGame({ mount, initialWorld: 'water', initialProgress: {
+    completed: ['fire', 'earth'], items: ['Candle'],
+    pot: { phase: 'empty', shape: { base: 0.5, height: 0.62, rim: 0.66 } },
+  } }),
   'hub-water': ({ mount }) => createHubPreview({ mount, after: 'water' }),
   'hub-wood': ({ mount }) => createHubPreview({ mount, after: 'wood' }),
   'hub-metal': ({ mount }) => createHubPreview({ mount, after: 'metal' }),
@@ -214,6 +218,7 @@ export function mountPreview({ mount }) {
         <option value="round-trip" selected>Round trip</option>
         <option value="fire-arrival">Fire arrival</option>
         <option value="earth-arrival">Earth arrival</option>
+        <option value="water-arrival">Water arrival</option>
         <option value="hub-water">Hub after Water</option>
         <option value="hub-wood">Hub after Wood</option>
         <option value="hub-metal">Hub after Metal</option>
