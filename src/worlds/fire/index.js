@@ -5,6 +5,13 @@ import { createScenery } from './scenery.js';
 export function createWorld({ camera, player, ui }) {
   const { scene, platforms, walkBounds } = createScenery();
   const safeSpawn = new Vector3(0, 0, 3.6);
+  const summit = platforms.at(-1);
+  const summitTarget = new Vector3(
+    (summit.minX + summit.maxX) / 2,
+    summit.y,
+    (summit.minZ + summit.maxZ) / 2,
+  );
+  let reachedSummit = false;
 
   return {
     scene,
@@ -16,9 +23,16 @@ export function createWorld({ camera, player, ui }) {
       player.teleport(safeSpawn);
       camera.resetOrbit({ pitch: 0.18 });
       scene.add(player.root);
-      ui.objective('Climb the lanterns with Space');
+      reachedSummit = false;
+      ui.objective('Climb to the top lantern', summitTarget);
     },
-    update() {},
+    update() {
+      if (reachedSummit) return;
+      const { x, y, z } = player.position;
+      if (y !== summit.y || x < summit.minX || x > summit.maxX || z < summit.minZ || z > summit.maxZ) return;
+      reachedSummit = true;
+      ui.objective('');
+    },
     exit() {
       player.root.removeFromParent();
     },

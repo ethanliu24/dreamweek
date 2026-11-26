@@ -3,7 +3,19 @@ import {
   HemisphereLight, Mesh, MeshStandardMaterial, PlaneGeometry, PointLight, Scene, SphereGeometry,
 } from 'three';
 
-const STEPS_X = [0, 0.3, 0.85, 1.45, 1.85, 1.8, 1.4, 0.75, 0, -0.65, -1.1, -1.25];
+// Fold the route back over the valley. Small offsets vary each visit while
+// the anchors keep consecutive jumps reachable and leave room overhead.
+const ROUTE = [
+  [0, 0], [1.4, -2], [3.6, -3], [4.3, -5.4], [2.4, -7],
+  [0, -7.4], [-1.8, -5.7], [-4, -4.8], [-4.5, -2.4], [-2.5, -1],
+  [-0.2, -1.8], [1.3, -3.8], [3.7, -4.3], [4.4, -6.7], [2.5, -8.2],
+  [0.2, -7.3], [-2, -8.4], [-4, -6.9], [-3.8, -4.4], [-1.7, -3.1],
+  [0.6, -3.9], [2, -6], [1, -8.2], [-1.4, -9.2],
+];
+
+function between(min, max) {
+  return min + Math.random() * (max - min);
+}
 
 export function createScenery() {
   const scene = new Scene();
@@ -34,13 +46,15 @@ export function createScenery() {
   scene.add(approach);
 
   const tassel = new CylinderGeometry(0.035, 0.055, 0.22, 6);
-  const platforms = STEPS_X.map((x, index) => {
-    const summit = index === STEPS_X.length - 1;
-    const z = -index * 2.52;
-    const y = (index + 1) * 0.65;
-    const width = summit ? 3.4 : 2.4;
-    const depth = summit ? 2.2 : 1.8;
-    const body = summit ? 0.95 : 0.42;
+  let y = 0;
+  const platforms = ROUTE.map(([anchorX, anchorZ], index) => {
+    const summit = index === ROUTE.length - 1;
+    const x = anchorX + between(-0.14, 0.14);
+    const z = anchorZ + between(-0.14, 0.14);
+    y += between(0.72, 0.89);
+    const width = summit ? 3.4 : between(1.45, 2.4);
+    const depth = summit ? 2.2 : between(1.25, 1.8);
+    const body = summit ? 0.95 : between(0.26, 0.42);
 
     place(box, gold, x, y - 0.05, z, width, 0.1, depth);
     place(box, paper, x, y - 0.1 - body / 2, z, width - 0.14, body, depth - 0.14);
