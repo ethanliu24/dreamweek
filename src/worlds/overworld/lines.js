@@ -3,14 +3,17 @@ export const intro = {
   speaker: 'Narrator',
   lines: [
     'Beyond the sky lies a multiverse of interconnected dream worlds.',
-    'Each world represents a day of the week, shaped by its own element. Together, they form the calendar.',
-    'But there was one who despised the very beginning of each week...',
-    'The Grand Wizard, a frog who absolutely hated Mondays.',
-    'One day, he discovered a technique in an ancient historical book. It claimed that swallowing the Moon would erase Monday from the calendar.',
-    'Naturally, he decided to try it.',
-    'The Moon disappeared into his stomach, and the calendar collapsed. The seven worlds fell out of balance.',
-    'But the ancient book also revealed a way to restore the week.',
-    'Gather the Sun and Moon Essences, combine them into a magical soup, and feed it to the one who swallowed the Moon.',
+    'Each world represents a day of the week, shaped by its own element.',
+    'The elements are fire, water, wood, earth, metal, sun and moon.',
+    'Together, they form the calendar.',
+    'However, there there is one entity who despised the very beginning of each week...',
+    'The Grand Wizard, a frog who is the #1 Monday hater.',
+    'One day, he discovered a technique in an ancient magic book. It claimed that swallowing the Moon would erase every Monday from the calendar.',
+    'As a jerk he is, he did just that.',
+    'He swallowed the entire moon and now looks like a bowling ball.',
+    'What came with it, was that the calendar collapsed, and the seven worlds fell out of balance.',
+    'There is only one way to save this, according to the ancient magic book',
+    'Gather the Sun and Moon Essences, brew a soup out of it, and let the one who swallowed the Moon drink it.',
     'And so, someone would have to journey through the dream worlds to restore the calendar.',
   ],
 };
@@ -27,7 +30,7 @@ export const arrival = {
 };
 
 export const wakeThoughts = {
-  OVERWORLD_FIRE_RETURN: 'I have a Candle... now I need something to cook in.',
+  OVERWORLD_FIRE_RETURN: 'I have a fire source... now I need something to cook in.',
   OVERWORLD_EARTH_RETURN: 'Now I need some water to fill this pot.',
   OVERWORLD_WATER_RETURN: 'Now I need some firewood to get this going.',
   OVERWORLD_WOOD_RETURN: "The fire's ready. Now I just need something to stir it with.",
