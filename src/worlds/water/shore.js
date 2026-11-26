@@ -1,3 +1,4 @@
+import { createTeal } from './teal.js';
 import {
   BoxGeometry, CanvasTexture, Color, CylinderGeometry, DirectionalLight, Fog,
   Group, HemisphereLight, MathUtils, Mesh, MeshBasicMaterial, MeshStandardMaterial, PlaneGeometry,
@@ -82,19 +83,8 @@ export function buildShore(scene) {
   prop(station, box, ivory, [0, 1.24, 0], [1.3, 0.13, 1]);
   prop(station, box, red, [0, 1.57, -0.42], [1.3, 0.56, 0.1]);
   prop(station, sphere, peach, [-0.68, 1.28, 0.18], [0.22, 0.16, 0.12]);
-  const teal = new Group();
-  teal.position.set(0, 1.3, 0.05);
-  station.add(teal);
-  prop(teal, sphere, ivory, [0, 0.43, 0], [0.39, 0.46, 0.34]);
-  for (const x of [-0.32, 0.32]) {
-    const flipper = prop(teal, sphere, ivory, [x, 0.24, 0.11], [0.09, 0.2, 0.075]);
-    flipper.rotation.z = x * 1.5;
-  }
-  for (const x of [-0.17, 0.17]) prop(teal, sphere, dark, [x, 0.59, 0.279], [0.18, 0.11, 0.065]);
-  prop(teal, box, dark, [0, 0.61, 0.31], [0.15, 0.025, 0.03]);
-  prop(teal, sphere, ivory, [0, 0.44, 0.3], [0.15, 0.075, 0.08]);
-  const lanyard = prop(teal, new TorusGeometry(0.115, 0.012, 6, 20), red, [0, 0.28, 0.29], [1, 1.3, 1]);
-  lanyard.rotation.x = -0.27;
+  const teal = createTeal();
+  station.add(teal.root);
 
   const beachgoers = [-5.2, 5.4].map((x, i) => {
     const guest = group(x, 0, 3.9 + i * 1.4);
@@ -206,6 +196,7 @@ export function buildShore(scene) {
   return {
     faucet: faucet.position,
     station: station.position,
+    teal,
     clam: clam.position,
     barrier,
     animate(elapsed, position, bubbleTime, announcing) {
@@ -216,7 +207,7 @@ export function buildShore(scene) {
       scene.fog.far = MathUtils.lerp(65, 30, depth);
       sun.intensity = MathUtils.lerp(1.55, 0.58, depth);
 
-      teal.rotation.x = announcing ? -0.18 : 0;
+      teal.animate(elapsed, announcing);
       for (const guest of beachgoers) {
         guest.rotation.y = barrier.visible
           ? Math.atan2(station.position.x - guest.position.x, station.position.z - guest.position.z)

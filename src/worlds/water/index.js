@@ -3,7 +3,8 @@ import { disposeScene } from '../../runtime/assets.js';
 import { createCookingPot } from '../../shared/props/cooking.js';
 import { createReturnRing } from '../../shared/props/return-ring.js';
 import { canReturn } from '../../state/progress.js';
-import { LOCKDOWN, LOCKDOWN_THOUGHT, NO_BUBBLE } from './lines.js';
+import { createInvestigation } from './investigation.js';
+import { LOCKDOWN, LOCKDOWN_THOUGHT, NO_BUBBLE, PRE_LOCKDOWN_SHORE } from './lines.js';
 import { BEACH_END, REEF_END, buildShore, floorHeight } from './shore.js';
 
 const ARRIVAL = new Vector3(0, 0, 8.65);
@@ -25,6 +26,13 @@ export function createWorld({ player, camera, controls, interactions, ui, signal
   let announcing = false;
   let warned = false;
   scene.add(ring);
+  const investigation = createInvestigation({
+    scene, shore, player, camera, ui, signal, progress,
+    onResolve() {
+      refreshBeach();
+      guide();
+    },
+  });
 
   function refreshBeach() {
     const filled = progress.read().pot.phase === 'filled';
@@ -42,7 +50,7 @@ export function createWorld({ player, camera, controls, interactions, ui, signal
     } else if (progress.read().pot.phase === 'empty') {
       ui.objective('Fill the pot at the faucet', shore.faucet);
     } else if (bubbleTime === 1) {
-      ui.objective('Explore the reef');
+      investigation.guide();
     } else {
       ui.objective('Visit the sleepy clam', shore.clam);
     }
@@ -124,6 +132,7 @@ export function createWorld({ player, camera, controls, interactions, ui, signal
           lines: [shore.barrier.visible ? 'The beach is closed.' : 'I still need to fill the pot.'],
         }),
       }));
+      unregister.push(...investigation.register(interactions, () => shore.barrier.visible, () => bubbleTime === 1));
     },
     update(dt, { mode, actions }) {
       if (releaseClam) {
@@ -143,12 +152,14 @@ export function createWorld({ player, camera, controls, interactions, ui, signal
         (actions.moveX ?? 0) * Math.sin(camera.yaw) < -0.01;
       if (warned || player.position.z > 0 || !towardWater) return;
       warned = true;
-      void sayThought(NO_BUBBLE).catch(error => {
+      const thought = shore.barrier.visible ? NO_BUBBLE : PRE_LOCKDOWN_SHORE;
+      void sayThought(thought).catch(error => {
         if (!signal.aborted) console.error('Water shoreline dialogue failed', error);
       });
     },
     present(elapsed) {
       shore.animate(elapsed, player.position, bubbleTime, announcing);
+      investigation.animate(elapsed);
     },
     exit() {
       for (const remove of unregister) remove();
