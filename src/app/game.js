@@ -15,7 +15,7 @@ import { createSword } from '../shared/props/sword.js';
 import markup from './game.html?raw';
 import './game.css';
 
-const SHARED_AUDIO = { cues: ['shared.interaction'] };
+const SHARED_AUDIO = { cues: ['shared.interaction', 'shared.jump'] };
 
 // Latern bloom settings. Strength controls intensity, radius controls spread,
 // and threshold controls which highlights glow. Set strength to 0 to disable.
@@ -141,6 +141,7 @@ export function createGame({ mount, registry = createWorldRegistry(), initialPro
         camera.orbit(actions.orbitX, actions.orbitY);
         if (world.surfaces) {
           frame.playerMotion = player.step(dt, { ...actions, mode, yaw: camera.yaw }, world.surfaces);
+          if (frame.playerMotion?.jumped) audio.play('shared.jump');
         }
         world.update(dt, frame);
         const target = controls.mode === 'explore' ? interactions.select(player.position) : null;

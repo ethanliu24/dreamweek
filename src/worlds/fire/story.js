@@ -19,7 +19,7 @@ export function createFireStory({
   const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
   const wick = createWick();
   const candle = createCandle();
-  const gull = createSeagull();
+  const gull = createSeagull({ onDrop: () => audio.play('seagull.drop') });
   const ring = createReturnRing(safeSpawn);
   const ringColor = ring.material.color.clone();
   summitLantern.add(wick.root);
@@ -107,7 +107,7 @@ export function createFireStory({
       candle.visible = true;
       await say(gift);
       candle.visible = false;
-      if (progress.apply('earnCandle').changed) audio.play('candle.chime', { position: wick.root.position });
+      if (progress.apply('earnCandle').changed) audio.play('shared.obtain', { position: wick.root.position });
       camera.releaseShot();
       if (complete()) showReturn();
     });
@@ -144,6 +144,7 @@ export function createFireStory({
           time = 0;
           releaseOpening = controls.acquire('story');
           shot(perch.clone().add(new Vector3(0, -1.5, -1.5)), -6.2, 3.4, 6.4, 0);
+          audio.play('latern.move')
           break;
         case 'rise': {
           const remaining = 1 - MathUtils.smoothstep(time, 0, RISE_SECONDS);

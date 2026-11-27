@@ -81,7 +81,7 @@ export function createWick() {
   };
 }
 
-export function createSeagull() {
+export function createSeagull({ onFly, onDrop } = {}) {
   const root = new Group();
   root.name = 'Seagull';
   const feather = new MeshStandardMaterial({ color: 0xfff8df });
@@ -104,14 +104,26 @@ export function createSeagull() {
   const speck = new Mesh(sphere, feather);
   speck.name = 'Falling speck';
   speck.scale.setScalar(0.047);
+  let flyTriggered = false;
+  let dropTriggered = false;
   return {
     root, speck,
     fly(origin, time) {
+      if (!flyTriggered) {
+        flyTriggered = true;
+        onFly?.();
+      }
+
       root.position.copy(origin).add(new Vector3(3.1 - time * 2.8, 1.62, 1.35));
       wings.forEach((wing, i) => { wing.rotation.x = (i === 0 ? -1 : 1) * Math.sin(time * 21) * 0.72; });
       const fall = Math.max(0, time - 0.95);
       speck.visible = fall > 0 && fall < 1.22;
       speck.position.set(origin.x + 0.44, origin.y + 1.53 - fall * fall * 2.5, origin.z + 1.35);
+
+      if (speck.visible && !dropTriggered) {
+        dropTriggered = true;
+        onDrop?.();
+      }
     },
   };
 }

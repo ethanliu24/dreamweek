@@ -8,7 +8,7 @@ import { canReturn } from '../state/progress.js';
 
 const ARRIVAL = new Vector3(0, 0, 2);
 const REWARD = new Vector3(0, 0, -1.2);
-const AUDIO = { cues: ['candle.chime'] };
+const AUDIO = { cues: ['shared.obtain'] };
 
 export function createWorld({ player, audio, interactions, progress, travel, ui }) {
   const scene = new Scene();
@@ -63,7 +63,7 @@ export function createWorld({ player, audio, interactions, progress, travel, ui 
         id: 'candle', point: REWARD, enabled: () => !complete(), label: 'Collect Candle',
         run() {
           if (!progress.apply('earnCandle').changed) return;
-          audio.play('candle.chime', { position: REWARD });
+          audio.play('shared.obtain', { position: REWARD });
           refresh();
         },
       }));

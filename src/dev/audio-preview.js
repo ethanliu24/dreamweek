@@ -7,7 +7,7 @@ const QA_CUES = {
   'qa.music.a': { category: 'music', gain: 0.16, synth: { type: 'sine', hz: 196 } },
   'qa.music.b': { category: 'music', gain: 0.14, synth: { type: 'sine', hz: 261.63 } },
   'qa.emitter': { category: 'effects', gain: 0.24, synth: { type: 'triangle', hz: 415, duration: 0.55 } },
-  'qa.missing': { category: 'effects', file: 'assets/audio/qa-intentionally-missing.ogg', fallback: 'candle.chime' },
+  'qa.missing': { category: 'effects', file: 'assets/audio/qa-intentionally-missing.ogg', fallback: 'shared.obtain' },
 };
 
 export function createAudioPreview({ mount }) {

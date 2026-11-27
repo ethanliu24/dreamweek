@@ -3,7 +3,11 @@ import { disposeScene } from '../../runtime/assets.js';
 import { createScenery } from './scenery.js';
 import { createFireStory } from './story.js';
 
-const AUDIO = { cues: ['candle.chime'] };
+const AUDIO = {
+  music: 'fire.music',
+  ambience: ['fire.ambience.crowd'],
+  cues: ['shared.obtain', 'seagull.fly', 'seagull.drop', 'latern.move'],
+};
 
 export function createWorld(context) {
   const { audio, camera, player } = context;
