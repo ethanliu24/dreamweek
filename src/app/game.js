@@ -15,6 +15,8 @@ import { createSword } from '../shared/props/sword.js';
 import markup from './game.html?raw';
 import './game.css';
 
+const SHARED_AUDIO = { cues: ['shared.interaction'] };
+
 // Latern bloom settings. Strength controls intensity, radius controls spread,
 // and threshold controls which highlights glow. Set strength to 0 to disable.
 const WORLD_GLOW = {
@@ -143,8 +145,9 @@ export function createGame({ mount, registry = createWorldRegistry(), initialPro
         world.update(dt, frame);
         const target = controls.mode === 'explore' ? interactions.select(player.position) : null;
         ui.prompt(target?.label);
-        if (actions.interact) {
-          target?.run().catch(error => {
+        if (actions.interact && target) {
+          audio.play('shared.interaction');
+          target.run().catch(error => {
             if (error?.name !== 'AbortError') console.error(error);
           });
         }
@@ -182,6 +185,11 @@ export function createGame({ mount, registry = createWorldRegistry(), initialPro
       soundButton.hidden = audio.state === 'running';
       const enabled = await unlocking;
       if (disposed) return;
+      if (enabled) {
+        void audio.prepare(SHARED_AUDIO).catch(error => {
+          if (error?.name !== 'AbortError') console.error(error);
+        });
+      }
       const restoreFocus = enabled && document.activeElement === soundButton && !canvas.inert;
       soundButton.hidden = enabled;
       if (restoreFocus) canvas.focus({ preventScroll: true });

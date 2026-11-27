@@ -8,7 +8,11 @@ import { createScenery, floorHeight, keepInsideIsland } from './scenery.js';
 const LOWER_SECONDS = 0.48;
 const SLEEP_SECONDS = 0.75;
 const WAKE_PITCH = 0.19;
-const AUDIO = { cues: ['hammock.lower'] };
+const AUDIO = {
+  music: 'overworld.music',
+  ambience: ['overworld.ambience.wind'],
+  cues: ['hammock.sleep'],
+};
 
 function keepOutsideCottage(position, bounds) {
   const { min, max } = bounds;
@@ -100,7 +104,7 @@ export function createWorld({ audio, camera, controls, interactions, player, pro
             yaw: Math.atan2(Math.sin(player.root.rotation.y), Math.cos(player.root.rotation.y)),
             elapsed: 0,
           };
-          audio.play('hammock.lower', { position: hammock.point });
+          audio.play('hammock.sleep', { position: hammock.point });
         },
       });
     },
