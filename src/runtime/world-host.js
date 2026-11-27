@@ -196,6 +196,7 @@ export function createWorldHost({
     request,
     get activeWorld() { return active?.entry.id ?? null; },
     get scene() { return visibleWorld()?.scene ?? null; },
+    get postProcess() { return visibleWorld()?.postProcess; },
     update(dt) {
       if (active && !attempt) {
         const frame = { mode: controls.mode, actions: controls.sample(), playerPosition: services.player?.position };

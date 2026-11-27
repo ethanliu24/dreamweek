@@ -27,13 +27,13 @@ function createRuneGeometry() {
   ));
 }
 
-export function createMinions(scene, keepInside) {
+export function createMinions(scene, keepInside, shadowMap) {
   const core = new MeshBasicMaterial({ color: 0xb572ff });
-  const shadowMaterial = new MeshBasicMaterial({ color: 0x332543, transparent: true, opacity: 0.28, depthWrite: false });
+  const shadowMaterial = new MeshBasicMaterial({ map: shadowMap, transparent: true, opacity: 0.46, depthWrite: false });
   const box = new RoundedBoxGeometry(0.5, 0.5, 0.5, 1, 0.028);
   const runeGeometry = createRuneGeometry();
   const sliver = new BoxGeometry(0.08, 0.32, 0.07);
-  const shadowGeometry = new CircleGeometry(0.29, 24).rotateX(-Math.PI / 2);
+  const shadowGeometry = new CircleGeometry(0.48, 24).rotateX(-Math.PI / 2);
   const idleViolet = 0x9b57e2;
   const brightViolet = 0xf6b7ff;
 
@@ -44,7 +44,7 @@ export function createMinions(scene, keepInside) {
     }));
     const runes = new LineSegments(runeGeometry, new LineBasicMaterial({ color: idleViolet }));
     cube.add(runes);
-    const damageText = createHitFeedback(scene);
+    const feedback = createHitFeedback(scene);
     cube.rotation.set(0.2, index, 0.2);
     const shadow = new Mesh(shadowGeometry, shadowMaterial);
     shadow.position.y = 0.014;
@@ -58,6 +58,7 @@ export function createMinions(scene, keepInside) {
     root.add(shadow, cube, ...pieces);
     scene.add(root);
 
+    const recoil = new Vector3();
     const home = root.position.clone();
     const from = new Vector3();
     const target = new Vector3();
@@ -79,7 +80,7 @@ export function createMinions(scene, keepInside) {
     }
 
     function update(dt, player, strike) {
-      damageText.update(dt);
+      feedback.update(dt);
       time += dt;
       if (phase === 'defeated') {
         const amount = Math.min(time / DISSOLVE_TIME, 1);
@@ -117,11 +118,14 @@ export function createMinions(scene, keepInside) {
       }
 
       const windingUp = phase === 'telegraph';
-      cube.rotation.x += dt * 0.85;
+      cube.rotation.x += dt * (hitTime > 0.16 ? 0 : 0.85);
       cube.rotation.y += dt * (windingUp ? 14 : phase === 'charge' ? 6 : 1.25);
       hitTime = Math.max(0, hitTime - dt);
       cube.material.emissiveIntensity = hitTime * 12;
-      cube.scale.setScalar(1 + hitTime * 1.5);
+      const kick = hitTime / 0.22;
+      cube.position.x = recoil.x * kick * 0.21;
+      cube.position.z = recoil.z * kick * 0.21;
+      cube.scale.set(1 + kick*0.22, 1 - kick*0.18, 1 + kick*0.12);
       runes.material.color.setHex(hitTime > 0 || windingUp ? brightViolet : idleViolet);
 
       offset.subVectors(root.position, player.position).setY(0);
@@ -131,8 +135,9 @@ export function createMinions(scene, keepInside) {
           distance <= STRIKE_REACH && strike.forward.dot(offset) >= STRIKE_ARC * distance) {
         lastSwingId = strike.swingId;
         hits++;
-        hitTime = 0.14;
-        damageText.show(root.position, cube.position.y, strike.forward);
+        hitTime = 0.22;
+        recoil.copy(strike.forward);
+        feedback.show(root.position, cube.position.y, strike.forward, hits === 3 ? 1.25 : 0.95);
         if (hits === 3) {
           cube.visible = false;
           shadow.visible = false;

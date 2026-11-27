@@ -1,5 +1,5 @@
 import {
-  CylinderGeometry, MathUtils, Mesh, MeshBasicMaterial, RingGeometry, SphereGeometry, Vector3,
+  CylinderGeometry, MathUtils, Mesh, MeshBasicMaterial, MeshStandardMaterial, RingGeometry, SphereGeometry, TorusGeometry, Vector3,
 } from 'three';
 import { createHitFeedback } from './hit-feedback.js';
 import { addWizardCombatPose } from '../../shared/actors/wizard.js';
@@ -16,16 +16,20 @@ const ATTACK_KNOCKBACK = 5;
 const BODY_RADIUS = 0.96;
 const STRIKE_ARC = Math.cos(MathUtils.degToRad(55));
 
-export function createBoss(scene, wizard, player, keepInside) {
+export function createBoss(scene, wizard, player, keepInside, shadowMap) {
   const feedback = createHitFeedback(scene);
   const pose = addWizardCombatPose(wizard);
   const ring = new Mesh(new RingGeometry(0.84, 1, 48).rotateX(-Math.PI / 2),
     new MeshBasicMaterial({ color: 0xa454ed, transparent: true, depthWrite: false }));
-  const orb = new Mesh(new SphereGeometry(0.2, 16, 10), new MeshBasicMaterial({ color: 0xb04cfa }));
+  const orb = new Mesh(new SphereGeometry(0.2, 16, 10), new MeshStandardMaterial({ color: 0xd1a5ff, emissive: 0x9935cf, emissiveIntensity: 0.62, roughness: 0.20 }));
+  const orbit = new Mesh(new TorusGeometry(0.245, 0.012, 6, 40),
+    new MeshBasicMaterial({ color: 0xf3caff, toneMapped: false }));
+  orbit.rotation.x = 0.86;
+  orb.add(orbit);
   const tongue = new Mesh(new CylinderGeometry(0.11, 0.15, 1, 12).rotateX(Math.PI / 2),
     new MeshBasicMaterial({ color: 0xe461a7 }));
-  const shadow = new Mesh(new RingGeometry(0, 0.65, 24).rotateX(-Math.PI / 2),
-    new MeshBasicMaterial({ color: 0x342540, transparent: true, opacity: 0.28, depthWrite: false }));
+  const shadow = new Mesh(new RingGeometry(0, 1.03, 24).rotateX(-Math.PI / 2),
+    new MeshBasicMaterial({ map: shadowMap, transparent: true, opacity: 0.66, depthWrite: false }));
   scene.add(ring, orb, tongue, shadow);
 
   const from = new Vector3();
@@ -39,13 +43,14 @@ export function createBoss(scene, wizard, player, keepInside) {
   let health = MAX_HEALTH;
   let lastSwing;
   let hitTime = 0;
+  const hitDuration = 0.29;
   let hitPlayer = false;
 
   function hideAttacks() {
     ring.visible = orb.visible = tongue.visible = false;
   }
   hideAttacks();
-  shadow.visible = false;
+  shadow.position.copy(wizard.position).setY(0.022);
   pose.set();
 
   function enter(next) {
@@ -142,7 +147,7 @@ export function createBoss(scene, wizard, player, keepInside) {
     }
   }
 
-  function resolveContact(dt) {
+  function resolveContact() {
     const strike = player.strikeWindow();
     const height = player.position.y - wizard.position.y;
     offset.subVectors(wizard.position, player.position).setY(0);
@@ -151,8 +156,8 @@ export function createBoss(scene, wizard, player, keepInside) {
         distance <= 1.5 && strike.forward.dot(offset) >= STRIKE_ARC * distance) {
       lastSwing = strike.swingId;
       health = Math.max(FINISHER_HP, health - SWORD_DAMAGE);
-      hitTime = 0.18;
-      feedback.show(wizard.position, 0.68, strike.forward);
+      hitTime = hitDuration;
+      feedback.show(wizard.position, 0.75, strike.forward, 1.45);
     }
     if (height > -0.8 && height < 0.95 && distance < BODY_RADIUS) {
       if (distance > 0.001) offset.multiplyScalar(-1 / distance);
@@ -160,12 +165,21 @@ export function createBoss(scene, wizard, player, keepInside) {
       player.position.addScaledVector(offset, BODY_RADIUS - distance);
       keepInside(player.position);
     }
-    hitTime = Math.max(0, hitTime - dt);
   }
 
   return {
     maxHealth: MAX_HEALTH,
-    updateFeedback: feedback.update,
+    updateFeedback(dt) {
+      feedback.update(dt);
+      hitTime = Math.max(0, hitTime - dt);
+    },
+    animate(time, fallen) {
+      if (orb.visible) orbit.rotation.y = time * 4;
+      pose.animate(time, (hitTime / hitDuration) ** 2, fallen);
+      shadow.position.copy(wizard.position).setY(0.022);
+      shadow.scale.setScalar(1 + wizard.position.y*0.16);
+      shadow.material.opacity = 0.66 / (1 + wizard.position.y*0.7);
+    },
     get health() { return health; },
     get finisherReady() { return phase === 'ready'; },
     stageFinisher() {
@@ -177,13 +191,13 @@ export function createBoss(scene, wizard, player, keepInside) {
     start() {
       from.copy(wizard.position);
       target.set(0, 0, -1.8);
-      shadow.visible = true;
       enter('approach');
     },
     update(dt, ultimate) {
       if (phase === 'ready') {
         if (!ultimate) return false;
         enter('finisher');
+        pose.set();
         return true;
       }
       elapsed += dt;
@@ -195,7 +209,7 @@ export function createBoss(scene, wizard, player, keepInside) {
         wizard.position.y = Math.abs(Math.sin(amount * Math.PI * 3)) * 0.15;
         if (elapsed >= 0.95) enter('windup');
       } else {
-        pose.set({ hit: hitTime / 0.18 });
+        pose.set();
         if (phase === 'windup') windup(attack);
         else if (phase === 'attack') attackMove(attack);
         else if (phase === 'recovery' && elapsed >= attack.recovery) {
@@ -203,8 +217,7 @@ export function createBoss(scene, wizard, player, keepInside) {
           enter('windup');
         }
       }
-      resolveContact(dt);
-      shadow.position.copy(wizard.position).setY(0.022);
+      resolveContact();
       if (health === FINISHER_HP) {
         enter('ready');
         hideAttacks();

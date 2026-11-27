@@ -26,6 +26,7 @@ const WORLD_GLOW = {
   'Water': { strength: 0.22, radius: 0.75, threshold: 0.97 },
   'Wood': { strength: 0.12, radius: 0.78, threshold: 0.94 },
   'Metal': { strength: 0.22, radius: 0.78, threshold: 0.94 },
+  'Void': { strength: 0.45, radius: 0.6, threshold: 1 },
 }
 
 // Intro fade timings in milliseconds.
@@ -127,6 +128,7 @@ export function createGame({ mount, registry = createWorldRegistry(), initialPro
 
     const host = createWorldHost({
       registry, controls, ui, assets, audio, progress, player, camera, canvas, viewCamera: display.camera,
+      renderer: display.renderer,
       coverInitial: !liveTitle,
       resolveTravel({ kind, entry }) {
         const snapshot = progress.read();
@@ -178,7 +180,7 @@ export function createGame({ mount, registry = createWorldRegistry(), initialPro
         if (!scene) return;
         host.present(elapsed, dt);
         audio.updateListener(display.camera);
-        display.render(scene, WORLD_GLOW[scene.name]);
+        display.render(scene, WORLD_GLOW[scene.name], display.camera, host.postProcess);
         ui.update(display.camera);
       },
     });

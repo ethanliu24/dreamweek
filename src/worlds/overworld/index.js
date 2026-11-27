@@ -147,6 +147,7 @@ export function createWorld({ audio, camera, controls, interactions, player, pro
       player.root.removeFromParent();
     },
     dispose() {
+      postProcess.dispose();
       disposeScene(scene);
     },
   };
