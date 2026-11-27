@@ -25,6 +25,7 @@ const WORLD_GLOW = {
   'Earth': { strength: 0.22, radius: 0.75, threshold: 0.97 },
   'Water': { strength: 0.22, radius: 0.75, threshold: 0.97 },
   'Wood': { strength: 0.12, radius: 0.78, threshold: 0.94 },
+  'Metal': { strength: 0.22, radius: 0.78, threshold: 0.94 },
 }
 
 // Intro fade timings in milliseconds.

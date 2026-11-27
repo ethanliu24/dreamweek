@@ -1,5 +1,5 @@
 import {
-  BoxGeometry, CanvasTexture, CubicBezierCurve3, CylinderGeometry, Group, LineCurve3, MathUtils,
+  BoxGeometry, CanvasTexture, CubicBezierCurve3, CylinderGeometry, Group, InstancedMesh, Matrix4, LineCurve3, MathUtils,
   Mesh, MeshBasicMaterial, MeshStandardMaterial, PlaneGeometry, Raycaster, SphereGeometry,
   SRGBColorSpace, TubeGeometry, Vector2, Vector3,
 } from 'three';
@@ -42,11 +42,11 @@ export function createPipeBoard() {
   const slab = new BoxGeometry(WIDTH, HEIGHT, 0.16);
   const plate = new BoxGeometry(0.96, 0.96, 0.07);
   const stone = new MeshStandardMaterial({ color: 0x303746, roughness: 0.9 });
-  const dark = new MeshStandardMaterial({ color: 0x252c39, roughness: 0.95 });
+  const dark = new MeshStandardMaterial({ color: 0x273e40, roughness: 0.95 });
   const copper = new MeshStandardMaterial({ color: 0x91634f, metalness: 0.46, roughness: 0.4 });
   const collarMetal = new MeshStandardMaterial({ color: 0xc29474, metalness: 0.4, roughness: 0.35 });
   const energy = new MeshStandardMaterial({
-    color: 0xffd265, emissive: 0xffa92f, emissiveIntensity: 0.65, metalness: 0.22, roughness: 0.22,
+    color: 0x9be8b8, emissive: 0x54dbcb, emissiveIntensity: 0.65, metalness: 0.22, roughness: 0.22,
   });
   const straight = new LineCurve3(new Vector3(-0.5, 0, 0), new Vector3(0.5, 0, 0));
   const elbow = new CubicBezierCurve3(new Vector3(0, 0.5, 0), new Vector3(0, 0.224, 0),
@@ -68,9 +68,12 @@ export function createPipeBoard() {
   const axes = makeAxes();
   axes.position.z = 0.011;
   root.add(axes);
+  const recesses = new InstancedMesh(plate, dark, ROWS * COLUMNS);
+  const transform = new Matrix4();
+  root.add(recesses);
   for (let row = 1; row <= ROWS; row++) {
     for (let column = 1; column <= COLUMNS; column++) {
-      add(root, plate, dark, columnX(column), rowY(row), 0.027);
+      recesses.setMatrixAt(cellKey(row, column), transform.makeTranslation(columnX(column), rowY(row), 0.027));
     }
   }
 
